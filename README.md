@@ -37,7 +37,7 @@ Notebooks for analysing results and producing figures from simulation runs
 - Remove day cap from the normal model, add the adding days bit
 - Add an if statement to check whether I want to run the whole epidemic or just the first section, then can add it to the runtime exception to break out if we don’t want the whole epidemic
 
--Check that every day is calculated in the day dict - which bits are inclusive and exclusive
+- Check that every day is calculated in the day dict - which bits are inclusive and exclusive
 
 
 New functions in main simulator:
