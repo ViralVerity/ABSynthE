@@ -4,18 +4,19 @@ Agent-based simulator for Ebola Virus
 
 ## Simulation scripts
 
-Contains scripts for running various different versions of the simulator.
+Contains scripts for running various different versions of the simulator, and associated modules.
 
-Have consolidated the server model and the computer model - server model was more up to date, and the only key difference was pathways
-
-No caps model - no caps on days or case numbers
-
-#### Above are to be consolidated, so that a command line option will tell it whether to run with caps or not
+Simulate_epidemic - the normal stochastic epidemic, can be run with or without capping
 
 Non-stoch model - to generate the same trees each time for testing other hypotheses
 
 Tree_simulator - generates the coalescent tree and corresponding skyline stochastically 
 Tree simulator nonstoch - the same but non-stochastically
+
+file_functions - set of functions for making directories and prepping results files
+
+make contact dicts - imports contact dictionaries and makes useable dicts
+NB the data is currently not on this repo as the files are too large to be uploaded
 
 ## Results scripts
 
@@ -41,9 +42,9 @@ Notebooks for analysing results and producing figures from simulation runs
 
 
 New functions in main simulator:
-- Make files (eg with headers etc)
-- Write to file
-- Organise dictionaries (ie import and make agent location dict) Not sure. Might make it easier to read
+- Make files (eg with headers etc) #### DONE
+- Write to file #### Not actually needed because short now
+- Organise dictionaries (ie import and make agent location dict) Not sure. Might make it easier to read #### DONE
 - Index case initialising
 - Remove cases
 - Get output - write tree file etc, get the tree
