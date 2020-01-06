@@ -11,56 +11,50 @@ if iteration_count == -1:
     import math
     import random
     from collections import defaultdict
-    import json
+    #import json
     from collections import Counter
     import time
-    import os
+    #import os
     from multiprocessing.pool import ThreadPool
     
     import Tree_simulator as cts
+    import file_functions 
+    from make_contact_dicts import *
+    
     
     #import Fitting_functions as fit
     #import skygrid_prep
     
     
     #For the server
-    dropbox_path = "/localdisk/home/s1732989/ABM/"
-    results_path = "running_model/Results/no_caps/"
+    #dropbox_path = "/localdisk/home/s1732989/ABM/"
+    #results_path = "running_model/Results/no_caps/"
     
     
-    #dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-    #results_path = "Looping models/Results/no_caps/"
+    dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+    results_path = "Looping models/Results/testing_consolidation/"
     
-    run_number = 2
+   
+    run_number = 4
+    
+    capped = True
+    case_limit = 250
     
     print("Defining parameters")
     
     try:
-        os.mkdir(dropbox_path + results_path + str(run_number))
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/log_files")
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/trees") 
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/dist_mvmt")
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/skylines")
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/issues")
-
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/issues/removals")
-        os.mkdir(dropbox_path + results_path + str(run_number) + "/issues/zerotaus")
+        file_functions.make_directories(dropbox_path, results_path, run_number)
     
     except FileExistsError:
         pass
 
-    R0_output = open(dropbox_path + results_path + str(run_number) + "/R0_run.csv", 'a')
-    size_output = open(dropbox_path + results_path + str(run_number) + "/epidemic_size.csv", 'a')
-    most_recent_tip_file = open(dropbox_path + results_path + str(run_number) + "/most_recent_dates.csv",'a')
-    length_output = open(dropbox_path + results_path + str(run_number) + "/persistence.csv",'a')
-            
-    most_recent_tip_file.write("number" + "," + "most_recently_sampled_tip" + "\n")
-    size_output.write("number" + "," + "size" + "," + "districts_involved" + "," + "communities_involved" + "\n")
-    length_output.write("number" + "," + "length_of_epidemic" + "\n")
+    R0_output, size_output, most_recent_tip_file, length_output = file_functions.make_summary_files(dropbox_path, results_path, run_number)
     
+    if capped:
+        run_out_summary = file_functions.prep_runout_summary(dropbox_path, results_path, run_number)
 
     popn_size = 7092142
-    epidemic_length = 100
+    epidemic_length = 1000
     cfr = 0.7
     epidemic_runout = 0
     sampling_percentage = 0.16
@@ -79,47 +73,12 @@ if iteration_count == -1:
     recovery_scale = (6.2**2)/15.2
     recovery_cdf = sp.stats.gamma.cdf(clinical_x, recovery_shape, loc = 0, scale = recovery_scale)
 
-    agent_location = defaultdict(list)
     
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
 
     print("Importing dictionaries")
     
-    with open(dropbox_path + "Contact_structure/agent_location.txt") as json_file:
-        data = json.load(json_file)
-
-    for key in data.keys():
-        new_key = int(key)
-        agent_location[new_key] = data[key]
-
-
-    with open(dropbox_path + "Contact_structure/District_to_hh.txt") as json_file:
-        dist_to_hh = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/hh_to_cluster.txt") as json_file:
-        hh_to_cluster = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/cluster_to_hh.txt") as json_file:
-        cluster_to_hh = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/Hh_to_people.txt") as json_file:
-        hh_to_ppl = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/cluster_to_ppl.txt") as json_file:
-        cluster_to_ppl = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/District_to_ppl.txt") as json_file:
-        dist_to_ppl = json.load(json_file)
-
-    with open(dropbox_path + "Contact_structure/district_relative_distance.txt") as json_file:
-        district_distance = json.load(json_file)
-
-    district_pops = {}
-
-    with open(dropbox_path + "Contact_structure/district_population.csv", 'r') as f:
-        for l in f:
-            toks = l.strip("\n").split(",")
-            district_pops[toks[0]] = int(toks[1])
+    agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops = make_contact_dicts(dropbox_path)
 
 
 
@@ -370,7 +329,7 @@ def run_model(iteration_number):
 
         iteration_count += 1
 
-        if iteration_count%1 == 0:
+        if iteration_count%5 == 0:
             write_file = True
         else:
             write_file = False
@@ -421,44 +380,9 @@ def run_model(iteration_number):
 
         original_cluster_set.add(index_case_individual.comm)
 
-        if write_file == True:
+        if write_file:
 
-            info_file = open(dropbox_path + results_path + str(run_number) + "/log_files/information_file_for_" + str(iteration_count) + ".csv", 'w')
-
-            tree_file = open(dropbox_path + results_path + str(run_number) + "/trees/tree_for_" + str(iteration_count) + ".txt", 'w')
-
-            district_mvmt_file = open(dropbox_path + results_path + str(run_number) + "/dist_mvmt/mvmt_for_" + str(iteration_count) + ".csv", 'w')
-
-            skyline_file = open(dropbox_path + results_path + str(run_number) + "/skylines/skyline_for_" + str(iteration_count) + ".csv", 'w')
-           
-
-            skyline_file.write("number" + ","
-                               + "start_interval" + ","
-                               + "end_interval" + ","
-                               + "logpopize" + "\n")
-
-            district_mvmt_file.write("DistrictOne" + ","
-                                     + "DistrictTwo" + ","
-                                     + "Times" + "\n")
-
-            info_file.write("Individual" + "," 
-                            + "Parent" + "," 
-                            + "Household" + ","
-                            + "District" + ","
-                            + "Day_infected" + ","
-                            + "Day_onset" + "," 
-                            + "Day_sampled" +
-                            "\n")
-
-
-            info_file.write(str(index_case_individual.unique_id) + "," 
-                            + "NA" + ","
-                            + str(index_case_individual.hh) + "," 
-                            + str(index_case_individual.dist) + ","
-                            + str(0) + ","
-                            + str(index_case_individual.incubation_day) + ","
-                            + str(index_case_individual.incubation_day) +
-                            "\n")
+            info_file = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
 
 
         for i in range(epidemic_length):
@@ -492,9 +416,12 @@ def run_model(iteration_number):
         #start = time.time()
         
         susceptibles_left = True
+        
+        #Put run_epidemic in its own file if possible as it depends on other functions
+        
+        day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
 
-        day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, write_file, info_file, iteration_count)
-
+            
         remove_set = set()   
     
         #Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died
@@ -512,27 +439,46 @@ def run_model(iteration_number):
 
         day_dict[0].append(index_case_case) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
 
-        if write_file == True:
+        if epidemic_capped and not write_file: #ie if it's capped but not already being written
+            
+            runout_file = file_functions.prep_runout_file(dropbox_path, results_path, run_number, iteration_count)
+         
+            for indie in case_dict.values():
 
-            tree_file = open(dropbox_path + results_path + str(run_number) + "/trees/tree_for_" + str(iteration_count) + ".txt", 'w')
+                day = trans_dict[indie.unique_id][1]
+                symptoms = trans_dict[indie.unique_id][2]
+                sampled = trans_dict[indie.unique_id][2]
 
-            district_mvmt_file = open(dropbox_path + results_path + str(run_number) + "/dist_mvmt/mvmt_for_" + str(iteration_count) + ".csv", 'w')
+                try:
+                    runout_file.write(str(indie.unique_id) + "," + 
+                    str(indie.parent.unique_id) +  "," +
+                    str(indie.hh) +  "," +
+                    str(indie.dist) + "," +
+                    str(day) + "," +
+                    str(symptoms) + "," +
+                    str(sampled) +
+                    "\n")
+                except AttributeError:
+                    runout_file.write(str(indie.unique_id) + "," + 
+                    "NA" +  "," +
+                    str(indie.hh) +  "," +
+                    str(indie.dist) + "," +
+                    str(day) + "," +
+                    str(symptoms) + "," +
+                    str(sampled) +
+                    "\n")
 
-            skyline_file = open(dropbox_path + results_path + str(run_number) + "/skylines/skyline_for_" + str(iteration_count) + ".csv", 'w')
 
-            skyline_file.write("number" + ","
-                               + "start_interval" + ","
-                               + "end_interval" + ","
-                               + "logpopize" + "\n")
+        
+        
+        if write_file or epidemic_capped:
 
-            district_mvmt_file.write("DistrictOne" + ","
-                                     + "DistrictTwo" + ","
-                                     + "Times" + "\n")
+            tree_file, district_mvmt_file, skyline_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
 
 
         last_day = max(onset_times)
 
-        if write_file == True:
+        if write_file or epidemic_capped:
 
             for key, value in dist_mvmt.items():
                 if len(value) != 0:
@@ -572,20 +518,32 @@ def run_model(iteration_number):
                     R0 = str(result[3])
                     R0_output.write(str(iteration_count) + "," + R0 + "\n")
 
-            if write_file == True:
-
-                info_file.close()
+        if write_file:
+            info_file.close()
+        if epidemic_capped and not write_file:
+            runout_file.close()
         
+        if epidemic_capped:
+            run_out_summary.write(str(iteration_count) + "," + str(len(case_dict)) + "\n")
         
         length_output.write(str(iteration_count) + "," + str(last_day) + "\n")
 
         size_output.write(str(iteration_count) + "," + str(len(case_dict)) + "," + str(len(districts_present)) + "," + str(len(cluster_set)) + "\n")
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
+    
+    epidemic_capped = False
+    day_count = 0
+    
     try: 
         for day, case_list in day_dict.items():    
-            if susceptibles_left == False:
+            if not susceptibles_left:
                 break
+            day_count += 1
+            if capped:
+                if day_count > epidemic_length or len(case_dict) > case_limit:
+                    epidemic_capped = True
+                    break
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
                     parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case id
@@ -654,18 +612,23 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
 
     except RuntimeError:
-        #print("RuntimeError in iteration " + str(iteration_count))
-        print("Adding more days to" + str(iteration_count))
-        original_length = len(day_dict)
-        new_start = day #Should start again from when the error was thrown, so for now will recalculate all the infecteds for that day
-        for i in range(1000):
-            day_dict[original_length + i] = []
-        
-        run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count)
+        if not capped:
+            print("Adding more days to" + str(iteration_count))
+            original_length = len(day_dict)
+            new_start = day #Should start again from when the error was thrown, so for now will recalculate all the infecteds for that day
+            for i in range(1000):
+                day_dict[original_length + i] = []
+
+            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        else:
+            pass
         
 
-    return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set
-        
+    return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped
+
+
+
+
              
             
             
@@ -681,8 +644,6 @@ R0_output.close()
 size_output.close()
 length_output.close()
 most_recent_tip_file.close()
-
-    
-
-
-
+                                  
+if capped:
+    run_out_summary.close()

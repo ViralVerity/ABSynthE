@@ -6,8 +6,7 @@ Agent-based simulator for Ebola Virus
 
 Contains scripts for running various different versions of the simulator.
 
-Computer model and server model are functionally the same, but have different file pathways depending on whether they are being run locally or on the server. 
-#### Also consolidate these - if statement to say on server or computer
+Have consolidated the server model and the computer model - server model was more up to date, and the only key difference was pathways
 
 No caps model - no caps on days or case numbers
 
