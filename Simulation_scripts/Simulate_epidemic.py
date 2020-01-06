@@ -11,15 +11,14 @@ if iteration_count == -1:
     import math
     import random
     from collections import defaultdict
-    #import json
     from collections import Counter
     import time
-    #import os
     from multiprocessing.pool import ThreadPool
     
     import Tree_simulator as cts
     import file_functions 
     from make_contact_dicts import *
+    from individual_class import *
     
     
     #import Fitting_functions as fit
@@ -32,7 +31,7 @@ if iteration_count == -1:
     
     
     dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-    results_path = "Looping models/Results/testing_consolidation/"
+    results_path = "Looping models/Results/testing_tidying/"
     
    
     run_number = 4
@@ -59,6 +58,7 @@ if iteration_count == -1:
     epidemic_runout = 0
     sampling_percentage = 0.16
     
+    #Put all of these into a function
     clinical_x = np.linspace(0, 40, 40)
 
     incshape = (8.5/7.6)**2
@@ -81,68 +81,6 @@ if iteration_count == -1:
     agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops = make_contact_dicts(dropbox_path)
 
 
-
-    class Individual(): 
-        def __init__(self, unique_id): 
-
-            self.unique_id = unique_id
-
-            self.children = []
-            self.exptimer = 0
-            self.inftimer = 0
-
-            self.hh = agent_location[self.unique_id][0]
-            self.comm = agent_location[self.unique_id][1]
-            #self.ch = agent_location[self.unique_id][2]
-            self.dist = agent_location[self.unique_id][2]
-
-            self.incubation_time()
-            self.death_prob()
-
-            if self.death_state == True: 
-                self.death_time()
-                self.infectious_period = self.death_day + 7
-            else:
-                self.recovery_time()
-                self.infectious_period = self.recovery_day
-
-        def death_prob(self):
-
-            death_poss = np.random.uniform(0, 1.0)
-
-            if death_poss > cfr: #So they are still alive
-                self.death_state = False
-            else:
-                self.death_state = True
-
-            return self.death_state
-
-        def incubation_time(self):
-
-            random_number = random.uniform(0,1)
-            self.incubation_day = np.argmax(inccdf > random_number)
-
-            return self.incubation_day
-
-        def death_time(self):
-
-            random_number = random.uniform(0,1)
-
-            self.death_day = np.argmax(death_cdf > random_number)
-
-            return self.death_day
-
-        def recovery_time(self):
-
-            #Can't recover before day 4 - taken from the NEJM paper figure
-            random_number = random.uniform(recovery_cdf[3],1)
-            self.recovery_day = np.argmax(recovery_cdf > random_number)
-            
-            return self.recovery_day
-
-
-
-
     class Case():
         def __init__(self, case_id, level):
 
@@ -158,7 +96,7 @@ if iteration_count == -1:
                 print("ERROR " + str(self.case_id))
 
 
-
+    #Separate to any class I think - could I combine this with the init function?
     def initialise_case(focal_case, level, case_dict): #parent as a case object
         """ Takes current individual who is doing the infecting as a case object input
         Makes case objects for new cases and adds to the case dictionary"""
@@ -172,7 +110,7 @@ if iteration_count == -1:
 
         return new_case
 
-
+    #Could be attached to individual class
     def get_possible_cases(individual):
         """Finds number of people exposed with their contact level relative to focal_individual"""
         poss_contact_dict = {}
@@ -212,7 +150,7 @@ if iteration_count == -1:
 
         return poss_contact_dict  
 
-
+    #This is going to be separate to any class
     def get_cdf(dim):
 
         x = np.linspace(0,dim, dim) #This is where difference between living/dead comes in
@@ -227,6 +165,7 @@ if iteration_count == -1:
         return cdf
 
 
+    #Could be attached to individual class
     def when_infected(focal_ind, current_day, possible_case, cdf_len_set, cdf_array):
 
         if focal_ind.infectious_period not in cdf_len_set:
@@ -255,6 +194,7 @@ if iteration_count == -1:
 
 
     #CHECK THAT THE DICTIONARY IS RETURNED AND THE CACHING STILL WORKS OK - it should do actually but still
+    #Could be attached to individual class
     def get_options_district(option_dict_districtlevel, parent):
 
         if parent.comm not in option_dict_districtlevel.keys():
@@ -271,7 +211,7 @@ if iteration_count == -1:
 
         return dist_ppl_list, option_dict_districtlevel
 
-
+    #This could be attached to the case class
     #input is case object - already been initialised
     def who_am_I(focal_case, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day): 
         """Input is case object that has already been initialised.
@@ -306,7 +246,7 @@ if iteration_count == -1:
 
         #Is the person actually susceptible
         if poss_case not in infected_individuals_set:
-            new_individual = Individual(poss_case)
+            new_individual = Individual(poss_case, agent_location, cfr, inccdf, death_cdf, recovery_cdf)
             case_dict[focal_case] = new_individual
             infected_individuals_set.add(poss_case)
             
@@ -363,7 +303,7 @@ def run_model(iteration_number):
         
         original_onset_times = []
 
-        index_case_individual = Individual(random.choice(range(1382431,1908832))) #These should be the IDs of the range in Kailahun
+        index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, inccdf, death_cdf, recovery_cdf) #These should be the IDs of the range in Kailahun
 
         index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
 
