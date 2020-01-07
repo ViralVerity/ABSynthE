@@ -66,8 +66,7 @@ if iteration_count == -1:
 
     print("Importing dictionaries")
     
-    agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops = make_contact_dicts(dropbox_path)
-    #Make this contact_dicts or something
+    contact_structure = make_contact_dicts(dropbox_path)
 
 #Put these running functions in their own files
 def run_model(iteration_number):
@@ -116,7 +115,7 @@ def run_model(iteration_number):
         for i in range(epidemic_length):
             original_day_dict[i] = []
 
-        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
+        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
 
@@ -126,7 +125,7 @@ def run_model(iteration_number):
         
         #Put run_epidemic in its own file if possible as it depends on other functions
         
-        day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
 
             
         remove_set = set()   
@@ -237,7 +236,7 @@ def run_model(iteration_number):
 
         size_output.write(str(iteration_count) + "," + str(len(case_dict)) + "," + str(len(districts_present)) + "," + str(len(cluster_set)) + "\n")
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
     
     epidemic_capped = False
     day_count = 0
@@ -256,7 +255,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case object
 
                     #May need to check that the new individual is coming out of this
-                    assignment = focal_case.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day, agent_location, cfr, distributions) #Assign the current case id to an individual
+                    assignment = focal_case.who_am_I(infected_individuals_set, popn_size, option_dict_districtlevel, contact_structure, case_dict, parent, day, cfr, distributions) #Assign the current case id to an individual
 
                     if assignment == None and day != 0: #If individual is already infected
                         #remove_set.add(focal_case) #Case doesn't exist so must be removed from day/case dict
@@ -328,7 +327,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             for i in range(1000):
                 day_dict[original_length + i] = []
 
-            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
         else:
             pass
         
