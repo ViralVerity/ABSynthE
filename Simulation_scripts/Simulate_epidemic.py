@@ -19,6 +19,7 @@ if iteration_count == -1:
     import file_functions 
     from make_contact_dicts import *
     from individual_class import *
+    from case_class import *
     
     
     #import Fitting_functions as fit
@@ -34,7 +35,7 @@ if iteration_count == -1:
     results_path = "Looping models/Results/testing_tidying/"
     
    
-    run_number = 4
+    run_number = 5
     
     capped = True
     case_limit = 250
@@ -79,21 +80,6 @@ if iteration_count == -1:
     print("Importing dictionaries")
     
     agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops = make_contact_dicts(dropbox_path)
-
-
-    class Case():
-        def __init__(self, case_id, level):
-
-            self.children = []
-
-            self.case_id = case_id
-
-            self.level = level
-
-            #print("case ID " + str(self.case_id) + " is level " + str(self.level))
-
-            if self.case_id != 0 and self.level == None:
-                print("ERROR " + str(self.case_id))
 
 
     #Separate to any class I think - could I combine this with the init function?
