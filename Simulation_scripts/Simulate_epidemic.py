@@ -5,15 +5,7 @@ if iteration_count == -1:
     
     print("Successfully importing modules")
     
-    #Check which of these are needed in this script
-    import numpy as np
-    from scipy import stats
-    import scipy as sp
-    import math
-    import random
     from collections import defaultdict
-    from collections import Counter
-    import time
     from multiprocessing.pool import ThreadPool
     
     import Tree_simulator as cts
@@ -69,12 +61,13 @@ if iteration_count == -1:
     
     contact_structure = make_contact_dicts(dropbox_path)
 
-#Put these running functions in their own files
 def run_model(iteration_number):
+    
     iteration_count = -1
     
     for i in range(iteration_number):
-
+    
+    ##Setting things up for running###
         iteration_count += 1
 
         if iteration_count%5 == 0:
@@ -94,28 +87,21 @@ def run_model(iteration_number):
 
         original_case_dict = {}
         original_day_dict = defaultdict(list)
-        
-        option_dict_countrylevel = defaultdict(list)
         option_dict_districtlevel = defaultdict(list)
-
         infected_individuals_set = set()
-
         cdf_array = []
         cdf_len_set = set()
-
         original_districts_present = []
         original_cluster_set = set()
-
         original_trans_dict = defaultdict(list)
         original_nodes = []
-        
         original_onset_times = []
  
 
-
         for i in range(epidemic_length):
             original_day_dict[i] = []
-
+        
+        ###Making index case###
         index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
@@ -123,15 +109,14 @@ def run_model(iteration_number):
             info_file = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
         
         susceptibles_left = True
-        
-        #Put run_epidemic in its own file if possible as it depends on other functions
-        
+         
+        ###Run the epidemic###
         day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
 
-            
+        
         remove_set = set()   
     
-        #Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died
+        ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
         for key, value in case_dict.items():
             if type(value) != Individual:
                 remove_set.add(key)
@@ -146,6 +131,8 @@ def run_model(iteration_number):
 
         day_dict[0].append(index_case_case) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
 
+        ###Getting results and writing to file###
+        
         if epidemic_capped and not write_file: #ie if it's capped but not already being written
             
             runout_file = file_functions.prep_runout_file(dropbox_path, results_path, run_number, iteration_count)
@@ -175,13 +162,9 @@ def run_model(iteration_number):
                     str(sampled) +
                     "\n")
 
-
-        
         
         if write_file or epidemic_capped:
-
             tree_file, district_mvmt_file, skyline_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
-
 
         last_day = max(onset_times)
 
@@ -192,7 +175,7 @@ def run_model(iteration_number):
                     district_mvmt_file.write(key[0] + "," + key[1] + "," + ",".join([str(i) for i in value]) + "\n")
 
             district_mvmt_file.close()
-
+            
             result = cts.simulate_tree(trans_dict, nodes, sampling_percentage, last_day)
             
             if result:
