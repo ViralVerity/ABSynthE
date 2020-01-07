@@ -20,6 +20,7 @@ if iteration_count == -1:
     from make_contact_dicts import *
     from individual_class import *
     from case_class import *
+    import distribution_functions
     
     
     #import Fitting_functions as fit
@@ -59,23 +60,9 @@ if iteration_count == -1:
     epidemic_runout = 0
     sampling_percentage = 0.16
     
-    #Put all of these into a function
-    clinical_x = np.linspace(0, 40, 40)
-
-    incshape = (8.5/7.6)**2
-    incscale = (7.6**2)/8.5
-    inccdf = sp.stats.gamma.cdf(clinical_x, incshape, loc = 0, scale = incscale)
-
-    death_shape = (8.6/6.9)**2
-    death_scale = (6.9**2)/8.6
-    death_cdf = sp.stats.gamma.cdf(clinical_x, death_shape, loc = 0, scale = death_scale)
-
-    recovery_shape = (15.2/6.2)**2
-    recovery_scale = (6.2**2)/15.2
-    recovery_cdf = sp.stats.gamma.cdf(clinical_x, recovery_shape, loc = 0, scale = recovery_scale)
-
-    
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
+    
+    inccdf, death_cdf, recovery_cdf = distribution_functions.define_distributions()
 
     print("Importing dictionaries")
     
@@ -136,26 +123,14 @@ if iteration_count == -1:
 
         return poss_contact_dict  
 
-    #This is going to be separate to any class
-    def get_cdf(dim):
-
-        x = np.linspace(0,dim, dim) #This is where difference between living/dead comes in
-        mu = 3.1
-        sigma = 2.5
-
-        a = shape = (mu/sigma)**2
-        scale = (sigma**2)/mu
-
-        cdf = sp.stats.gamma.cdf(x,a,loc=0,scale=scale)
-
-        return cdf
-
+##get_cdf from here
+#Will need to import distribution functions into the Individual class if below if made part of the individual class
 
     #Could be attached to individual class
     def when_infected(focal_ind, current_day, possible_case, cdf_len_set, cdf_array):
 
         if focal_ind.infectious_period not in cdf_len_set:
-            cdf = get_cdf(focal_ind.infectious_period)
+            cdf = distribution_functions.get_cdf(focal_ind.infectious_period)
             cdf_array.append(cdf)
             cdf_len_set.add(focal_ind.infectious_period)
         
