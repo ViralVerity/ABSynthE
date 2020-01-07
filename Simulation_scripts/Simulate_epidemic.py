@@ -81,84 +81,19 @@ if iteration_count == -1:
 
         return new_case
 
-    #Could be attached to individual class
-  #  def get_possible_cases(individual):
-   #     """Finds number of people exposed with their contact level relative to focal_individual"""
-        
+  #  def get_possible_cases(individual):        
         
         
 ##get_cdf from here
-#Will need to import distribution functions into the Individual class if below if made part of the individual class
-
-    #When_infected from here
+#When_infected from here
 
 
     #CHECK THAT THE DICTIONARY IS RETURNED AND THE CACHING STILL WORKS OK - it should do actually but still
-    #Could be attached to individual class
-    def get_options_district(option_dict_districtlevel, parent):
-
-        if parent.comm not in option_dict_districtlevel.keys():
-
-            poss_comms = [hh_to_cluster[hh] for hh in dist_to_hh[parent.dist]]
-
-            dist_ppl_list = ([cluster_to_ppl[clust] for clust in poss_comms if clust != parent.comm])
-
-            option_dict_districtlevel[parent.comm] = dist_ppl_list
-
-        else:
-
-            dist_ppl_list = option_dict_districtlevel[parent.comm]
-
-        return dist_ppl_list, option_dict_districtlevel
+   # def get_options_district(option_dict_districtlevel, parent):
 
     #This could be attached to the case class
     #input is case object - already been initialised
-    def who_am_I(focal_case, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day): 
-        """Input is case object that has already been initialised.
-        Finds out which of the parent's potential contacts are still susceptible"""
-
-        if len(infected_individuals_set) == popn_size: 
-            return False
-
-        if focal_case.level == "Hh":
-            poss_case = random.choice(hh_to_ppl[parent.hh])
-
-        elif focal_case.level == "Comm":
-            poss_case = random.choice(random.choice([hh_to_ppl[hh] for hh in cluster_to_hh[parent.comm] 
-                                                if hh != parent.hh]))
-          
-
-        elif focal_case.level == "Dist":
-            #Tried to optimise this but have left for now
-            dist_ppl_list = get_options_district(option_dict_districtlevel, parent)[0]
-
-            poss_case = random.choice(random.choice(dist_ppl_list))
-
-        elif focal_case.level == "Country":        
-
-            district = random.choice(district_distance[parent.dist])
-
-            poss_case = random.choice(dist_to_ppl[district])
-
-        else:
-            print("ERROR no level assigned")
-
-
-        #Is the person actually susceptible
-        if poss_case not in infected_individuals_set:
-            new_individual = Individual(poss_case, agent_location, cfr, inccdf, death_cdf, recovery_cdf)
-            case_dict[focal_case] = new_individual
-            infected_individuals_set.add(poss_case)
-            
-        elif day == 0: #So that there are actually 14 cases in the first transmission cluster
-            who_am_I(focal_case, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day)
-
-        else:
-            #print("Already infected")
-            return
-
-        #print("Time taken to define self = " + str(end-start))
-        return poss_case, case_dict, infected_individuals_set
+#def who_am_I
 
 
 
@@ -202,7 +137,14 @@ def run_model(iteration_number):
         original_nodes = []
         
         original_onset_times = []
+ 
 
+
+        for i in range(epidemic_length):
+            original_day_dict[i] = []
+
+        ############
+        
         index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, inccdf, death_cdf, recovery_cdf) #These should be the IDs of the range in Kailahun
 
         index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
@@ -219,17 +161,6 @@ def run_model(iteration_number):
         original_districts_present.append(index_case_individual.dist)
 
         original_cluster_set.add(index_case_individual.comm)
-
-        if write_file:
-
-            info_file = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
-
-
-        for i in range(epidemic_length):
-            original_day_dict[i] = []
-
-
-        ###############################################################
 
         #poss_case_dict = get_possible_cases(index_case_individual)
         index_case_dict = {}
@@ -254,6 +185,12 @@ def run_model(iteration_number):
                     #print("Case ID " + str(new_case.case_id) + " should be level " + str(new_case.level))
 
         #start = time.time()
+        
+        ################
+        
+        if write_file:
+
+            info_file = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
         
         susceptibles_left = True
         
@@ -389,7 +326,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case id
 
                     #May need to check that the new individual is coming out of this
-                    assignment = who_am_I(focal_case, infected_individuals_set, popn_size, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day) #Assign the current case id to an individual
+                    assignment = focal_case.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day, agent_location, cfr, inccdf, death_cdf, recovery_cdf) #Assign the current case id to an individual
 
                     if assignment == None and day != 0: #If individual is already infected
                         #remove_set.add(focal_case) #Case doesn't exist so must be removed from day/case dict
@@ -443,14 +380,11 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                             for person in range(number):
                                 day_inf_output = focal_individual.when_infected(day, person, cdf_len_set, cdf_array)[0]
                                 
-                                print(focal_individual.unique_id)
-                                print(day_inf_output)
-                                
                                 if day_inf_output == None:
                                     #print("Finished infection first")
                                     pass
 
-                                else:
+                                else: #Need to test this as well - could return "Type"
                                     new_case = initialise_case(focal_case, level, case_dict)
                                     day_dict[day_inf_output].append(new_case)
 

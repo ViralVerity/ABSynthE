@@ -6,7 +6,7 @@ import distribution_functions
 
 class Individual(): 
     def __init__(self, unique_id, agent_location, cfr, inccdf, death_cdf, recovery_cdf): 
-
+        """Defines infection course parameters for individual"""
         self.unique_id = unique_id
 
         self.children = [] 
@@ -61,7 +61,9 @@ class Individual():
         return self.recovery_day
 
 
+    ###Running epidemic functions###
     def get_possible_cases(self):
+        """Get the number of exposed secondary cases at each contact level"""
         #Not storing each individuals possible case dict due to memory concerns
         #If you want to get this, add self. in front of each poss_contact_dict mention
 
@@ -104,7 +106,7 @@ class Individual():
 
     
     def when_infected(self, current_day, possible_case, cdf_len_set, cdf_array):
-        """Gets when secondary cases are infected"""
+        """Gets when secondary cases are infected, if that happens before the end of self's infectious period"""
         if self.infectious_period not in cdf_len_set:
             cdf = distribution_functions.get_cdf(self.infectious_period)
             cdf_array.append(cdf)
@@ -130,7 +132,7 @@ class Individual():
         except ValueError:
             return None, cdf_len_set, cdf_array
 
-
+        
 
 
 
