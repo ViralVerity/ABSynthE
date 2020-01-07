@@ -90,32 +90,7 @@ if iteration_count == -1:
 ##get_cdf from here
 #Will need to import distribution functions into the Individual class if below if made part of the individual class
 
-    #Could be attached to individual class
-    def when_infected(focal_ind, current_day, possible_case, cdf_len_set, cdf_array):
-
-        if focal_ind.infectious_period not in cdf_len_set:
-            cdf = distribution_functions.get_cdf(focal_ind.infectious_period)
-            cdf_array.append(cdf)
-            cdf_len_set.add(focal_ind.infectious_period)
-        
-        else:
-            for item in cdf_array:
-                if focal_ind.infectious_period == len(item):
-                    cdf = item
-
-        random_number = random.uniform(0,1)
-
-        try:
-            day = np.argmax(cdf > random_number)
-
-            try:
-                day_inf = day + current_day + focal_ind.incubation_day
-                return day_inf, cdf_len_set
-            except TypeError:
-                return "Type", cdf_len_set, cdf_array
-            
-        except ValueError:
-            return None, cdf_len_set, cdf_array
+    #When_infected from here
 
 
     #CHECK THAT THE DICTIONARY IS RETURNED AND THE CACHING STILL WORKS OK - it should do actually but still
@@ -463,19 +438,14 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                             cluster_set.add(focal_individual.comm)
 
                         poss_case_dict = focal_individual.get_possible_cases() #Gives dict of contact_level: number of people
-
-                        print(poss_case_dict)
-                        print(focal_individual.poss_contact_dict)
-                        
-                        try:
-                            print(focal_individual.parent.poss_contact_dict)
-                        except AttributeError:
-                            print("tried to print parent contact dict")
                         
                         for level, number in poss_case_dict.items():
                             for person in range(number):
-                                day_inf_output = when_infected(focal_individual, day, person, cdf_len_set, cdf_array)[0]
-
+                                day_inf_output = focal_individual.when_infected(day, person, cdf_len_set, cdf_array)[0]
+                                
+                                print(focal_individual.unique_id)
+                                print(day_inf_output)
+                                
                                 if day_inf_output == None:
                                     #print("Finished infection first")
                                     pass
