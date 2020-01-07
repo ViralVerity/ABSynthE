@@ -60,3 +60,47 @@ class Individual():
             self.recovery_day = np.argmax(recovery_cdf > random_number)
             
             return self.recovery_day
+        
+        
+        def get_possible_cases(self):
+            #Concern here is that now I'm storing the poss contact dict for every individual, which I don't need to do
+            #Can I maybe remove it after I've used it? 
+            #Tested - it def is storing it as an attribute of the individual
+            
+            self.poss_contact_dict = {}
+
+            function = np.random.poisson
+
+            lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
+
+            a = 0.85
+            b = a*0.5
+            c = 0.07
+
+            Hh_number = function(lamb)
+            comm_number = function(a*lamb)
+            dist_number = function(b*lamb)
+            country_number = function(c*lamb)
+
+            if Hh_number != None:
+                self.poss_contact_dict["Hh"] = Hh_number
+            else:
+                self.poss_contact_dict["Hh"] = 0
+
+            if comm_number != None:
+                self.poss_contact_dict["Comm"] = comm_number
+            else:
+                self.poss_contact_dict["Comm"] = 0
+
+            if dist_number != None:
+                self.poss_contact_dict["Dist"] = dist_number
+            else:
+                self.poss_contact_dict["Dist"] = 0
+
+            if country_number != None:
+                self.poss_contact_dict["Country"] = country_number
+            else:
+                self.poss_contact_dict["Country"] = 0
+
+            return self.poss_contact_dict  
+

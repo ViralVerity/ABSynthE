@@ -35,7 +35,6 @@ if iteration_count == -1:
     dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
     results_path = "Looping models/Results/testing_tidying/"
     
-   
     run_number = 5
     
     capped = True
@@ -57,7 +56,6 @@ if iteration_count == -1:
     popn_size = 7092142
     epidemic_length = 1000
     cfr = 0.7
-    epidemic_runout = 0
     sampling_percentage = 0.16
     
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
@@ -84,45 +82,11 @@ if iteration_count == -1:
         return new_case
 
     #Could be attached to individual class
-    def get_possible_cases(individual):
-        """Finds number of people exposed with their contact level relative to focal_individual"""
-        poss_contact_dict = {}
-
-        function = np.random.poisson
-
-        lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
-
-        a = 0.85
-        b = a*0.5
-        c = 0.07
-
-        Hh_number = function(lamb)
-        comm_number = function(a*lamb)
-        dist_number = function(b*lamb)
-        country_number = function(c*lamb)
-
-        if Hh_number != None:
-            poss_contact_dict["Hh"] = Hh_number
-        else:
-            poss_contact_dict["Hh"] = 0
-
-        if comm_number != None:
-            poss_contact_dict["Comm"] = comm_number
-        else:
-            poss_contact_dict["Comm"] = 0
-
-        if dist_number != None:
-            poss_contact_dict["Dist"] = dist_number
-        else:
-            poss_contact_dict["Dist"] = 0
-
-        if country_number != None:
-            poss_contact_dict["Country"] = country_number
-        else:
-            poss_contact_dict["Country"] = 0
-
-        return poss_contact_dict  
-
+  #  def get_possible_cases(individual):
+   #     """Finds number of people exposed with their contact level relative to focal_individual"""
+        
+        
+        
 ##get_cdf from here
 #Will need to import distribution functions into the Individual class if below if made part of the individual class
 
@@ -463,6 +427,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                         susceptibles_left = False
                         return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, dist_present, cluster_set
                     
+                    #Test that this only comes up when type = Individual
                     else: #There is a successful assignation to a specific individual
 
                         onset_times.append(day)
@@ -497,8 +462,16 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                         if focal_individual.comm not in cluster_set:
                             cluster_set.add(focal_individual.comm)
 
-                        poss_case_dict = get_possible_cases(focal_individual) #Gives dict of contact_level: number of people
+                        poss_case_dict = focal_individual.get_possible_cases() #Gives dict of contact_level: number of people
 
+                        print(poss_case_dict)
+                        print(focal_individual.poss_contact_dict)
+                        
+                        try:
+                            print(focal_individual.parent.poss_contact_dict)
+                        except AttributeError:
+                            print("tried to print parent contact dict")
+                        
                         for level, number in poss_case_dict.items():
                             for person in range(number):
                                 day_inf_output = when_infected(focal_individual, day, person, cdf_len_set, cdf_array)[0]
