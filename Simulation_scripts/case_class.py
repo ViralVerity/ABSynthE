@@ -36,10 +36,11 @@ class Case():
 
 
     
-    def who_am_I(self, infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent_individual, day, agent_location, cfr, inccdf, death_cdf, recovery_cdf): 
+    def who_am_I(self, infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent_individual, day, agent_location, cfr, distributions): 
         """Input is case object that has already been initialised.
         Finds out which of the parent's potential contacts are still susceptible"""
-
+        
+        
         if len(infected_individuals_set) == popn_size: 
             return False
 
@@ -69,12 +70,12 @@ class Case():
 
         #Is the person actually susceptible
         if poss_case not in infected_individuals_set:
-            new_individual = Individual(poss_case, agent_location, cfr, inccdf, death_cdf, recovery_cdf)
+            new_individual = Individual(poss_case, agent_location, cfr, distributions)
             case_dict[self] = new_individual
             infected_individuals_set.add(poss_case)
             
         elif day == 0: #So that there are actually 14 cases in the first transmission cluster
-            self.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent_individual, day, agent_location, cfr, inccdf, death_cdf, recovery_cdf)
+            self.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent_individual, day, agent_location, cfr, distributions)
 
         else:
             #print("Already infected")

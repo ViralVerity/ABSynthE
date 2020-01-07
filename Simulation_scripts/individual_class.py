@@ -5,8 +5,12 @@ import random
 import distribution_functions
 
 class Individual(): 
-    def __init__(self, unique_id, agent_location, cfr, inccdf, death_cdf, recovery_cdf): 
+    def __init__(self, unique_id, agent_location, cfr, distributions): 
         """Defines infection course parameters for individual"""
+        inccdf = distributions[0]
+        death_cdf = distributions[1]
+        recovery_cdf = distributions[2]
+        
         self.unique_id = unique_id
 
         self.children = [] 

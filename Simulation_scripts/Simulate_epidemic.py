@@ -5,6 +5,7 @@ if iteration_count == -1:
     
     print("Successfully importing modules")
     
+    #Check which of these are needed in this script
     import numpy as np
     from scipy import stats
     import scipy as sp
@@ -61,8 +62,7 @@ if iteration_count == -1:
     
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
     
-    inccdf, death_cdf, recovery_cdf = distribution_functions.define_distributions()
-    #Make this a list called distributions or something
+    distributions = distribution_functions.define_distributions() 
 
     print("Importing dictionaries")
     
@@ -116,7 +116,7 @@ def run_model(iteration_number):
         for i in range(epidemic_length):
             original_day_dict[i] = []
 
-        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(agent_location, cfr, inccdf, death_cdf, recovery_cdf, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
+        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
 
@@ -256,7 +256,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case object
 
                     #May need to check that the new individual is coming out of this
-                    assignment = focal_case.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day, agent_location, cfr, inccdf, death_cdf, recovery_cdf) #Assign the current case id to an individual
+                    assignment = focal_case.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day, agent_location, cfr, distributions) #Assign the current case id to an individual
 
                     if assignment == None and day != 0: #If individual is already infected
                         #remove_set.add(focal_case) #Case doesn't exist so must be removed from day/case dict

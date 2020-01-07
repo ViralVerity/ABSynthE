@@ -2,9 +2,9 @@ from individual_class import *
 from case_class import *
 import random
 
-def make_index_case(agent_location, cfr, inccdf, death_cdf, recovery_cdf, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict):
+def make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict):
     
-    index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, inccdf, death_cdf, recovery_cdf) #These should be the IDs of the range in Kailahun
+    index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, distributions) #These should be the IDs of the range in Kailahun
 
     index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
 
