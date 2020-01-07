@@ -21,6 +21,7 @@ if iteration_count == -1:
     from individual_class import *
     from case_class import *
     import distribution_functions
+    import index_functions
     
     
     #import Fitting_functions as fit
@@ -61,42 +62,14 @@ if iteration_count == -1:
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
     
     inccdf, death_cdf, recovery_cdf = distribution_functions.define_distributions()
+    #Make this a list called distributions or something
 
     print("Importing dictionaries")
     
     agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops = make_contact_dicts(dropbox_path)
+    #Make this contact_dicts or something
 
-
-    #Separate to any class I think - could I combine this with the init function?
-    def initialise_case(focal_case, level, case_dict): #parent as a case object
-        """ Takes current individual who is doing the infecting as a case object input
-        Makes case objects for new cases and adds to the case dictionary"""
-
-        new_case = Case(len(case_dict), level)
-
-        new_case.parent = focal_case
-
-        case_dict[new_case] = None
-        #case_dictall[new_case.case_id] = None
-
-        return new_case
-
-  #  def get_possible_cases(individual):        
-        
-        
-##get_cdf from here
-#When_infected from here
-
-
-    #CHECK THAT THE DICTIONARY IS RETURNED AND THE CACHING STILL WORKS OK - it should do actually but still
-   # def get_options_district(option_dict_districtlevel, parent):
-
-    #This could be attached to the case class
-    #input is case object - already been initialised
-#def who_am_I
-
-
-
+#Put these running functions in their own files
 def run_model(iteration_number):
     iteration_count = -1
     
@@ -143,50 +116,7 @@ def run_model(iteration_number):
         for i in range(epidemic_length):
             original_day_dict[i] = []
 
-        ############
-        
-        index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, inccdf, death_cdf, recovery_cdf) #These should be the IDs of the range in Kailahun
-
-        index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
-
-        index_case_case = Case(0, None)
-        index_case_case.parent = None
-        original_case_dict[index_case_case] = index_case_individual
-
-        original_trans_dict[index_case_individual.unique_id] = ["NA", '0', index_case_individual.incubation_day]
-        original_nodes.append(index_case_individual.unique_id)
-
-        infected_individuals_set.add(index_case_individual.unique_id)
-
-        original_districts_present.append(index_case_individual.dist)
-
-        original_cluster_set.add(index_case_individual.comm)
-
-        #poss_case_dict = get_possible_cases(index_case_individual)
-        index_case_dict = {}
-        index_case_dict["Hh"] = 5
-        index_case_dict["Comm"] = 7
-        index_case_dict["Dist"] = 2
-        index_case_dict["Country"] = 0
-
-        #print(poss_case_dict)
-
-        for level, number in index_case_dict.items():
-            for person in range(number):
-                day_inf = 0
-                new_case = initialise_case(index_case_case, level, original_case_dict)
-                original_day_dict[day_inf].append(new_case)
-                
-                #day_inf = when_infected(index_case_individual, 0, person, cdf_len_set, cdf_array)[0]
-                #if not day_inf: #if not day_inf: #if day_inf == None 
-                 #   pass
-                #else:
-
-                    #print("Case ID " + str(new_case.case_id) + " should be level " + str(new_case.level))
-
-        #start = time.time()
-        
-        ################
+        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(agent_location, cfr, inccdf, death_cdf, recovery_cdf, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
 
@@ -323,7 +253,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     break
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
-                    parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case id
+                    parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case object
 
                     #May need to check that the new individual is coming out of this
                     assignment = focal_case.who_am_I(infected_individuals_set, popn_size, hh_to_cluster, dist_to_hh, cluster_to_ppl, hh_to_ppl, cluster_to_hh, option_dict_districtlevel, district_distance, dist_to_ppl, case_dict, parent, day, agent_location, cfr, inccdf, death_cdf, recovery_cdf) #Assign the current case id to an individual
@@ -385,7 +315,8 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                                     pass
 
                                 else: #Need to test this as well - could return "Type"
-                                    new_case = initialise_case(focal_case, level, case_dict)
+                                    new_case = Case(len(case_dict), level, focal_case)
+                                    case_dict[new_case] = None
                                     day_dict[day_inf_output].append(new_case)
 
 

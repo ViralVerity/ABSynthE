@@ -2,21 +2,20 @@ from individual_class import *
 
 class Case():
     
-    def __init__(self, case_id, level):
+    def __init__(self, case_id, level, parent):
 
         self.children = []
 
         self.case_id = case_id
 
         self.level = level
+        
+        self.parent = parent
 
         #print("case ID " + str(self.case_id) + " is level " + str(self.level))
 
         if self.case_id != 0 and self.level == None:
             print("ERROR " + str(self.case_id))
-            
-            
-            
             
             
     def get_options_district(self, option_dict_districtlevel, hh_to_cluster, dist_to_hh, cluster_to_ppl, parent_individual):
