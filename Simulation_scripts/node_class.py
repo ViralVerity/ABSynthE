@@ -2,7 +2,7 @@ import numpy as np
 
 class node():
     
-    def __init__(self, unique_id, node_type, trans_dict=None, those_sampled=None, node_dict=None, height=None, lucky_pair=None, subtree=None):
+    def __init__(self, unique_id, node_type, trans_dict=None, those_sampled=None, node_dict=None, gen_3=None, gen_4=None, height=None, lucky_pair=None, subtree=None):
         
         self.id = unique_id
         self.sampled = False
@@ -37,7 +37,9 @@ class node():
         self.remove_func_called = False
         self.for_loop_called = False
         
-        self.get_root_list(trans_dict, those_sampled, node_dict)
+        self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
+        
+        
         
     def get_useful_info(self, trans_dict, those_sampled, node_dict):
 
@@ -77,7 +79,8 @@ class node():
 
 
             
-    def get_root_list(self, trans_dict, those_sampled, node_dict):
+    def get_root_list(self, trans_dict, those_sampled, node_dict, gen_3, gen_4):
+        
         
         #Caching to save time
         if len(self.to_root) != 0:
@@ -93,9 +96,14 @@ class node():
             #Recur up the tree
             else:
                 
-                self.get_parent(trans_dict, those_sampled, node_dict)
-                
+                self.get_parent(trans_dict, those_sampled, node_dict) #Will initialise parent and therefore call this function again
                 self.to_root = [(self.parent)] + self.parent.to_root
+                
+                #For R0 calculation to save a loop
+                if len(self.to_root) == 3:
+                    gen_3 += 1
+                if len(self.to_root) == 4:
+                    gen_4 += 1
 
             #Getting the sampling
             if self.id in those_sampled:
@@ -104,8 +112,7 @@ class node():
                     i.sampled_children.add(self) #So the sampled children is all sampled children downstream of the focal individual
 
      
-        
-        
+        return gen_3, gen_4
         
         
         

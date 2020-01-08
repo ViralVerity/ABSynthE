@@ -9,7 +9,7 @@ from node_class import *
 from tree_class import *
 
 
-###Probably can't go into a class yet###
+###Probably can't go into a class yet - need to tidy up anyway though###
 def sampling(trans_dict, sampled_percentage, epidemic_len): 
     """Get who is sampled, inputs are list of individual ids and the sampled percentage"""
     not_enough_cases = False
@@ -80,64 +80,11 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     return those_sampled, not_enough_cases
 
 
-##Added to node class for now, but not sure
-def get_root_list(input_person, trans_dict, those_sampled, node_dict): 
-    """Get the full transmission tree for each individual"""
-    
-    person = initialise_person(input_person, trans_dict, those_sampled, node_dict)
-        
-    #Caching to save time
-    if len(person.to_root) != 0:
-        return(person.to_root)
-        
-    else:
-
-        person.parent = get_parent(trans_dict, person, node_dict)
-            
-        #If the person is the root
-        if person.parent.id == "NA": 
-            path = []
-            person.transm_root = True
-        
-        #Recur up the tree
-        else:
-            path = get_root_list(person.parent, trans_dict, those_sampled, node_dict) + [(person.parent)]
-
-            
-        person.to_root = path
-        
-        #Getting the sampling 
-        if person.id in those_sampled:
-            person.sampled = True
-            for i in person.to_root:
-                i.sampled_children.add(person) #So the sampled children is all sampled children downstream of the focal individual
-
-        return path
-### Either stand alone function or added to the tree class
-def get_R0(node_dict):
-    #Needs the gen node stuff and the get_root_list stuff. Let's generate along with the tree and just try and store it somewhere.
-    gen_4 = []
-    gen_3 = []
-    
-    for person in node_dict.values():
-        
-        if len(person.to_root) == 3:
-        
-            gen_4.append(person)
-          
-        elif len(person.to_root) == 2:
-            
-            gen_3.append(person)
-            
-        else:
-            pass
-        
-    if len(gen_4) != 0 and len(gen_3) != 0:
-        R0 = len(gen_4)/len(gen_3)
-    
+def get_R0(gen_3, gen_4):
+    if gen_4 == 0 and gen_3 == 0:
+        R0 = gen_4/gen_3
         return R0
     else:
-        
         return
         
 
@@ -623,7 +570,7 @@ def plot_skyline(Ne_dict):
     plt.step(names,values)
 
 
-def simulate_tree(trans_dict, nodes, sampling_proportion, epidemic_len): #change these arguments when putting in module for reading in
+def simulate_tree(trans_dict, nodes, sampling_proportion, epidemic_len): 
     """Function to simulate a coalescent tree"""
             
     sampling_output = sampling(trans_dict, sampling_proportion, epidemic_len)
@@ -640,14 +587,18 @@ def simulate_tree(trans_dict, nodes, sampling_proportion, epidemic_len): #change
     if len(those_sampled) != 0:
     
         node_dict = {}
-
-        #Traverse the tree and find out what's going on
+        gen_3 = 0
+        gen_4 = 0
+        
+        #Intialise as type individual nodes, and make transmission tree
         for person in nodes:
-            lst = get_root_list(person, trans_dict, those_sampled, node_dict)
+            node_class.node(person, "Ind", trans_dict, those_sampled, node_dict, gen_3, gen_4)
+            
             if node_dict[person].transm_root:
                 transm_root = node_dict[person]
                 
-        R0 = get_R0(node_dict)
+        
+        R0 = get_R0(gen_3, gen_4)
 
         subtree_dict_outside = {}
 
