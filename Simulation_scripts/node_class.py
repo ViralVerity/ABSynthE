@@ -2,9 +2,10 @@ import numpy as np
 
 class node():
     
-    def __init__(self, unique_id, node_type, trans_dict=None, those_sampled=None, node_dict=None, gen_3=None, gen_4=None, height=None, lucky_pair=None, subtree=None):
+    def __init__(self, unique_id, node_type, trans_dict=None, those_sampled=None, node_dict=None, gen_3=None, gen_4=None, height=None, children=None, subtree=None):
         
-        self.id = unique_id
+        self.id = unique_id #Need to think about the IDs for the three types
+        #At the moment, Ind is a string of numbers, Trans is a node object and coal is a uuid
         self.sampled = False
         
         self.type = node_type #ie transmission, coalescent or individual - individual is a person.
@@ -12,27 +13,27 @@ class node():
         #So really "node" before wasn't a node, it was a "node" on a transmission tree
         
         if self.type == "Ind": #ie if we're just looking at this person, not as a node in the tree
-            self.children = set() #May be a general definition - like children and node_children could be the same
-            self.sampled_children = set()
+            self.infections = set() #May be a general definition - like children and node_children could be the same
+            self.sampled_infections = set()
             self.to_root = []
             self.transm_root = False
             self.last = False    
             
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
             self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
+            
+            #initialise subtree here? Might intefere with the get_root_list recursion, and I do need the sampled children at the moment. Would save another loop!
         
         #Transmission node doesn't have any additional things, we only need to know where it is in time, which is defined in the subtree class
         
 
         ##These three arguments are optional, because they're only relevant for coalescent nodes
         if height:
-            self.height = height
-        if lucky_pair:
-            self.pair = lucky_pair
+            self.relative_height = height
+        if children:
+            self.children = children
         if subtree:
             self.subtree = subtree
-        
-        self.node_children = set()
         
         self.root_to_tip = 0.0
 
@@ -70,7 +71,7 @@ class node():
         if trans_dict[self.id][0] in node_dict.keys():
 
             self.parent = node_dict[trans_dict[self.id][0]]
-            self.parent.children.add(self)
+            self.parent.infections.add(self)
 
         else: #if the parent is not yet in the node dict, make the parent. They shouldn't be made again because they'll now be in node_dict.keys()
 
@@ -80,7 +81,7 @@ class node():
                 print("making parent node")
                 self.parent = node(parent_id, "Ind", trans_dict, those_sampled, node_dict)     
                 node_dict[parent_id] = self.parent
-                self.parent.children.add(self)
+                self.parent.infections.add(self)
 
 
             
@@ -113,7 +114,7 @@ class node():
             if self.id in those_sampled:
                 self.sampled = True
                 for i in self.to_root:
-                    i.sampled_children.add(self) #So the sampled children is all sampled children downstream of the focal individual
+                    i.sampled_infections.add(self) #So the sampled infections is all sampled infections downstream of the focal individual
 
      
         return gen_3, gen_4
