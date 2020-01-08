@@ -37,9 +37,10 @@ class node():
         self.remove_func_called = False
         self.for_loop_called = False
         
-    def get_useful_info(self, trans_dict, those_sampled, node_dict):
-        #Need to put the if statement that was in the original function to see if the person has already been initialised into the bigger code when we call __init__
+        self.get_root_list(trans_dict, those_sampled, node_dict)
         
+    def get_useful_info(self, trans_dict, those_sampled, node_dict):
+
         input1 = trans_dict[self.id][1] 
         input2 = trans_dict[self.id][2] 
 
@@ -55,10 +56,6 @@ class node():
             self.time_sampled = float(trans_dict[self.id][2]) 
             
         node_dict[self.id] = self
-        
-        #self.get_parent(trans_dict, node_dict)
-        #For now this is taken out, because it recur back to the root of the tree. May be helpful to combine functions, but could be less readable. But then it would get the path to root on init which would be nice
-    
     
     def get_parent(self, trans_dict, those_sampled, node_dict):
         """Get parent as node object"""
@@ -87,28 +84,26 @@ class node():
             return(self.to_root)
 
         else:
-            self.get_parent(trans_dict, node_dict)
-
+            
             #If the person is the root
-            if self.parent.id == "NA": 
+            if trans_dict[self.id][0] == "NA": 
                 path = []
                 self.transm_root = True
 
             #Recur up the tree
             else:
-                path = self.parent.get_root_list(trans_dict, those_sampled, node_dict) + [(self.parent)]
-            #Not sure this will work here - may need to make this function a method of the tree or something
+                
+                self.get_parent(trans_dict, those_sampled, node_dict)
+                
+                self.to_root = [(self.parent)] + self.parent.to_root
 
-            self.to_root = path
-
-            #Getting the sampling 
+            #Getting the sampling
             if self.id in those_sampled:
                 self.sampled = True
                 for i in self.to_root:
                     i.sampled_children.add(self) #So the sampled children is all sampled children downstream of the focal individual
 
-            return path
-        
+     
         
         
         
