@@ -96,6 +96,7 @@ def get_subtrees(person, subtree_dict): #so this is the person's subtree we're w
     """ Get each individual's virus tree, taking sampling into account"""   
     
     #If the person isn't sampled and that branch has no sampled children on it
+    #We'll put this somewhere in the outside function
     if not person.sampled and len(person.sampled_children) == 0:
         pass
    

@@ -12,8 +12,18 @@ class node():
         #So really "node" before wasn't a node, it was a "node" on a transmission tree
         
         if self.type == "Ind": #ie if we're just looking at this person, not as a node in the tree
+            self.children = set() #May be a general definition - like children and node_children could be the same
+            self.sampled_children = set()
+            self.to_root = []
+            self.transm_root = False
+            self.last = False    
+            
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
+            self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
         
+        #Transmission node doesn't have any additional things, we only need to know where it is in time, which is defined in the subtree class
+        
+
         ##These three arguments are optional, because they're only relevant for coalescent nodes
         if height:
             self.height = height
@@ -22,22 +32,16 @@ class node():
         if subtree:
             self.subtree = subtree
         
-        self.children = set()
-        self.sampled_children = set()
         self.node_children = set()
         
-        self.to_root = []
         self.root_to_tip = 0.0
 
-        self.transm_root = False
-        self.last = False        
         self.removed = False
         
         #Test functions#
         self.remove_func_called = False
         self.for_loop_called = False
         
-        self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
         
         
         
@@ -58,6 +62,7 @@ class node():
             self.time_sampled = float(trans_dict[self.id][2]) 
             
         node_dict[self.id] = self
+        self.absolute_time = self.time_sampled #For use in the tree
     
     def get_parent(self, trans_dict, those_sampled, node_dict):
         """Get parent as node object"""
@@ -80,14 +85,13 @@ class node():
 
             
     def get_root_list(self, trans_dict, those_sampled, node_dict, gen_3, gen_4):
-        
-        
+
         #Caching to save time
         if len(self.to_root) != 0:
             return(self.to_root)
 
         else:
-            
+          
             #If the person is the root
             if trans_dict[self.id][0] == "NA": 
                 path = []
