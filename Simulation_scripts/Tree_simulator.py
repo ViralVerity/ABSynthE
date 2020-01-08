@@ -5,174 +5,11 @@ import uuid
 import numpy as np
 from scipy import special
 
-# ### Define node and tree classes
-
-class node():
-    
-    def __init__(self, unique_id):
-        
-        self.id = unique_id
-        self.sampled = False
-        
-        self.time_sampled = 0 #?
-
-        self.children = set()
-        
-        self.sampled_children = set()
-        
-        self.to_root = []
-        
-        self.time_infected = 0 #?
-        
-        self.coalescent_time = [] #?
-        
-        self.height = 0.0 #?
-        
-        self.relative_height = 0 #?
-        
-        self.transm_root = False
-        
-        self.last = False
-        
-        self.removed = False
-        
-        self.node_children = set()
-        
-        self.root_to_tip = 0.0
-        
-        self.remove_func_called = False
-        
-        self.for_loop_called = False
-        
-        
-class transmission_node():
-    
-    def __init__(self, unique_id):
-        
-        self.id = unique_id
-        
-        self.sampled = False
-        
-        self.time_sampled = 0 
-
-        self.node_children = set()
-        
-        self.sampled_children = set()
-        
-        self.to_root = []
-        
-        self.time_infected = 0
-        
-        self.coalescent_time = []
-        
-        self.removed = False
-        
-        self.height = 0.0
-        
-        self.relative_height = 0
-        
-        self.root = False
-        
-        self.last = False
-        
-        self.root_to_tip = 0.0
-        
-        self.remove_func_called = False
-        
-        self.for_loop_called = False
-        
-class coalescent_node():
-    
-    def __init__(self, unique_id, height, lucky_pair, subtree):
-        
-        self.id = unique_id
-        self.relative_height = height
-        
-        self.node_children = set()
-        
-        self.pair = lucky_pair
-        
-        self.transmission_node = False
-        self.sampling_node = False #?
-        self.internal_node = True #?
-        
-        self.last = False
-        
-        self.removed = False
-        self.root_to_tip = 0.0
-        
-        self.height = 0.0
-        self.remove_func_called = False
-        
-        self.subtree = subtree
-        
-        self.for_loop_called = False
-
-class subtree():
-    
-    def __init__(self, person_tree):
-        
-        self.id = person_tree #will be the person it corresponds to
-        
-        self.person = person_tree
-        
-        self.transmission_tips = [] #Subtree objects
-        
-        self.sample_tip = None
-        
-        self.most_recent_tip = 0 #time wise when is the most recent, useful for the relative heights
-        
-        self.coalescent_nodes = [] #internal nodes as a list of coalescent_node objects
-        
-        self.root_time = 0
-        
-        self.relative_heights = {}
-        
-        self.branch_lengths = {}
-        
-        self.coal_root = False
-        
-    def get_branch_lengths(self):
-        
-        if not self.person.sampled and len(self.transmission_tips) == 1: #unsampled middle node 
-            self.branch_lengths[self.transmission_tips[0]] = self.relative_heights[self.root] - self.relative_heights[self.transmission_tips[0]]
-            self.branch_lengths[self.root] = 0.0
-        
-        elif self.person.sampled and len(self.transmission_tips) == 0: #sampled tip
-            self.branch_lengths[self.sample_tip] = self.relative_heights[self.root] - self.relative_heights[self.sample_tip]
-            self.branch_lengths[self.root] = 0.0
-            
-        else:
-        
-            for nde in self.transmission_tips:
-                self.branch_lengths[nde] = self.relative_heights[nde.node_parent] - self.relative_heights[nde]
-
-            for nde in self.coalescent_nodes:
-                if not nde.last:
-                    self.branch_lengths[nde] = self.relative_heights[nde.node_parent] - self.relative_heights[nde]
-                else:
-                    #should just be the root
-                    self.branch_lengths[nde] = 0.0
-
-            if self.person.sampled:
-                self.branch_lengths[self.person] = self.relative_heights[self.sample_tip.node_parent] - self.relative_heights[self.sample_tip]
-
-class coalescent_tree():
-    
-    def __init__(self):
-        
-        self.nodes = set()
-        
-        self.branch_lengths = {}
-        
-        self.node_heights = {}
-        
-        self.most_recent_date = 0.0
-        
-        self.final_nodes = set() #non-removed ones
-        
+from node_class import *
+from tree_class import *
 
 
+###Probably can't go into a class yet###
 def sampling(trans_dict, sampled_percentage, epidemic_len): 
     """Get who is sampled, inputs are list of individual ids and the sampled percentage"""
     not_enough_cases = False
@@ -243,84 +80,7 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     return those_sampled, not_enough_cases
 
 
-def get_parent(trans_dict, person, node_dict):
-    """Get parent as node object"""
-    
-    if trans_dict[person.id][0] in node_dict.keys():
-        
-        person.parent = node_dict[trans_dict[person.id][0]]
-        person.parent.children.add(person)
-    
-    else: #if the parent is not yet in the node dict, make the parent. They shouldn't be made again because they'll now be in node_dict.keys()
-
-        parent_input = trans_dict[person.id][0]
-
-        person.parent = node(parent_input)
-
-        if person.parent.id != "NA":
-           
-            input1 = trans_dict[person.parent.id][1] 
-            input2 = trans_dict[person.parent.id][2] 
-
-        
-            uniform1 = np.random.uniform(0,1)
-            
-            person.parent.time_infected = float(trans_dict[person.parent.id][1]) + uniform1
-            
-            
-            if input1 == input2:
-                rnge = 1 - uniform1
-                person.parent.time_sampled = float(person.parent.time_infected) + np.random.uniform(0,rnge)
-                
-            else:
-                person.parent.time_sampled = float(trans_dict[person.parent.id][2])
-
-        person.parent.children.add(person)
-
-        node_dict[parent_input] = person.parent
-        
-    return person.parent
-            
-
-def initialise_person(input_person, trans_dict, those_sampled, node_dict):
-    """Initialise the person as a node object"""
-    
-    #Making sure everyone is intitialised with useful information from the simulation output file
-    if type(input_person) != node and input_person not in node_dict.keys(): #If person has not already been initialised
-
-        person = node(input_person)
-       
-        input1 = trans_dict[person.id][1] 
-        input2 = trans_dict[person.id][2] 
-
-        uniform1 = np.random.uniform(0,1)
-
-        person.time_infected = float(trans_dict[person.id][1]) + uniform1
-
-
-        if input1 == input2:
-            rnge = 1 - uniform1
-            person.time_sampled = float(person.time_infected) + np.random.uniform(0,rnge)
-
-        else:
-            person.time_sampled = float(trans_dict[person.id][2]) 
-            
-        node_dict[input_person] = person
-        
-        person.parent = get_parent(trans_dict, person, node_dict)
-        
-            
-    #Because we loop through every person, it's possible they've already been initialised
-    elif input_person in node_dict.keys(): 
-        person = node_dict[input_person]
-    
-    #Mostly for the recursion section, where the input is a node that we're interested in doing the next step with
-    else:
-        person = input_person
-       
-    
-    return person
-
+##Added to node class for now, but not sure
 def get_root_list(input_person, trans_dict, those_sampled, node_dict): 
     """Get the full transmission tree for each individual"""
     
@@ -353,7 +113,7 @@ def get_root_list(input_person, trans_dict, those_sampled, node_dict):
                 i.sampled_children.add(person) #So the sampled children is all sampled children downstream of the focal individual
 
         return path
-    
+### Either stand alone function or added to the tree class
 def get_R0(node_dict):
     #Needs the gen node stuff and the get_root_list stuff. Let's generate along with the tree and just try and store it somewhere.
     gen_4 = []
@@ -381,7 +141,9 @@ def get_R0(node_dict):
         return
         
 
-
+#Either stand-alone or with node class. If with node, might be a bit recursive but equally we're interested in making one for that person, so I think likely it should be with node class.
+#Could also go with the tree class, because it has all the coal stuff at the bottom and making info about the tree.
+#Maybe if it's type subtree, init it with this and the person it's representing?
 def get_subtrees(person, subtree_dict): #so this is the person's subtree we're working out
     
     """ Get each individual's virus tree, taking sampling into account"""   
@@ -491,6 +253,7 @@ def sort_key(ele):
     """Small function used later to sort lists by relative height"""
     return ele.height
 
+#With tree class, because it's called in function above, in making the subtrees
 def coalescent(lineage_list, current_height, tree):
     """Get the coalescence times of any lineages that need to coalesce"""
     
@@ -576,7 +339,7 @@ def coalescent(lineage_list, current_height, tree):
                                 
                 coalescent(updated_population, current_height, tree)
 
-
+#With tree class
 def update_coalescent_tree(subtree, whole_tree):
     """Update the coalescent tree with information from the subtree"""
     
@@ -592,7 +355,7 @@ def update_coalescent_tree(subtree, whole_tree):
         whole_tree.nodes.add(internal_node)
     
     
-
+#With tree class
 def connections(subtree, whole_tree, subtree_dict):
     """Stick the subtrees together by attaching transmission nodes to roots of next tree"""
     
@@ -644,7 +407,7 @@ def connections(subtree, whole_tree, subtree_dict):
         return subtree, whole_tree
 
 
-
+#Tree class
 def remove_internals(whole_tree_node, whole_tree):
     """Remove internal nodes that joined subtrees together"""
     whole_tree_node.remove_func_called = True
@@ -683,7 +446,7 @@ def remove_internals(whole_tree_node, whole_tree):
         
     return whole_tree
 
-
+#Tree class
 def get_tip_to_root(nde, whole_tree):
     """Traverses sampled coalescent tree to get node heights"""
   
@@ -703,7 +466,7 @@ def get_tip_to_root(nde, whole_tree):
     return nde.root_to_tip
 
 
-
+#Tree class
 def to_newick(nde, whole_tree, those_sampled):
     """Makes a newick string of the tree"""
     
@@ -726,7 +489,7 @@ def to_newick(nde, whole_tree, those_sampled):
         
     return string
 
-
+#Tree class
 def get_active_population(whole_tree):
     """Get active population at each coalescent interval"""
     
@@ -786,7 +549,7 @@ def get_active_population(whole_tree):
     
     return active_population, coalescent_intervals
 
-
+#Tree class
 def calculate_ne(whole_tree, those_sampled):
     """Get effective population sizes in each coalescent interval"""
     
@@ -842,7 +605,7 @@ def calculate_ne(whole_tree, those_sampled):
     
     return Ne_dict, coalescent_intervals
     
-    
+#Tree class
 def plot_skyline(Ne_dict):
 
     for_plotting = {}
