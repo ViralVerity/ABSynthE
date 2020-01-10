@@ -17,10 +17,11 @@ class node():
             self.sampled_infections = set()
             self.to_root = []
             self.transm_root = False
-            self.last = False    
             
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
             self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
+            
+            #Could make subtree here - need subtree dictionary
             
             #initialise subtree here? Might intefere with the get_root_list recursion, and I do need the sampled children at the moment. Would save another loop!
         
@@ -65,6 +66,7 @@ class node():
         node_dict[self.id] = self
         self.absolute_time = self.time_sampled #For use in the tree
     
+    #Make this get child so that we make it more efficient - will need to make new dictionary that is parent:[children]
     def get_parent(self, trans_dict, those_sampled, node_dict):
         """Get parent as node object"""
 

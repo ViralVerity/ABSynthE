@@ -18,7 +18,7 @@ class tree():
         
             #Subtree characteristics
             self.transmission_tips = [] #Subtree objects (that it's transmitting to?) This is quite odd, may be able to tidy away
-            #self.sample_tip = None    Might need this not sure - might be a point later if I ask if there's a sample
+            self.contains_sample = False
             #self.coalescent_nodes = [] #internal nodes as a list of coalescent_node objects 
             
             self.coal_root = False #is it the root of the whole tree (?)
@@ -36,6 +36,7 @@ class tree():
             self.sort_out_tips()
             self.coalescent(self.tips, 0.0)
             self.define_root()
+            
             self.get_branch_lengths()
             
             return subtree_dict
@@ -86,7 +87,7 @@ class tree():
             #self.lin_list.append(focal_individual)
             self.tips.append(focal_individual)
             
-            self.sample_tip = focal_individual #Do we need this?
+            self.contains_sample = True
           
             
     def define_root(self):
@@ -94,15 +95,14 @@ class tree():
         self.root = node(uuid.uuid1(), "Coal", height=self.root_time, children=self.penultimate, subtree=self)
         
         self.heights[self.root] = self.root_time
-        
-        self.root.last = True #?
-        
+                
         self.nodes.append(self.root)
         
         self.penultimate.node_parent = (self.root)
         
-            
-       
+        self.branch_lengths[self.root] = 0.0
+
+
         
     def coalescent(self, lineage_list, current_height):
         def sort_key(ele):
@@ -183,29 +183,33 @@ class tree():
                                 
                     self.coalescent(updated_population, current_height)
     
-    
-    #Need to tidy this
     def get_branch_lengths(self): 
         
-        if not self.person.sampled and len(self.transmission_tips) == 1: #unsampled middle node 
-            self.branch_lengths[self.transmission_tips[0]] = self.relative_heights[self.root] - self.relative_heights[self.transmission_tips[0]]
-            self.branch_lengths[self.root] = 0.0
-        
-        elif self.person.sampled and len(self.transmission_tips) == 0: #sampled tip
-            self.branch_lengths[self.sample_tip] = self.relative_heights[self.root] - self.relative_heights[self.sample_tip]
-            self.branch_lengths[self.root] = 0.0
-            
-        else:
-        
-            for nde in self.transmission_tips:
+        for tip in self.tips:
+            self.branch_lengths[tip] = self.relative_heights[tip.node_parent] - self.relative_heights[tip]
+
+        for nde in self.nodes:
+            if nde != self.root:
                 self.branch_lengths[nde] = self.relative_heights[nde.node_parent] - self.relative_heights[nde]
 
-            for nde in self.coalescent_nodes:
-                if not nde.last:
-                    self.branch_lengths[nde] = self.relative_heights[nde.node_parent] - self.relative_heights[nde]
-                else:
-                    #should just be the root
-                    self.branch_lengths[nde] = 0.0
 
-            if self.person.sampled:
-                self.branch_lengths[self.person] = self.relative_heights[self.sample_tip.node_parent] - self.relative_heights[self.sample_tip]
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
