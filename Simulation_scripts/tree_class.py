@@ -4,9 +4,13 @@ import uuid
 import numpy as np
 
 class tree():
-    #Need to work out when subtree init happens in the code - new loop? on individual node init?
+    #Need to work out when subtree init happens in the code - new loop? on individual node init? 
+    #Before, it had a tree traversal in the function by going through each child, so it was called once on the root in external code
+    
     
     def __init__(self, person_tree=None, subtree_dict=None):
+        
+        print("Making subtree for " + person_tree.id)
         
         self.nodes = []
         self.tips = []
@@ -14,26 +18,27 @@ class tree():
         self.heights = {}
         
         if person_tree:
-            self.person = person_tree #will be the person as a node object it corresponds to if it's a subtree
-        
-            #Subtree characteristics
-            self.transmission_tips = [] #Subtree objects (that it's transmitting to?) This is quite odd, may be able to tidy away
-            self.contains_sample = False
-            #self.coalescent_nodes = [] #internal nodes as a list of coalescent_node objects 
-            
-            self.coal_root = False #is it the root of the whole tree (?)
-            
             self.subtree = True #a lil flag
+            self.person = person_tree #will be the person as a node object it corresponds to if it's a subtree
+            self.contains_sample = False      
+
+            self.absolute_tip_times = []
+        
+            self.transmission_tips = [] #Subtree objects (that it's transmitting to?) This is quite odd, may be able to tidy away
+            
+                  
+            self.coal_root = False #is it the root of the whole tree (?) Maybe just have tree.root as a subtree object
             
             subtree_dict[self.person] = self
             
             #From here, adding in things from original get_subtrees function so will need to coordinate with above variables
             
-            self.absolute_tip_times = []
+            
             #self.lin_list = []
             #self.current_height = 0
             
             self.sort_out_tips()
+            print(len(self.tips))
             self.coalescent(self.tips, 0.0)
             self.define_root()
             
@@ -65,7 +70,7 @@ class tree():
             self.heights[tip] = tip.relative_height #Not sure about this being a dictionary
     
     def find_transmission_tips(self, focal_individual):
-                
+        print(len(focal_individual.sampled_infections))
         if len(focal_individual.sampled_infections) != 0:
             for case in focal_individual.infections:
                 if len(case.sampled_infections) != 0 or case.sampled:
@@ -104,6 +109,9 @@ class tree():
 
         
     def coalescent(self, lineage_list, current_height):
+        
+        print("doing coalescent")
+        
         def sort_key(ele):
             """Small function used later to sort lists by relative height"""
             return ele.relative_height
@@ -165,14 +173,14 @@ class tree():
                    
                     #Who is going to coalesce?
                     lucky_pair = random.sample(active_pop, k=2)
-                    print("Coalescing " + str(lucky_pair))
+                    #print("Coalescing " + str(lucky_pair))
                      
                     current_height += tau
                         
                     #ie the coalescent event of the pair selected above
                     parent_node = node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
-                    
-                    print("new node is " + str(parent_node.id) + " " + str(parent_node.relative_height))
+                    print("made a node" + str(parent_node))
+                    #print("new node is " + str(parent_node.id) + " " + str(parent_node.relative_height))
                     
                     lucky_pair[0].node_parent = parent_node
                     lucky_pair[1].node_parent = parent_node

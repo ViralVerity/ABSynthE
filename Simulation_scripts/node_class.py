@@ -1,12 +1,15 @@
 import numpy as np
+from tree_class import *
 
 class node():
     
-    def __init__(self, unique_id, node_type, trans_dict=None, those_sampled=None, node_dict=None, gen_3=None, gen_4=None, height=None, children=None, subtree=None):
+    def __init__(self, unique_id, node_type, trans_dict=None, child_dict=None, those_sampled=None, node_dict=None, gen_3=None, gen_4=None, height=None, children=None, subtree=None):
+        
+        print("Making node for " + unique_id)
         
         self.id = unique_id #Need to think about the IDs for the three types
-        #At the moment, Ind is a string of numbers, Trans is a node object and coal is a uuid
-        self.sampled = False
+        #At the moment, Ind is a string of numbers, Trans is a node object and coal is a uuid.
+        #Could maybe do something like Ind string and it will be a different type for Trans, and then coal could be string + a,b,c etc
         
         self.type = node_type #ie transmission, coalescent or individual - individual is a person.
         #NB before, node was each person I think, transmission_node and coalescent_node were separate classes
@@ -15,15 +18,30 @@ class node():
         if self.type == "Ind": #ie if we're just looking at this person, not as a node in the tree
             self.infections = set() #May be a general definition - like children and node_children could be the same
             self.sampled_infections = set()
-            self.to_root = []
-            self.transm_root = False
+            
+            self.index_case = False
+            
+            if self.id in those_sampled:
+                self.sampled = True
+            
+            node_dict[self.id] = self
+            parent_id = trans_dict[self.id][0]
+            
+            if parent_id in node_dict.keys():
+                self.parent = node_dict[parent_id]
+            else:
+                self.parent = None
+                
+            if parent_id == "NA":
+                self.generation = 0
+            else:
+                self.generation = self.parent.generation + 1
             
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
-            self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
-            
-            #Could make subtree here - need subtree dictionary
-            
-            #initialise subtree here? Might intefere with the get_root_list recursion, and I do need the sampled children at the moment. Would save another loop!
+            #self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4)
+            self.find_children(trans_dict, child_dict, those_sampled, node_dict)
+
+            tree(self, {})
         
         #Transmission node doesn't have any additional things, we only need to know where it is in time, which is defined in the subtree class
         
@@ -66,6 +84,30 @@ class node():
         node_dict[self.id] = self
         self.absolute_time = self.time_sampled #For use in the tree
     
+    
+    def find_children(self, trans_dict, child_dict, those_sampled, node_dict):
+        
+        secondary_infections = child_dict[self.id] #immediate transmission
+        
+        for child in secondary_infections:
+
+            new_child = node(child, "Ind", trans_dict, child_dict, those_sampled, node_dict)
+
+            self.infections.add(new_child)
+            
+          
+            new_child.parent = self
+            new_child.generation = self.generation + 1
+                        
+            if new_child.sampled:
+                
+                self.sampled_infections.add(new_child)
+
+                self.sampled_infections = self.sampled_infections.union(new_child.sampled_infections)
+
+            
+    
+    
     #Make this get child so that we make it more efficient - will need to make new dictionary that is parent:[children]
     def get_parent(self, trans_dict, those_sampled, node_dict):
         """Get parent as node object"""
@@ -80,7 +122,7 @@ class node():
             parent_id = trans_dict[self.id][0]
             
             if parent_id != "NA":
-                print("making parent node")
+                
                 self.parent = node(parent_id, "Ind", trans_dict, those_sampled, node_dict)     
                 node_dict[parent_id] = self.parent
                 self.parent.infections.add(self)
@@ -88,7 +130,7 @@ class node():
 
             
     def get_root_list(self, trans_dict, those_sampled, node_dict, gen_3, gen_4):
-
+        print("getting root list")
         #Caching to save time
         if len(self.to_root) != 0:
             return(self.to_root)
@@ -98,7 +140,7 @@ class node():
             #If the person is the root
             if trans_dict[self.id][0] == "NA": 
                 path = []
-                self.transm_root = True
+                self.index_case = True
 
             #Recur up the tree
             else:
@@ -118,7 +160,7 @@ class node():
                 for i in self.to_root:
                     i.sampled_infections.add(self) #So the sampled infections is all sampled infections downstream of the focal individual
 
-     
+        print(len(self.sampled_infections))
         return gen_3, gen_4
         
         

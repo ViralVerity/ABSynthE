@@ -1,4 +1,4 @@
-# ABSynth
+# ABSynthE
 
 Agent-based simulator for Ebola Virus
 
