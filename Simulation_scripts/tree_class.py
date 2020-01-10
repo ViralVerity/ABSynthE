@@ -1,4 +1,4 @@
-from node_class import *
+import node_class as nc
 import random
 import uuid
 import numpy as np
@@ -11,7 +11,7 @@ class tree():
     def __init__(self, person_tree=None, subtree_dict=None):
         
         print("Making subtree for " + person_tree.id)
-        
+                
         self.nodes = []
         self.tips = []
         self.branch_lengths = {}
@@ -70,12 +70,12 @@ class tree():
             self.heights[tip] = tip.relative_height #Not sure about this being a dictionary
     
     def find_transmission_tips(self, focal_individual):
-        print(len(focal_individual.sampled_infections))
+
         if len(focal_individual.sampled_infections) != 0:
             for case in focal_individual.infections:
                 if len(case.sampled_infections) != 0 or case.sampled:
                     
-                    transmission_tip = node(case, "Trans") 
+                    transmission_tip = nc.node(case, "Trans") 
                     transmission_tip.absolute_time = case.time_infected
                     
                     self.absolute_tip_times.append(transmission_tip.absolute_time)
@@ -96,7 +96,7 @@ class tree():
             
     def define_root(self):
         
-        self.root = node(uuid.uuid1(), "Coal", height=self.root_time, children=self.penultimate, subtree=self)
+        self.root = nc.node(uuid.uuid1(), "Coal", height=self.root_time, children=self.penultimate, subtree=self)
         
         self.heights[self.root] = self.root_time
                 
@@ -109,9 +109,7 @@ class tree():
 
         
     def coalescent(self, lineage_list, current_height):
-        
-        print("doing coalescent")
-        
+               
         def sort_key(ele):
             """Small function used later to sort lists by relative height"""
             return ele.relative_height
@@ -178,7 +176,7 @@ class tree():
                     current_height += tau
                         
                     #ie the coalescent event of the pair selected above
-                    parent_node = node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
+                    parent_node = nc.node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
                     print("made a node" + str(parent_node))
                     #print("new node is " + str(parent_node.id) + " " + str(parent_node.relative_height))
                     

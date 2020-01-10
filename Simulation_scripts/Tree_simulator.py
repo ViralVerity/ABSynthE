@@ -79,7 +79,7 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     
     return those_sampled, not_enough_cases
 
-
+##Add a get_R0 funciton which just couns the number of nodes with self.generation==3 and 4
 
 #With tree class
 def update_coalescent_tree(subtree, whole_tree):
@@ -97,7 +97,7 @@ def update_coalescent_tree(subtree, whole_tree):
         whole_tree.nodes.add(internal_node)
     
     
-#With tree class
+#With tree class? not sure actually
 def connections(subtree, whole_tree, subtree_dict):
     """Stick the subtrees together by attaching transmission nodes to roots of next tree"""
     
@@ -188,7 +188,7 @@ def remove_internals(whole_tree_node, whole_tree):
         
     return whole_tree
 
-#Tree class
+#Tree class def
 def get_tip_to_root(nde, whole_tree):
     """Traverses sampled coalescent tree to get node heights"""
   
@@ -208,7 +208,7 @@ def get_tip_to_root(nde, whole_tree):
     return nde.root_to_tip
 
 
-#Tree class
+#Tree class def
 def to_newick(nde, whole_tree, those_sampled):
     """Makes a newick string of the tree"""
     
@@ -231,7 +231,7 @@ def to_newick(nde, whole_tree, those_sampled):
         
     return string
 
-#Tree class
+#Tree class def
 def get_active_population(whole_tree):
     """Get active population at each coalescent interval"""
     
@@ -291,7 +291,7 @@ def get_active_population(whole_tree):
     
     return active_population, coalescent_intervals
 
-#Tree class
+#Tree class def
 def calculate_ne(whole_tree, those_sampled):
     """Get effective population sizes in each coalescent interval"""
     
@@ -347,7 +347,7 @@ def calculate_ne(whole_tree, those_sampled):
     
     return Ne_dict, coalescent_intervals
     
-#Tree class
+#Tree class def
 def plot_skyline(Ne_dict):
 
     for_plotting = {}
@@ -389,8 +389,8 @@ def simulate_tree(trans_dict, nodes, sampling_proportion, epidemic_len):
         for person in nodes:
             node_class.node(person, "Ind", trans_dict, those_sampled, node_dict, gen_3, gen_4)
             
-            if node_dict[person].transm_root:
-                transm_root = node_dict[person]
+            if node_dict[person].index_case:
+                index_case = node_dict[person]
                 
         
         R0 = get_R0(gen_3, gen_4)
@@ -399,7 +399,8 @@ def simulate_tree(trans_dict, nodes, sampling_proportion, epidemic_len):
 
         big_tree = coalescent_tree()
 
-        subtree_dict = get_subtrees(transm_root, subtree_dict_outside)[1]
+        #Not sure how to call get_subtrees
+        subtree_dict = get_subtrees(index_case, subtree_dict_outside)[1]
         
         big_tree = connections(subtree_dict[transm_root.id], big_tree, subtree_dict)[1]
 
