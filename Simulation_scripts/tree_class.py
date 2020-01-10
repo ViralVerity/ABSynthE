@@ -39,7 +39,6 @@ class tree():
             
             self.get_branch_lengths()
             
-            return subtree_dict
             
         
         else:
@@ -168,6 +167,8 @@ class tree():
                     lucky_pair = random.sample(active_pop, k=2)
                     print("Coalescing " + str(lucky_pair))
                      
+                    current_height += tau
+                        
                     #ie the coalescent event of the pair selected above
                     parent_node = node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
                     
@@ -186,20 +187,14 @@ class tree():
     def get_branch_lengths(self): 
         
         for tip in self.tips:
-            self.branch_lengths[tip] = self.relative_heights[tip.node_parent] - self.relative_heights[tip]
+            self.branch_lengths[tip] = self.heights[tip.node_parent] - self.heights[tip]
 
         for nde in self.nodes:
             if nde != self.root:
-                self.branch_lengths[nde] = self.relative_heights[nde.node_parent] - self.relative_heights[nde]
+                self.branch_lengths[nde] = self.heights[nde.node_parent] - self.heights[nde]
 
 
 
-                
-                
-                
-                
-                
-                
                 
                 
                 
