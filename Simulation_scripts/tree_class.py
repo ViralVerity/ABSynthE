@@ -3,14 +3,11 @@ import random
 import uuid
 import numpy as np
 
-class tree():
-    #Need to work out when subtree init happens in the code - new loop? on individual node init? 
-    #Before, it had a tree traversal in the function by going through each child, so it was called once on the root in external code
+class tree():   
     
-    
-    def __init__(self, person_tree=None, subtree_dict=None):
+    def __init__(self, person_tree=None, subtree_dict=None, node_dict=None):
         
-        print("Making subtree for " + person_tree.id)
+        #print("Making subtree for " + person_tree.id)
                 
         self.nodes = []
         self.tips = []
@@ -21,24 +18,14 @@ class tree():
             self.subtree = True #a lil flag
             self.person = person_tree #will be the person as a node object it corresponds to if it's a subtree
             self.contains_sample = False      
-
-            self.absolute_tip_times = []
-        
-            self.transmission_tips = [] #Subtree objects (that it's transmitting to?) This is quite odd, may be able to tidy away
+            self.transmits = False
             
+            self.absolute_tip_times = []            
                   
             self.coal_root = False #is it the root of the whole tree (?) Maybe just have tree.root as a subtree object
             
-            subtree_dict[self.person] = self
-            
-            #From here, adding in things from original get_subtrees function so will need to coordinate with above variables
-            
-            
-            #self.lin_list = []
-            #self.current_height = 0
-            
             self.sort_out_tips()
-            print(len(self.tips))
+            
             self.coalescent(self.tips, 0.0)
             self.define_root()
             
@@ -48,6 +35,10 @@ class tree():
         
         else:
             #Whole tree coalescent characteristics
+            
+            self.most_recent_date = 0.0
+            
+            self.construct_tree(node_dict)
             
             self.final_nodes = set() #non-removed ones
             
@@ -75,11 +66,11 @@ class tree():
             for case in focal_individual.infections:
                 if len(case.sampled_infections) != 0 or case.sampled:
                     
-                    transmission_tip = nc.node(case, "Trans") 
+                    transmission_tip = nc.node(case, "Trans", infector=self.person, infectee=case) 
                     transmission_tip.absolute_time = case.time_infected
+                    self.transmits = True
                     
                     self.absolute_tip_times.append(transmission_tip.absolute_time)
-                    #self.lin_list.append(transmission_tip)    
                     self.tips.append(transmission_tip)
     
     
@@ -88,7 +79,6 @@ class tree():
         if focal_individual.sampled: 
        
             self.absolute_tip_times.append(focal_individual.time_sampled)
-            #self.lin_list.append(focal_individual)
             self.tips.append(focal_individual)
             
             self.contains_sample = True
@@ -96,9 +86,12 @@ class tree():
             
     def define_root(self):
         
-        self.root = nc.node(uuid.uuid1(), "Coal", height=self.root_time, children=self.penultimate, subtree=self)
+        self.root = nc.node(uuid.uuid1(), "Coal", height=self.root_time, children=[self.penultimate], subtree=self)
         
         self.heights[self.root] = self.root_time
+        
+        if self.person.id == "1414058":
+            print("root time = " + str(self.root_time) + " for " + str(self.person.id))
                 
         self.nodes.append(self.root)
         
@@ -167,17 +160,22 @@ class tree():
         
                     #Have this in for the moment to force it happen before the root of the subtree
                     if current_height + tau > self.root_time:
+                        print("root condition triggered")
                         tau = self.root_time - current_height
                    
                     #Who is going to coalesce?
                     lucky_pair = random.sample(active_pop, k=2)
                     #print("Coalescing " + str(lucky_pair))
                      
+                    print("current height = " + str(current_height))
+                        
                     current_height += tau
+                    
+                    print("tau = " + str(tau))
                         
                     #ie the coalescent event of the pair selected above
                     parent_node = nc.node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
-                    print("made a node" + str(parent_node))
+                    #print("made a node" + str(parent_node))
                     #print("new node is " + str(parent_node.id) + " " + str(parent_node.relative_height))
                     
                     lucky_pair[0].node_parent = parent_node
@@ -200,8 +198,50 @@ class tree():
                 self.branch_lengths[nde] = self.heights[nde.node_parent] - self.heights[nde]
 
 
+    def update_coalescent_tree(self, subtree):
+        """Update the coalescent tree with information from the subtree"""
 
+        self.branch_lengths.update(subtree.branch_lengths)
+
+        for tip in subtree.tips:
+            if tip.type == "Ind" and subtree.contains_sample:
+                self.tips.append(tip)
+            else:
+                self.nodes.append(tip)
+
+        for nde in subtree.nodes:
+            self.nodes.append(nde)
+
+    
+    def construct_tree(self, node_dict):
+        
+        for nde in node_dict.values(): #Maybe I can start this from the index case? Don't want a long tail before the first sample? Or maybe I update the node_dict to remove pre-first sample cases. Or I deal with it in removal step?
+            
+            subtree = nde.subtree
+            
+            if subtree.person.index_case:  #This is regardless of sampling, so will need to add into removal maybe
+                self.root = subtree.root
                 
+            if subtree.contains_sample:
+                if subtree.most_recent_tip >= self.most_recent_date:
+                    #Will need to check that this is always a sample. In between it may be transmission but that's ok
+                    self.most_recent_tip = subtree.most_recent_tip
+                    self.most_recent_date = float(subtree.most_recent_tip)
+                 
+            if subtree.transmits:
+                for tip in subtree.tips:
+                    if tip.type == "Trans":
+                        
+                        donor_tree = tip.infector.subtree
+                        recipient_tree = tip.infectee.subtree
+                        
+                        recipient_tree.root.node_parent = tip
+                        tip.node_children.append(recipient_tree.root) #atm this is None, so will this work?
+            
+                        
+                        
+                   
+            self.update_coalescent_tree(subtree)
                 
                 
                 

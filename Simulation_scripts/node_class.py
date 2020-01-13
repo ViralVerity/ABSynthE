@@ -3,7 +3,7 @@ from tree_class import *
 
 class node():
     
-    def __init__(self, unique_id, node_type, trans_dict=None, child_dict=None, those_sampled=None, node_dict=None, height=None, children=None, subtree=None):
+    def __init__(self, unique_id, node_type, trans_dict=None, child_dict=None, those_sampled=None, node_dict=None, height=None, children=None, subtree=None, infector=None, infectee=None):
         
         #print("Making node for " + unique_id)
         
@@ -12,15 +12,11 @@ class node():
         #Could maybe do something like Ind string and it will be a different type for Trans, and then coal could be string + a,b,c etc
         
         self.type = node_type #ie transmission, coalescent or individual - individual is a person.
-        #NB before, node was each person I think, transmission_node and coalescent_node were separate classes
-        #So really "node" before wasn't a node, it was a "node" on a transmission tree
         
         if self.type == "Ind": #ie if we're just looking at this person, not as a node in the tree
-            self.infections = set() #May be a general definition - like children and node_children could be the same
+            self.infections = set() 
             self.sampled_infections = set()
-            
-            self.index_case = False
-            
+                        
             if self.id in those_sampled:
                 self.sampled = True
             
@@ -34,24 +30,34 @@ class node():
                 
             if parent_id == "NA":
                 self.generation = 0
+                self.index_case = True
             else:
                 self.generation = self.parent.generation + 1
+                self.index_case = False
+
+
                 
             
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
             #self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4) got rid of this func 10/01/20
             self.find_children(trans_dict, child_dict, those_sampled, node_dict)
 
-            tree(self, {})
+            self.subtree = tree(self, {})
+            
+            
         
-        #Transmission node doesn't have any additional things, we only need to know where it is in time, which is defined in the subtree class
+        if self.type == "Trans":
+            self.infector = infector
+            self.infectee = infectee
         
 
         ##These three arguments are optional, because they're only relevant for coalescent nodes
         if height:
             self.relative_height = height
         if children:
-            self.children = children
+            self.node_children = children
+        elif not children:
+            self.node_children = []
         if subtree:
             self.subtree = subtree
         
@@ -73,7 +79,10 @@ class node():
 
         uniform1 = np.random.uniform(0,1)
 
-        self.time_infected = float(trans_dict[self.id][1]) + uniform1
+        if self.index_case:
+            self.time_infected = 0.0
+        else:
+            self.time_infected = float(trans_dict[self.id][1]) + uniform1
 
         if input1 == input2:
             rnge = 1 - uniform1
