@@ -31,18 +31,21 @@ class tree():
             
             self.get_branch_lengths()
             
-            
-        
         else:
             #Whole tree coalescent characteristics
             
+            self.whole_tree = True
+
             self.most_recent_date = 0.0
             
             self.construct_tree(node_dict)
             
-            self.final_nodes = set() #non-removed ones
+            self.final_nodes = self.nodes.copy()
             
-            self.whole_tree = True
+            self.remove_internals(self.root)
+            
+            
+            
     
     
     def sort_out_tips(self):
@@ -90,8 +93,8 @@ class tree():
         
         self.heights[self.root] = self.root_time
         
-        if self.person.id == "1414058":
-            print("root time = " + str(self.root_time) + " for " + str(self.person.id))
+        #if self.person.id == "1414058":
+         #   print("root time = " + str(self.root_time) + " for " + str(self.person.id))
                 
         self.nodes.append(self.root)
         
@@ -160,18 +163,18 @@ class tree():
         
                     #Have this in for the moment to force it happen before the root of the subtree
                     if current_height + tau > self.root_time:
-                        print("root condition triggered")
+                        #print("root condition triggered")
                         tau = self.root_time - current_height
                    
                     #Who is going to coalesce?
                     lucky_pair = random.sample(active_pop, k=2)
                     #print("Coalescing " + str(lucky_pair))
                      
-                    print("current height = " + str(current_height))
+                    #print("current height = " + str(current_height))
                         
                     current_height += tau
                     
-                    print("tau = " + str(tau))
+                    #print("tau = " + str(tau))
                         
                     #ie the coalescent event of the pair selected above
                     parent_node = nc.node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
@@ -215,15 +218,16 @@ class tree():
     
     def construct_tree(self, node_dict):
         
-        for nde in node_dict.values(): #Maybe I can start this from the index case? Don't want a long tail before the first sample? Or maybe I update the node_dict to remove pre-first sample cases. Or I deal with it in removal step?
+        for nde in node_dict.values():
             
             subtree = nde.subtree
             
-            if subtree.person.index_case:  #This is regardless of sampling, so will need to add into removal maybe
-                self.root = subtree.root
+            if subtree.person.index_case: 
+                self.root = subtree.root #If I want the subtree with the root in as well I can do it here
                 
             if subtree.contains_sample:
                 if subtree.most_recent_tip >= self.most_recent_date:
+                    
                     #Will need to check that this is always a sample. In between it may be transmission but that's ok
                     self.most_recent_tip = subtree.most_recent_tip
                     self.most_recent_date = float(subtree.most_recent_tip)
@@ -236,14 +240,64 @@ class tree():
                         recipient_tree = tip.infectee.subtree
                         
                         recipient_tree.root.node_parent = tip
-                        tip.node_children.append(recipient_tree.root) #atm this is None, so will this work?
+                        tip.node_children.append(recipient_tree.root) 
             
-                        
-                        
-                   
+                    
             self.update_coalescent_tree(subtree)
+            
+            
                 
                 
+    def remove_internals(self, nde):
+        
+
+        nde.new_children = nde.node_children.copy()
+
+        if len(nde.node_children) == 1: 
+            if nde != self.root:
+                
+                parent = nde.node_parent 
+
+                nde.removed = True
+                parent.new_children.remove(nde)
+                
+                self.final_nodes.remove(nde)
+
+                #Reassign parents and children to remove internal nodes
+                for child in nde.node_children:
+
+                    child.node_parent = parent
+
+                    parent.new_children.append(child)
+
+                    self.branch_lengths[child] = self.branch_lengths[child] + self.branch_lengths[nde]
+
+
+            else:
+
+                for child in nde.new_children:
+
+                    child.node_parent = None
+                    self.branch_lengths[child] = 0.0
+                    self.root = child
+
+                nde.removed = True
+                
+                self.final_nodes.remove(nde)
+
+
+            
+        for i in nde.node_children:
+            self.remove_internals(i)
+                
+        
+        return self
+    
+    
+
+        
+        
+        
                 
                 
                 
