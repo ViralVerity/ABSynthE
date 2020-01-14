@@ -2,6 +2,9 @@ import node_class as nc
 import random
 import uuid
 import numpy as np
+from collections import defaultdict
+from collections import OrderedDict
+from scipy import special
 
 class tree():   
     
@@ -21,19 +24,20 @@ class tree():
             self.transmits = False
             
             self.absolute_tip_times = []            
-                  
-            self.coal_root = False #is it the root of the whole tree (?) Maybe just have tree.root as a subtree object
-            
+                    
             self.sort_out_tips()
+
+            if len(self.tips) != 0:
+                
+                self.coalescent(self.tips, 0.0)
             
-            self.coalescent(self.tips, 0.0)
-            self.define_root()
-            
-            self.get_branch_lengths()
-            
+                self.define_root()
+
+                self.get_branch_lengths()
+                        
         else:
             #Whole tree coalescent characteristics
-            
+    
             self.whole_tree = True
 
             self.most_recent_date = 0.0
@@ -43,31 +47,53 @@ class tree():
             self.final_nodes = self.nodes.copy()
             
             self.remove_internals(self.root)
+                       
+            for nde in self.final_nodes:
+                
+                if not nde.remove_func_called:
+                    print("function not called " + str(nde) + " " + str(nde.node_children))
+                
+                elif nde.removed:
+                    print("error in removing " + str(nde) + " " + str(nde.type))
+                
+                if nde.type == "Trans":
+                    print("Trans node still in " + str(nde.node_parent) + " " + str(nde.node_children))
+                    for nde2 in self.final_nodes:
+                        if nde in nde2.node_children:
+                            print("child of " + str(nde2))
+                
+                else:
+                    self.get_tip_to_root(nde)
+                    self.heights[nde] = self.most_recent_tip - nde.root_to_tip
+                
+            for tip in self.tips:
+                self.heights[tip] = self.most_recent_tip - tip.time_sampled
             
             
-            
-    
     
     def sort_out_tips(self):
         
         focal_individual = self.person
-        
         self.find_transmission_tips(focal_individual)
+        
         self.find_sample_tips(focal_individual)
-    
-        self.most_recent_tip = sorted([float(i) for i in self.absolute_tip_times])[::-1][0]
-        self.root_time = self.most_recent_tip - float(focal_individual.time_infected)
+        
+        if len(self.tips) != 0: 
+            self.most_recent_tip = sorted([float(i) for i in self.absolute_tip_times])[::-1][0]
+            self.root_time = self.most_recent_tip - float(focal_individual.time_infected)
         
         for tip in self.tips:
-            #Might not need both of these
             tip.relative_height = self.most_recent_tip - tip.absolute_time
-            self.heights[tip] = tip.relative_height #Not sure about this being a dictionary
+            self.heights[tip] = tip.relative_height 
+            
     
     def find_transmission_tips(self, focal_individual):
 
         if len(focal_individual.sampled_infections) != 0:
+
             for case in focal_individual.infections:
-                if len(case.sampled_infections) != 0 or case.sampled:
+                
+                if len(case.sampled_infections) != 0 or case.sampled: 
                     
                     transmission_tip = nc.node(case, "Trans", infector=self.person, infectee=case) 
                     transmission_tip.absolute_time = case.time_infected
@@ -92,9 +118,6 @@ class tree():
         self.root = nc.node(uuid.uuid1(), "Coal", height=self.root_time, children=[self.penultimate], subtree=self)
         
         self.heights[self.root] = self.root_time
-        
-        #if self.person.id == "1414058":
-         #   print("root time = " + str(self.root_time) + " for " + str(self.person.id))
                 
         self.nodes.append(self.root)
         
@@ -105,10 +128,9 @@ class tree():
 
         
     def coalescent(self, lineage_list, current_height):
-               
+        
         def sort_key(ele):
-            """Small function used later to sort lists by relative height"""
-            return ele.relative_height
+            return ele.relative_height     
         
         none_left = False
         
@@ -197,8 +219,12 @@ class tree():
             self.branch_lengths[tip] = self.heights[tip.node_parent] - self.heights[tip]
 
         for nde in self.nodes:
+            #print("calculated branch lengths for " + str(nde))
+            
             if nde != self.root:
                 self.branch_lengths[nde] = self.heights[nde.node_parent] - self.heights[nde]
+            else:
+                self.branch_lengths[nde] = 0.0
 
 
     def update_coalescent_tree(self, subtree):
@@ -219,38 +245,45 @@ class tree():
     def construct_tree(self, node_dict):
         
         for nde in node_dict.values():
-            
-            subtree = nde.subtree
-            
-            if subtree.person.index_case: 
-                self.root = subtree.root #If I want the subtree with the root in as well I can do it here
-                
-            if subtree.contains_sample:
-                if subtree.most_recent_tip >= self.most_recent_date:
-                    
-                    #Will need to check that this is always a sample. In between it may be transmission but that's ok
-                    self.most_recent_tip = subtree.most_recent_tip
-                    self.most_recent_date = float(subtree.most_recent_tip)
-                 
-            if subtree.transmits:
-                for tip in subtree.tips:
-                    if tip.type == "Trans":
-                        
-                        donor_tree = tip.infector.subtree
-                        recipient_tree = tip.infectee.subtree
-                        
-                        recipient_tree.root.node_parent = tip
-                        tip.node_children.append(recipient_tree.root) 
-            
-                    
-            self.update_coalescent_tree(subtree)
-            
-            
-                
-                
-    def remove_internals(self, nde):
-        
+            if nde.sampled or len(nde.sampled_infections) != 0:
+              
+                subtree = nde.subtree
 
+                if subtree.person.index_case: 
+                    self.root = subtree.root #If I want the subtree with the root in as well I can do it here
+
+                if subtree.contains_sample:
+                    if subtree.most_recent_tip >= self.most_recent_date:
+
+                        #Will need to check that this is always a sample. In between it may be transmission but that's ok
+                        self.most_recent_tip = subtree.most_recent_tip
+                        self.most_recent_date = float(subtree.most_recent_tip)
+
+                if subtree.transmits:
+                    for tip in subtree.tips:
+                        
+                        if tip.type == "Trans":
+                            
+                            #print("trans tip = " + str(tip))
+                            
+                            donor_tree = tip.infector.subtree
+                            recipient_tree = tip.infectee.subtree
+
+                            recipient_tree.root.node_parent = tip
+                            tip.node_children.append(recipient_tree.root) 
+
+
+                self.update_coalescent_tree(subtree)
+            
+            
+                
+                
+    def remove_internals(self, nde): ###Not being called on a transmission node in the middle somewhere
+        #An issue with new_children vs node_children? That was the problem last time
+        #NB The length is correct (1) so it is an issue with the function being called on one node.
+        
+        nde.remove_func_called = True
+        
         nde.new_children = nde.node_children.copy()
 
         if len(nde.node_children) == 1: 
@@ -265,17 +298,19 @@ class tree():
 
                 #Reassign parents and children to remove internal nodes
                 for child in nde.node_children:
-
+                    
+                    #print(child, nde)
+                    
                     child.node_parent = parent
 
                     parent.new_children.append(child)
-
+                    
                     self.branch_lengths[child] = self.branch_lengths[child] + self.branch_lengths[nde]
 
 
             else:
 
-                for child in nde.new_children:
+                for child in nde.node_children:
 
                     child.node_parent = None
                     self.branch_lengths[child] = 0.0
@@ -293,7 +328,165 @@ class tree():
         
         return self
     
+    def get_tip_to_root(self, nde):
+
+        try:
+            if nde.root_to_tip != 0.0:
+                return nde.root_to_tip
+        except AttributeError:
+            print("No root to tip for " + str(nde) + " " + str(nde.id) + " " + str(nde.type))
+
+        if nde == self.root:
+            distance = 0.0
+
+        else:
+
+            #print(nde, nde.type, nde.removed)
+            #if nde == nde.subtree.root:
+             #   print(nde)
+            
+
+            distance = self.get_tip_to_root(nde.node_parent) + self.branch_lengths[nde]
+
+                     
+
+        nde.root_to_tip = distance
+        
+
+        return nde.root_to_tip
     
+    
+    ###From here on we'll call in the main script not in the init function
+    def to_newick(self, nde, those_sampled): #call on root of tree 
+        
+        string = ",".join([self.to_newick(i, those_sampled) for i in nde.new_children if not i.removed])
+
+        if len(nde.new_children) != 0:
+            string = "(" + string
+
+        if nde.type == "Ind":
+
+            string += str(nde.id)
+        else:
+
+            string += ")"
+
+        string += ":" + str(round(self.branch_lengths[nde], 2))
+
+        if nde == self.root:
+            string += ")"
+
+        return string
+    
+    
+    def get_active_population(self):
+        """Get active population at each coalescent interval"""
+    
+        coalescent_times = set()
+        coal_list = []
+        coalescent_intervals = defaultdict(tuple)
+
+        active_population = defaultdict(list)
+
+        sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
+
+        for nde, height in sorted_dict.items():
+
+            if nde.type == "Coal":
+
+                coalescent_times.add(height)
+                coal_list.append(height)
+
+        coalescent_times = sorted(coalescent_times)
+
+        current_time = 0
+
+        count = 0
+
+        non_parent_set = set() 
+
+        for time in coalescent_times:
+
+            count += 1
+
+            coalescent_intervals[count] = (float(current_time),float(time))
+
+            current_time = time
+
+
+        for nde, height in sorted_dict.items():
+
+            for number, times in coalescent_intervals.items():            
+                if not nde.node_parent:
+                    non_parent_set.add(nde)
+
+                    if height < times[1] and self.heights[self.root] >= times[1]:
+                        active_population[number].append(nde) 
+
+                elif height < times[1] and self.heights[nde.node_parent] >= times[1]:
+
+                    active_population[number].append(nde)
+
+        if len(non_parent_set) > 1:
+            print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
+
+        return active_population, coalescent_intervals
+    
+    
+    def calculate_ne(self, those_sampled):
+        """Get effective population sizes in each coalescent interval"""
+
+        waiting_times = {}
+
+        result = self.get_active_population()
+
+        active_population = result[0]
+        coalescent_intervals = result[1]
+
+        Ne_dict = {}
+
+        for key, value in coalescent_intervals.items():
+            waiting_times[key] = value[1] - value[0]
+
+        for key, value in waiting_times.items():
+
+            tau = value/365
+
+            if tau == 0:
+                print("tau is zero here")
+                print(key, value)
+
+            lineages = len(active_population[key])
+
+            count_weird_trees = 0
+
+            if lineages == 1: #This should work because the tree can never start with one lineage
+                try:
+                    Ne = Ne
+                except UnboundLocalError:
+                    count_weird_trees += 1
+                    Ne = 0.000000001
+                    tree_file = open("error_trees" + str(count_weird_trees) + ".csv", 'w')
+                    to_newick(whole_tree.root, whole_tree, those_sampled)
+
+            else:
+                Ne = np.log(special.binom(lineages,2)) + np.log(tau) 
+
+            new_key = (coalescent_intervals[key][0], coalescent_intervals[key][1])
+
+
+            Ne_dict[new_key] = Ne
+
+
+        return Ne_dict, coalescent_intervals
+    
+    
+    
+
+    
+        
+        
+
 
         
         

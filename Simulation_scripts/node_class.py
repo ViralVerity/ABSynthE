@@ -8,20 +8,24 @@ class node():
         #print("Making node for " + unique_id)
         
         self.id = unique_id #Need to think about the IDs for the three types
-        #At the moment, Ind is a string of numbers, Trans is a node object and coal is a uuid.
-        #Could maybe do something like Ind string and it will be a different type for Trans, and then coal could be string + a,b,c etc
         
         self.type = node_type #ie transmission, coalescent or individual - individual is a person.
+        
+        self.branch_len_calculated = False
+        
+        self.remove_func_called = False
         
         if self.type == "Ind": #ie if we're just looking at this person, not as a node in the tree
             self.infections = set() 
             self.sampled_infections = set()
-                        
+                                    
             if self.id in those_sampled:
                 self.sampled = True
+            else:
+                self.sampled = False
             
-            node_dict[self.id] = self
             parent_id = trans_dict[self.id][0]
+            node_dict[self.id] = self
             
             if parent_id in node_dict.keys():
                 self.parent = node_dict[parent_id]
@@ -34,17 +38,18 @@ class node():
             else:
                 self.generation = self.parent.generation + 1
                 self.index_case = False
-
-
                 
-            
+                
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
-            #self.get_root_list(trans_dict, those_sampled, node_dict, gen_3, gen_4) got rid of this func 10/01/20
             self.find_children(trans_dict, child_dict, those_sampled, node_dict)
 
-            self.subtree = tree(self, {})
-            
-            
+            #If the lineage is sampled
+            if self.sampled or len(self.sampled_infections) != 0:
+                
+                self.root_to_tip = self.time_sampled
+                
+                self.subtree = tree(self, {})
+
         
         if self.type == "Trans":
             self.infector = infector
@@ -61,7 +66,6 @@ class node():
         if subtree:
             self.subtree = subtree
         
-        self.root_to_tip = 0.0
 
         self.removed = False
         
@@ -69,7 +73,8 @@ class node():
         self.remove_func_called = False
         self.for_loop_called = False
         
-        
+        if self.type == "Coal":
+            self.root_to_tip = 0.0
         
         
     def get_useful_info(self, trans_dict, those_sampled, node_dict):
@@ -91,7 +96,7 @@ class node():
         else:
             self.time_sampled = float(trans_dict[self.id][2]) 
             
-        node_dict[self.id] = self
+        
         self.absolute_time = self.time_sampled #For use in the tree
     
     
