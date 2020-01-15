@@ -16,7 +16,8 @@ Contains scripts for running various different versions of the simulator, and as
 - "index_functions.py" - Makes index case for epidemic
 - "individual_class.py" - Defines individual class and associated methods
 - "make_contact_dicts.py" - makes dictionaries of various aspects of the gross contact structure 
-NB the data is currently not on this repo as the files are too large to be uploaded
+
+NB the contact data is currently not on this repo as the files are too large to be uploaded. It is therefore tricky to run the simulator
 
 
 
