@@ -1,6 +1,7 @@
 # ABSynthE
 
-Agent-based simulator for Ebola Virus
+Agent-based simulator for Ebola Virus.
+
 Still very much a work in progress
 
 ## Simulation scripts
