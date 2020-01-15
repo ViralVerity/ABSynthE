@@ -112,8 +112,8 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
     else:
         those_sampled = sampling_output
         
-    print(those_sampled)
 
+    
     if len(those_sampled) != 0:
     
         node_dict = {}
@@ -123,7 +123,7 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         index_case = child_dict["NA"][0]
         
         node(index_case, "Ind", trans_dict=trans_dict, child_dict=child_dict, those_sampled=those_sampled, node_dict=node_dict)
-                
+            
         coalescent_tree = tree(node_dict=node_dict)
         
         R0 = get_R0(node_dict)

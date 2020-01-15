@@ -42,7 +42,7 @@ class node():
                 
             self.get_useful_info(trans_dict, those_sampled, node_dict) #Gets info like time course of infection
             self.find_children(trans_dict, child_dict, those_sampled, node_dict)
-
+            
             #If the lineage is sampled
             if self.sampled or len(self.sampled_infections) != 0:
                 
@@ -65,7 +65,7 @@ class node():
             self.node_children = []
         if subtree:
             self.subtree = subtree
-        
+            
 
         self.removed = False
         
@@ -109,7 +109,6 @@ class node():
             new_child = node(child, "Ind", trans_dict, child_dict, those_sampled, node_dict)
 
             self.infections.add(new_child)
-            
           
             new_child.parent = self
             new_child.generation = self.generation + 1
@@ -118,7 +117,7 @@ class node():
                 
                 self.sampled_infections.add(new_child)
 
-                self.sampled_infections = self.sampled_infections.union(new_child.sampled_infections)
+            self.sampled_infections = self.sampled_infections.union(new_child.sampled_infections)
 
             
     

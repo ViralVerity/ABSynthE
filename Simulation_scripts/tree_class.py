@@ -34,6 +34,8 @@ class tree():
                 self.define_root()
 
                 self.get_branch_lengths()
+                
+
                         
         else:
             #Whole tree coalescent characteristics
@@ -47,20 +49,56 @@ class tree():
             self.final_nodes = self.nodes.copy()
             
             self.remove_internals(self.root)
-                       
+            
+            trans_count = 0
+            coal_count = 0
+            
+            for i in self.nodes:
+                if i.type == "Trans":
+                    trans_count += 1
+                if i.type == "Coal":
+                    coal_count += 1
+                    
+                    
+            if len(self.final_nodes) != (len(self.tips) - 1):
+                print("error in final node number")
+            if len(self.nodes) != (trans_count + coal_count):
+                print("error in pre-removal number")
+             
             for nde in self.final_nodes:
                 
                 if not nde.remove_func_called:
-                    print("function not called " + str(nde) + " " + str(nde.node_children))
+                    print("function not called on")
+                    print("Node: " + str(nde))
+                    print("Type: " + str(nde.type))
+                    if nde.type == "Coal":
+                        print("From subtree: " + str(nde.subtree.person.id))
+                        print("Sampled? " + str(nde.subtree.contains_sample))
+                    try:
+                        print("Parent = " + str(nde.node_parent))
+                    except AttributeError:
+                        print("No parent")
+                    print("Children = " + str(nde.node_children))
                 
                 elif nde.removed:
-                    print("error in removing " + str(nde) + " " + str(nde.type))
+                    print("error in removing")
+                    print("Node: " + str(nde))
+                    print("Type: " + str(nde.type))
+                    try:
+                        print("Parent = " + str(nde.node_parent))
+                    except AttributeError:
+                        print("No parent")
+                    print("Children = " + str(nde.node_children))
                 
-                if nde.type == "Trans":
-                    print("Trans node still in " + str(nde.node_parent) + " " + str(nde.node_children))
-                    for nde2 in self.final_nodes:
-                        if nde in nde2.node_children:
-                            print("child of " + str(nde2))
+                elif nde.type == "Trans":
+                    print("Trans node still in ")
+                    print("Node: " + str(nde))
+                    print("Type: " + str(nde.type))
+                    try:
+                        print("Parent = " + str(nde.node_parent))
+                    except AttributeError:
+                        print("No parent")
+                    print("Children = " + str(nde.node_children))
                 
                 else:
                     self.get_tip_to_root(nde)
@@ -278,13 +316,14 @@ class tree():
             
                 
                 
-    def remove_internals(self, nde): ###Not being called on a transmission node in the middle somewhere
-        #An issue with new_children vs node_children? That was the problem last time
-        #NB The length is correct (1) so it is an issue with the function being called on one node.
+    def remove_internals(self, nde): 
         
         nde.remove_func_called = True
         
         nde.new_children = nde.node_children.copy()
+        
+        #print("node children at start of function")
+        #print(nde.node_children)
 
         if len(nde.node_children) == 1: 
             if nde != self.root:
@@ -320,9 +359,11 @@ class tree():
                 
                 self.final_nodes.remove(nde)
 
-
-            
+        #print("node children at end of function")
+        #print(nde.node_children)  
+        
         for i in nde.node_children:
+            
             self.remove_internals(i)
                 
         
