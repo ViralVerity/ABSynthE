@@ -15,13 +15,19 @@ Contains scripts for running various different versions of the simulator, and as
 - "individual_class.py" - Defines individual class and associated methods
 - "make_contact_dicts.py" - makes dictionaries of various aspects of the gross contact structure 
 NB the data is currently not on this repo as the files are too large to be uploaded
-- Tree_simulator - generates the coalescent tree and corresponding skyline stochastically 
 
+
+
+- "Tree_simulator" - generates the coalescent tree and corresponding skyline stochastically. Contains some functions, and also runs:
+- "tree_class.py": - contains tree class definition with associated methods
+- "node_class.py" - contains node class definition and associated methods
 
 
 Non-stoch model - to generate the same trees each time for testing other hypotheses
 
 Tree simulator nonstoch - the same but non-stochastically
+
+Testing_notebook - fairly messy jupyter for testing individual functions and exploring package functionality
 
 
 ## Results scripts
