@@ -1,10 +1,11 @@
 from collections import defaultdict
 import random
 
-from node_class import *
-from tree_class import *
+from node_class_for_op import *
+from tree_class_for_op import *
 
 
+@profile
 def sampling(trans_dict, sampled_percentage, epidemic_len): 
     """Get who is sampled, inputs are list of individual ids and the sampled percentage"""
     not_enough_cases = False
@@ -23,8 +24,8 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     if samples_per_week < 1:
         not_enough_cases = True
         return 
-    
-                
+
+
     for i in range(weeks):
         weeks_cases[i] = []
         
@@ -36,7 +37,7 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
         date_sampled = value[2]
         week_number = int(date_sampled/7)
         weeks_cases[week_number].append(key)
-                
+
     #if len(weeks_cases[(140,148)]) == 0:
      #   not_enough_cases = True
       #  return
@@ -59,6 +60,7 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     
     return those_sampled
 
+@profile
 def get_R0(node_dict):
     """Count number of people in 4th and 3rd generations to calculate R0"""
     
@@ -77,6 +79,7 @@ def get_R0(node_dict):
     
         return R0
 
+@profile
 def plot_skyline(Ne_dict):
 
     for_plotting = {}
@@ -93,6 +96,7 @@ def plot_skyline(Ne_dict):
     plt.step(names,values)
 
 
+@profile
 def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_len): 
     """Function to simulate a coalescent tree"""
             
