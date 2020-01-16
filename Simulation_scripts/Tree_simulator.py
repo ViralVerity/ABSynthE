@@ -69,8 +69,7 @@ def get_R0(node_dict):
         
         if nde.generation == 3:
             gen_3 += 1
-        if nde.generation == 4:
-            gen_4 += 1
+            gen_4 += len(nde.infections)
             
     if gen_3 != 0 and gen_4 != 0:
         R0 = gen_4/gen_3
