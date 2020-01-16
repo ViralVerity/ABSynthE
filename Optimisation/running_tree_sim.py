@@ -45,3 +45,4 @@ epidemic_len = max(times)
 
 newick_tree, Ne_dict, big_tree, R0, big_tree.most_recent_date, those_sampled, coal_intervals = cts.simulate_tree(transm_dict, child_dict, nodes, 1, epidemic_len )
 
+

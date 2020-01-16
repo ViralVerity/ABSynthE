@@ -13,7 +13,7 @@ class tree():
         
         #print("Making subtree for " + person_tree.id)
                 
-        self.nodes = []
+        self.nodes = set()
         self.tips = []
         self.branch_lengths = {}
         self.heights = {}
@@ -158,18 +158,19 @@ class tree():
         
         self.heights[self.root] = self.root_time
                 
-        self.nodes.append(self.root)
+        self.nodes.add(self.root)
         
         self.penultimate.node_parent = (self.root)
         
         self.branch_lengths[self.root] = 0.0
 
 
+        
     @profile    
     def coalescent(self, lineage_list, current_height):
         
-        def sort_key(ele):
-            return ele.relative_height     
+        #def sort_key(ele):
+         #   return ele.relative_height 
         
         none_left = False
         
@@ -187,7 +188,7 @@ class tree():
         
             #More to be sampled? 
             if len(to_be_sampled) != 0:
-                next_sample = next(iter(sorted(to_be_sampled,key=sort_key)))
+                next_sample = next(iter(sorted(to_be_sampled,key=lambda nde:nde.relative_height)))
             else:
                 none_left = True
                 
@@ -245,7 +246,7 @@ class tree():
                     lucky_pair[0].node_parent = parent_node
                     lucky_pair[1].node_parent = parent_node
                     
-                    self.nodes.append(parent_node)
+                    self.nodes.add(parent_node)
                     self.heights[parent_node] = current_height
                     
                     updated_population = [i for i in lineage_list if i not in lucky_pair] + [parent_node]
@@ -275,10 +276,10 @@ class tree():
             if tip.type == "Ind" and subtree.contains_sample:
                 self.tips.append(tip)
             else:
-                self.nodes.append(tip)
+                self.nodes.add(tip)
 
         for nde in subtree.nodes:
-            self.nodes.append(nde)
+            self.nodes.add(nde)
 
     @profile
     def construct_tree(self, node_dict):
