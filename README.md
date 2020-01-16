@@ -37,7 +37,10 @@ Testing_notebook - fairly messy jupyter for testing individual functions and exp
 
 Notebooks for analysing results and producing figures from simulation runs
 
-
+- "Analyse single file" gives spread, persistence and some network analysis of individual runs
+- "Comparing skygrid and skyline" draws a skygrid from a BEAST log file, plots a simulated skyline on the same axis, and compares using regression and KDE.
+-  "Getting tree from log file" for when a tree was not simulated but a complete log file is available
+- "Summary results" gives summary results from many runs of the simulator eg distribution of epidemic lengths
 
 
 
