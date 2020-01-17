@@ -123,9 +123,9 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         
         newick_tree = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
 
-        Ne_dict, coal_intervals = coalescent_tree.calculate_ne(those_sampled)
+        Ne_dict, coal_intervals, sorted_dict = coalescent_tree.calculate_ne(those_sampled)
 
-        return newick_tree, Ne_dict, coalescent_tree, R0, coalescent_tree.most_recent_date, those_sampled, coal_intervals
+        return newick_tree, Ne_dict, coalescent_tree, R0, coalescent_tree.most_recent_date, those_sampled, coal_intervals, sorted_dict
 
 
 

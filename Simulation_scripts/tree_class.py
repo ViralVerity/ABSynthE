@@ -421,7 +421,7 @@ class tree():
         """Get active population at each coalescent interval"""
     
         coalescent_times = set()
-        coal_list = []
+        #coal_list = []
         coalescent_intervals = defaultdict(tuple)
 
         active_population = defaultdict(list)
@@ -433,7 +433,7 @@ class tree():
             if nde.type == "Coal":
 
                 coalescent_times.add(height)
-                coal_list.append(height)
+                #coal_list.append(height)
 
         coalescent_times = sorted(coalescent_times)
 
@@ -448,27 +448,36 @@ class tree():
             count += 1
 
             coalescent_intervals[count] = (float(current_time),float(time))
+            
+            coalescent_points.add(time)
 
             current_time = time
 
 
+        parent_index = 0
+
         for nde, height in sorted_dict.items():
+            index = parent_index - 1 #the minus one so it can be in the same interval as its parent
+            
+            if not nde.node_parent:
+                active_population[len(coalescent_points)].append(nde)
+                non_parent_set.add(nde)
 
-            for number, times in coalescent_intervals.items():            
-                if not nde.node_parent:
-                    non_parent_set.add(nde)
+            for times in coalescent_points[parent_index:]:            
 
-                    if height < times[1] and self.heights[self.root] >= times[1]:
-                        active_population[number].append(nde) 
+                index += 1
+                
+                if height < times and self.heights[nde.node_parent] >= times:
 
-                elif height < times[1] and self.heights[nde.node_parent] >= times[1]:
+                    parent_index = index
+                    
+                    active_population[index + 1].append(nde)
 
-                    active_population[number].append(nde)
-
+                    break #because it can only appear once in the list
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
 
-        return active_population, coalescent_intervals
+        return active_population, coalescent_intervals, sorted_dict
     
     
     def calculate_ne(self, those_sampled):
@@ -480,6 +489,7 @@ class tree():
 
         active_population = result[0]
         coalescent_intervals = result[1]
+        sorted_dict = result[2]
 
         Ne_dict = {}
 
@@ -516,7 +526,7 @@ class tree():
             Ne_dict[new_key] = Ne
 
 
-        return Ne_dict, coalescent_intervals
+        return Ne_dict, coalescent_intervals, sorted_dict
     
     
     
