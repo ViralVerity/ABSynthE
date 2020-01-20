@@ -1,7 +1,7 @@
 from case_class import *
 from individual_class import *
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
     
     epidemic_capped = False
     day_count = 0
@@ -28,8 +28,6 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
                     elif assignment == False: #If there is no-one left
                         print("All members of the population infected")
-                        #last_day = day
-                        #print("last day = " + str(last_day))
                         susceptibles_left = False
                         return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, dist_present, cluster_set
                     
@@ -45,18 +43,16 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                         parent.children.append(focal_individual)
 
                         trans_dict[focal_individual.unique_id] = [focal_individual.parent.unique_id, day, (day+ focal_individual.incubation_day)]
+                        
+                        child_dict[focal_individual.unique_id] = []
+                        
+                        child_dict[focal_individual.parent.unique_id].append(focal_individual.unique_id)
 
                         nodes.append(focal_individual.unique_id)
 
                         if write_file == True:
-                            info_file.write(str(focal_individual.unique_id) + "," + 
-                                            str(focal_individual.parent.unique_id) +  "," +
-                                            str(focal_individual.hh) +  "," +
-                                            str(focal_individual.dist) + "," +
-                                            str(day) + "," +
-                                            str(day + focal_individual.incubation_day) + "," +
-                                            str(day + focal_individual.incubation_day) +
-                                            "\n")
+                            info_file.write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id}, {focal_individual.hh},{focal_individual.dist},{day},{day+focal_individual.incubation_day}, {day + focal_individual.incubation_day}\n')
+
 
                             if focal_individual.dist != focal_individual.parent.dist:
                                 dist_mvmt[focal_individual.dist,focal_individual.parent.dist].append(day)
@@ -86,7 +82,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
     except RuntimeError:
         if not capped:
-            print("Adding more days to" + str(iteration_count))
+            
             original_length = len(day_dict)
             new_start = day #Should start again from when the error was thrown, so for now will recalculate all the infecteds for that day
             for i in range(1000):
@@ -97,4 +93,4 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             pass
         
 
-    return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped
+    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped

@@ -8,10 +8,11 @@ from scipy import special
 
 class tree():   
     
-    def __init__(self, person_tree=None, subtree_dict=None, node_dict=None):
+    def __init__(self, person_tree=None, subtree_dict=None, node_dict=None, epidemic_len=None):
         
         #print("Making subtree for " + person_tree.id)
-                
+        
+        
         self.nodes = set()
         self.tips = []
         self.branch_lengths = {}
@@ -43,6 +44,10 @@ class tree():
             self.whole_tree = True
 
             self.most_recent_date = 0.0
+            self.oldest_sample_date = epidemic_len
+            self.b_len_list = []
+            self.internal_branches = []
+            self.external_branches = []
             
             self.construct_tree(node_dict)
             
@@ -102,11 +107,14 @@ class tree():
                 
                 else:
                     self.get_tip_to_root(nde)
-                    self.heights[nde] = self.most_recent_tip - nde.root_to_tip
+                    self.heights[nde] = self.most_recent_date - nde.root_to_tip
+                    self.b_len_list.append(self.branch_lengths[nde])
+                    self.internal_branches.append(self.branch_lengths[nde])
                 
             for tip in self.tips:
-                self.heights[tip] = self.most_recent_tip - tip.time_sampled
-            
+                self.heights[tip] = self.most_recent_date - tip.time_sampled
+                self.b_len_list.append(self.branch_lengths[tip])
+                self.external_branches.append(self.branch_lengths[tip])
             
     
     def sort_out_tips(self):
@@ -149,6 +157,8 @@ class tree():
             self.tips.append(focal_individual)
             
             self.contains_sample = True
+            
+            self.sample_time = focal_individual.time_sampled
           
             
     def define_root(self):
@@ -291,8 +301,12 @@ class tree():
                     if subtree.most_recent_tip >= self.most_recent_date:
 
                         #Will need to check that this is always a sample. In between it may be transmission but that's ok
-                        self.most_recent_tip = subtree.most_recent_tip
-                        self.most_recent_date = float(subtree.most_recent_tip)
+                        self.most_recent_date = subtree.most_recent_tip
+                        #self.most_recent_date = float(subtree.most_recent_tip)
+                        
+                    if subtree.sample_time <= self.oldest_sample_date:
+                        self.oldest_sample_date = subtree.sample_time
+                        
 
                 if subtree.transmits:
                     for tip in subtree.tips:
@@ -379,14 +393,8 @@ class tree():
 
         else:
 
-            #print(nde, nde.type, nde.removed)
-            #if nde == nde.subtree.root:
-             #   print(nde)
-            
-
             distance = self.get_tip_to_root(nde.node_parent) + self.branch_lengths[nde]
 
-                     
 
         nde.root_to_tip = distance
         

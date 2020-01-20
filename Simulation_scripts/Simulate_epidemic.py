@@ -1,4 +1,4 @@
-iteration_number_outside = 50
+iteration_number_outside = 1000
 iteration_count = -1
 
 if iteration_count == -1:
@@ -30,7 +30,7 @@ if iteration_count == -1:
     dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
     results_path = "Looping models/Results/LTT_runs/"
     
-    run_number = 1
+    run_number = 3
     
     capped = True
     case_limit = 50000
@@ -75,7 +75,7 @@ def run_model(iteration_number):
         else:
             write_file = False
 
-        if iteration_count%1 == 0:
+        if iteration_count%10 == 0:
             print(str(iteration_count) + " runs completed")
 
         original_dist_mvmt = defaultdict(list)
@@ -94,6 +94,7 @@ def run_model(iteration_number):
         original_districts_present = []
         original_cluster_set = set()
         original_trans_dict = defaultdict(list)
+        original_child_dict = defaultdict(list)
         original_nodes = []
         original_onset_times = []
  
@@ -102,7 +103,7 @@ def run_model(iteration_number):
             original_day_dict[i] = []
         
         ###Making index case###
-        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
+        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
 
@@ -111,7 +112,7 @@ def run_model(iteration_number):
         susceptibles_left = True
          
         ###Run the epidemic###
-        day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
 
         
         remove_set = set()   
@@ -142,7 +143,7 @@ def run_model(iteration_number):
                 day = trans_dict[indie.unique_id][1]
                 symptoms = trans_dict[indie.unique_id][2]
                 sampled = trans_dict[indie.unique_id][2]
-
+                
                 try:
                     runout_file.write(f"{indie.unique_id},{indie.parent.unique_id},{indie.hh},{indie.dist},{day},{symptoms},{sampled},\n")
 
@@ -163,7 +164,7 @@ def run_model(iteration_number):
 
             district_mvmt_file.close()
             
-            result = cts.simulate_tree(trans_dict, nodes, sampling_percentage, last_day)
+            result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
             
             if result:
                 
@@ -179,24 +180,26 @@ def run_model(iteration_number):
                 tree_file.close()
 
                 logpop_count = 0
-                start_interval = 0.0
+                #start_interval = 0.0
                 
                 for key, value in skyline.items():
                     logpop_count += 1
-                    skyline_file.write(f"{logpop_count},{start_interval},{key},{value}\n")
-
-                    start_interval = key
+                    
+                    skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
 
                 skyline_file.close()
                 
+                lineage_count = 0
+                
                 for k,v in lineages_through_time.items():
-                    ltt_file.write(f"{k},{v}\n")
+                    lineage_count += 1
+                    ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
                 
                 if result[3]:
                     R0 = str(result[3])
-                    R0_output.write(f"{iteration_count},R0\n")
                     
-                    R0_output.write(str(iteration_count) + "," + R0 + "\n")
+                    R0_output.write(f"{iteration_count},{R0}\n")
+                    
 
         if write_file:
             info_file.close()
@@ -219,7 +222,7 @@ def run_model(iteration_number):
     
             
             
-pool = ThreadPool(8)
+pool = ThreadPool(4)
 
 print("Running infection model")
 

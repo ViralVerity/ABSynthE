@@ -2,7 +2,7 @@ from individual_class import *
 from case_class import *
 import random
 
-def make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict):
+def make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict):
     
     index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, distributions) #These should be the IDs of the range in Kailahun
 
@@ -13,6 +13,8 @@ def make_index_case(agent_location, cfr, distributions, original_case_dict, orig
 
     original_trans_dict[index_case_individual.unique_id] = ["NA", '0', index_case_individual.incubation_day]
     original_nodes.append(index_case_individual.unique_id)
+    
+    original_child_dict["NA"] = [index_case_individual.unique_id]
 
     infected_individuals_set.add(index_case_individual.unique_id)
 
@@ -38,4 +40,4 @@ def make_index_case(agent_location, cfr, distributions, original_case_dict, orig
             
            
             
-    return index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict
+    return index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict

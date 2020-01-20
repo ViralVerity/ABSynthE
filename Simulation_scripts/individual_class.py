@@ -78,7 +78,7 @@ class Individual():
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
         a = 0.85
-        b = a*0.5
+        b = a*0.5 #This needs to be fixed but should have a better thing for how what it is
         c = 0.07
 
         Hh_number = function(lamb)

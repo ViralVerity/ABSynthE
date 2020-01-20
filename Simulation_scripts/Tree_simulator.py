@@ -18,7 +18,10 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
 
     weeks = round(epidemic_len/7)
     
-    samples_per_week = round(number_of_people/weeks)
+    if weeks > 0:
+        samples_per_week = round(number_of_people/weeks)
+    else:
+        return
     
     if samples_per_week < 1:
         not_enough_cases = True
@@ -99,7 +102,6 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
     
     if not sampling_output:
         not_enough_cases = sampling_output
-        print("here")
         return
     else:
         those_sampled = sampling_output
@@ -116,7 +118,7 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         
         node(index_case, "Ind", trans_dict=trans_dict, child_dict=child_dict, those_sampled=those_sampled, node_dict=node_dict)
             
-        coalescent_tree = tree(node_dict=node_dict)
+        coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
         
         R0 = get_R0(node_dict)
   
