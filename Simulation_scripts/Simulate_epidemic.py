@@ -28,12 +28,12 @@ if iteration_count == -1:
     
     
     dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-    results_path = "Looping models/Results/testing_tidying/"
+    results_path = "Looping models/Results/LTT_runs/"
     
-    run_number = 6
+    run_number = 1
     
     capped = True
-    case_limit = 250
+    case_limit = 50000
     
     print("Defining parameters")
     
@@ -49,7 +49,7 @@ if iteration_count == -1:
         run_out_summary = file_functions.prep_runout_summary(dropbox_path, results_path, run_number)
 
     popn_size = 7092142
-    epidemic_length = 1000
+    epidemic_length = 148
     cfr = 0.7
     sampling_percentage = 0.16
     
@@ -151,7 +151,7 @@ def run_model(iteration_number):
 
         
         if write_file or epidemic_capped:
-            tree_file, district_mvmt_file, skyline_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
+            tree_file, district_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
 
         last_day = max(onset_times)
 
@@ -170,6 +170,7 @@ def run_model(iteration_number):
                 newick_string = result[0]
                 skyline = result[1]
                 tree = result[2]
+                lineages_through_time = result[7]
                 
                 most_recent_tip_file.write(str(iteration_count) + "," + str(tree.most_recent_date) + "\n")
 
@@ -187,6 +188,9 @@ def run_model(iteration_number):
                     start_interval = key
 
                 skyline_file.close()
+                
+                for k,v in lineages_through_time.items():
+                    ltt_file.write(f"{k},{v}\n")
                 
                 if result[3]:
                     R0 = str(result[3])

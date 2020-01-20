@@ -8,7 +8,8 @@ def make_directories(dropbox_path, results_path, run_number):
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number),"trees")
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number),"dist_mvmt")
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "skylines")
-    os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "issues")
+    #os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "issues")
+    os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), 'lineages')
      #have removed issues? no more zero taus or removal folder
     
 def make_summary_files(dropbox_path, results_path, run_number):
@@ -33,12 +34,15 @@ def prep_other_files(dropbox_path, results_path, run_number, iteration_count):
 
     skyline_file = open(dropbox_path + results_path + str(run_number) + "/skylines/skyline_for_" + str(iteration_count) + ".csv", 'w')
 
+    ltt_file = open(dropbox_path + results_path + str(run_number) + "/lineages/ltt_for_" + str(iteration_count) + ".csv", 'w') 
 
     skyline_file.write("number,start_interval,end_interval,logpopsize\n")
 
     district_mvmt_file.write("DistrictOne,DistrictTwo,Times\n")
+                                
+    ltt_file.write("start,end,lineages\n")
 
-    return tree_file, district_mvmt_file, skyline_file
+    return tree_file, district_mvmt_file, skyline_file, ltt_file
 
 def prep_runout_summary(dropbox_path, results_path, run_number):
     

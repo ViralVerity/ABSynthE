@@ -421,38 +421,19 @@ class tree():
         """Get active population at each coalescent interval"""
     
         coalescent_times = set()
-        #coal_list = []
+
         coalescent_intervals = defaultdict(tuple)
 
         active_population = defaultdict(list)
 
         sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
         
-        print("heights")
-        print(sorted_dict)
-        print(len(sorted_dict))
-
         for nde, height in sorted_dict.items():
 
             if nde.type == "Coal":
-
-                print("Coal node " + str(nde) + " " + str(height))
-               
                 
                 coalescent_times.add(height)
-                #coal_list.append(height)
-            elif nde.type == "Trans":
-                print("Trans!!!" + str(nde) + str(height))
-                
-            elif nde.type == "Ind":
-                
-                print("Sample " + str(nde) + " " + str(height))
 
-        
-        print("coal times")
-        print(coalescent_times)
-        
-        
         coalescent_times = sorted(coalescent_times)
         coalescent_points = list(coalescent_times)
 
@@ -501,6 +482,8 @@ class tree():
     def calculate_ne(self, those_sampled):
         """Get effective population sizes in each coalescent interval"""
 
+        lineages_through_time = {}
+        
         waiting_times = {}
 
         result = self.get_active_population()
@@ -508,10 +491,6 @@ class tree():
         active_population = result[0]
         coalescent_intervals = result[1]
         sorted_dict = result[2]
-
-        print("active pop and coal intervals")
-        print(active_population)
-        print(coalescent_intervals)
         
         Ne_dict = {}
 
@@ -527,6 +506,8 @@ class tree():
                 print(key, value)
 
             lineages = len(active_population[key])
+            
+            lineages_through_time[coalescent_intervals[key]] = lineages
 
             count_weird_trees = 0
 
@@ -540,6 +521,7 @@ class tree():
                     to_newick(whole_tree.root, whole_tree, those_sampled)
 
             else:
+                
                 a =  np.log(special.binom(lineages,2))
                 b = np.log(tau)
                 
@@ -551,7 +533,7 @@ class tree():
             Ne_dict[new_key] = Ne
 
 
-        return Ne_dict, coalescent_intervals, sorted_dict
+        return Ne_dict, coalescent_intervals, lineages_through_time
     
     
     
