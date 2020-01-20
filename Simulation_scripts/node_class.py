@@ -5,8 +5,6 @@ class node():
     
     def __init__(self, unique_id, node_type, trans_dict=None, child_dict=None, those_sampled=None, node_dict=None, height=None, children=None, subtree=None, infector=None, infectee=None):
         
-        #print("Making node for " + unique_id)
-        
         self.id = unique_id #Need to think about the IDs for the three types
         
         self.type = node_type #ie transmission, coalescent or individual - individual is a person.
@@ -94,7 +92,7 @@ class node():
             self.time_sampled = float(self.time_infected) + np.random.uniform(0,rnge)
 
         else:
-            self.time_sampled = float(trans_dict[self.id][2]) 
+            self.time_sampled = float(trans_dict[self.id][2]) + uniform1
             
         
         self.absolute_time = self.time_sampled #For use in the tree

@@ -427,15 +427,34 @@ class tree():
         active_population = defaultdict(list)
 
         sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
+        
+        print("heights")
+        print(sorted_dict)
+        print(len(sorted_dict))
 
         for nde, height in sorted_dict.items():
 
             if nde.type == "Coal":
 
+                print("Coal node " + str(nde) + " " + str(height))
+               
+                
                 coalescent_times.add(height)
                 #coal_list.append(height)
+            elif nde.type == "Trans":
+                print("Trans!!!" + str(nde) + str(height))
+                
+            elif nde.type == "Ind":
+                
+                print("Sample " + str(nde) + " " + str(height))
 
+        
+        print("coal times")
+        print(coalescent_times)
+        
+        
         coalescent_times = sorted(coalescent_times)
+        coalescent_points = list(coalescent_times)
 
         current_time = 0
 
@@ -448,8 +467,6 @@ class tree():
             count += 1
 
             coalescent_intervals[count] = (float(current_time),float(time))
-            
-            coalescent_points.add(time)
 
             current_time = time
 
@@ -474,6 +491,7 @@ class tree():
                     active_population[index + 1].append(nde)
 
                     break #because it can only appear once in the list
+        
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
 
@@ -491,6 +509,10 @@ class tree():
         coalescent_intervals = result[1]
         sorted_dict = result[2]
 
+        print("active pop and coal intervals")
+        print(active_population)
+        print(coalescent_intervals)
+        
         Ne_dict = {}
 
         for key, value in coalescent_intervals.items():
@@ -518,7 +540,10 @@ class tree():
                     to_newick(whole_tree.root, whole_tree, those_sampled)
 
             else:
-                Ne = np.log(special.binom(lineages,2)) + np.log(tau) 
+                a =  np.log(special.binom(lineages,2))
+                b = np.log(tau)
+                
+                Ne = a + b
 
             new_key = (coalescent_intervals[key][0], coalescent_intervals[key][1])
 
