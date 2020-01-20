@@ -144,23 +144,10 @@ def run_model(iteration_number):
                 sampled = trans_dict[indie.unique_id][2]
 
                 try:
-                    runout_file.write(str(indie.unique_id) + "," + 
-                    str(indie.parent.unique_id) +  "," +
-                    str(indie.hh) +  "," +
-                    str(indie.dist) + "," +
-                    str(day) + "," +
-                    str(symptoms) + "," +
-                    str(sampled) +
-                    "\n")
+                    runout_file.write(f"{indie.unique_id},{indie.parent.unique_id},{indie.hh},{indie.dist},{day},{symptoms},{sampled},\n")
+
                 except AttributeError:
-                    runout_file.write(str(indie.unique_id) + "," + 
-                    "NA" +  "," +
-                    str(indie.hh) +  "," +
-                    str(indie.dist) + "," +
-                    str(day) + "," +
-                    str(symptoms) + "," +
-                    str(sampled) +
-                    "\n")
+                    runout_file.write(f"{indie.unique_id},NA,{indie.hh},{indie.dist},{day},{symptoms},{sampled},\n")
 
         
         if write_file or epidemic_capped:
@@ -195,10 +182,7 @@ def run_model(iteration_number):
                 
                 for key, value in skyline.items():
                     logpop_count += 1
-                    skyline_file.write(str(logpop_count) + ","
-                                      + str(start_interval) + ","
-                                      + str(key) + ","
-                                      + str(value) + "\n")
+                    skyline_file.write(f"{logpop_count},{start_interval},{key},{value}\n")
 
                     start_interval = key
 
@@ -206,6 +190,8 @@ def run_model(iteration_number):
                 
                 if result[3]:
                     R0 = str(result[3])
+                    R0_output.write(f"{iteration_count},R0\n")
+                    
                     R0_output.write(str(iteration_count) + "," + R0 + "\n")
 
         if write_file:
@@ -214,11 +200,17 @@ def run_model(iteration_number):
             runout_file.close()
         
         if epidemic_capped:
-            run_out_summary.write(str(iteration_count) + "," + str(len(case_dict)) + "\n")
+            size = len(case_dict)
+            
+            run_out_summary.write(f"{iteration_count},{size}\n")
         
-        length_output.write(str(iteration_count) + "," + str(last_day) + "\n")
+        size = len(case_dict)
+        dists = len(districts_present)
+        clusters = len(cluster_set)
+        
+        length_output.write(f"{iteration_count},{last_day}\n")
 
-        size_output.write(str(iteration_count) + "," + str(len(case_dict)) + "," + str(len(districts_present)) + "," + str(len(cluster_set)) + "\n")
+        size_output.write(f"{iteration_count},{size},{dists},{clusters}\n")
 
     
             
