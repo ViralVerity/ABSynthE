@@ -44,10 +44,14 @@ class tree():
             self.whole_tree = True
 
             self.most_recent_date = 0.0
+            
+            #For fitting SS's
             self.oldest_sample_date = epidemic_len
             self.b_len_list = []
             self.internal_branches = []
             self.external_branches = []
+            self.sample_times = []
+            self.total_steps = []
             
             self.construct_tree(node_dict)
             
@@ -108,13 +112,23 @@ class tree():
                 else:
                     self.get_tip_to_root(nde)
                     self.heights[nde] = self.most_recent_date - nde.root_to_tip
+                    
+                    #For fitting summary stats
                     self.b_len_list.append(self.branch_lengths[nde])
                     self.internal_branches.append(self.branch_lengths[nde])
+                    
+                    ##Could put left and right here? but the sample times aren't done yet so that's hard
                 
             for tip in self.tips:
                 self.heights[tip] = self.most_recent_date - tip.time_sampled
+                
+                #For fitting summary stats
                 self.b_len_list.append(self.branch_lengths[tip])
                 self.external_branches.append(self.branch_lengths[tip])
+                self.sample_times.append(tip.time_sampled)
+                tip.steps = tip.node_parent.steps + 1
+                
+                self.total_steps.append(tip.steps)
             
     
     def sort_out_tips(self):
@@ -332,9 +346,6 @@ class tree():
         nde.remove_func_called = True
         
         nde.new_children = nde.node_children.copy()
-        
-        #print("node children at start of function")
-        #print(nde.node_children)
 
         if len(nde.node_children) == 1: 
             if nde != self.root:
@@ -348,9 +359,7 @@ class tree():
 
                 #Reassign parents and children to remove internal nodes
                 for child in nde.node_children:
-                    
-                    #print(child, nde)
-                    
+                                       
                     child.node_parent = parent
 
                     parent.new_children.append(child)
@@ -370,8 +379,6 @@ class tree():
                 
                 self.final_nodes.remove(nde)
 
-        #print("node children at end of function")
-        #print(nde.node_children)  
         
         for i in nde.node_children:
             
@@ -390,13 +397,18 @@ class tree():
 
         if nde == self.root:
             distance = 0.0
+            steps = 0
 
         else:
 
             distance = self.get_tip_to_root(nde.node_parent) + self.branch_lengths[nde]
-
-
+            
+            steps = nde.node_parent.steps + 1
+            
+            
         nde.root_to_tip = distance
+        
+        nde.steps = steps
         
 
         return nde.root_to_tip
