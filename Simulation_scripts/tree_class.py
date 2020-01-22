@@ -519,7 +519,7 @@ class tree():
 
         for key, value in waiting_times.items():
 
-            tau = value/365
+            tau = value 
 
             if tau == 0:
                 print("tau is zero here")

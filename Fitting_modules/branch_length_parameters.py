@@ -6,6 +6,7 @@ import statistics
 
 def calculate_branch_statistics(coalescent_tree):
     
+    #These aren't right because we need the branch lengths to them
     max_H = coalescent_tree.most_recent_date
     min_H = coalescent_tree.oldest_sample_date
 

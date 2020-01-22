@@ -85,14 +85,14 @@ class node():
         if self.index_case:
             self.time_infected = 0.0
         else:
-            self.time_infected = float(trans_dict[self.id][1]) + uniform1
+            self.time_infected = (float(trans_dict[self.id][1]) + uniform1)/365
 
         if input1 == input2:
             rnge = 1 - uniform1
-            self.time_sampled = float(self.time_infected) + np.random.uniform(0,rnge)
+            self.time_sampled = (float(self.time_infected) + np.random.uniform(0,rnge))/365
 
         else:
-            self.time_sampled = float(trans_dict[self.id][2]) + uniform1
+            self.time_sampled = (float(trans_dict[self.id][2]) + uniform1)/365
             
         
         self.absolute_time = self.time_sampled #For use in the tree
