@@ -33,7 +33,7 @@ def calculate_topology_params(coalescent_tree):
 
     staircase_2 = np.mean(sum_ratios)
 
-    #At the moment, this includes the root in each step calculation  
+    #At the moment, this includes the root in each step calculation, which is correct as it should include the first branching
     sackin = np.sum(coalescent_tree.total_steps)
     
     #WD_ratio

@@ -117,7 +117,6 @@ class tree():
                     self.b_len_list.append(self.branch_lengths[nde])
                     self.internal_branches.append(self.branch_lengths[nde])
                     
-                    ##Could put left and right here? but the sample times aren't done yet so that's hard
                 
             for tip in self.tips:
                 self.heights[tip] = self.most_recent_date - tip.time_sampled
