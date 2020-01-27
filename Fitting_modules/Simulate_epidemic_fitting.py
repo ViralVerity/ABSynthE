@@ -1,5 +1,65 @@
-def run_model(iteration_number):
+
+from multiprocessing.pool import ThreadPool
+from collections import defaultdict
+
+from epidemic_function_fitting import *
+import index_functions_fitting
+
+import sys
+sys.path.insert(1, "../Simulation_scripts/")
+
+
+import file_functions
+import Tree_simulator as cts
+
+
+def simulate_epidemic(a, iteration_number_outside, distributions, contact_structure, dropbox_path, results_path):
+
+    #pool = ThreadPool(4)
+
+    print("Running infection model")
+
+    #pool.map(run_model,(a,iteration_number_outside, distributions, contact_structure, dropbox_path, results_path,))   
+
+    capped = True
     
+    run_number = 1
+    
+    try:
+        file_functions.make_directories(dropbox_path, results_path, run_number)
+    
+    except FileExistsError:
+        pass
+
+    R0_output, size_output, most_recent_tip_file, length_output = file_functions.make_summary_files(dropbox_path, results_path, run_number)
+    
+    if capped:
+        run_out_summary = file_functions.prep_runout_summary(dropbox_path, results_path, run_number)
+
+    run_model(a,iteration_number_outside, distributions, contact_structure, capped, dropbox_path, results_path, run_number, R0_output, size_output, most_recent_tip_file, length_output)
+    
+    R0_output.close()
+    size_output.close()
+    length_output.close()
+    most_recent_tip_file.close()
+
+    if capped:
+        run_out_summary.close()
+
+
+def run_model(a,iteration_number, distributions, contact_structure, capped, dropbox_path, results_path, run_number, R0_output, size_output, most_recent_tip_file, length_output):
+    
+    
+    case_limit = 50000
+    popn_size = 7092142
+    epidemic_length = 148
+    cfr = 0.7
+    sampling_percentage = 0.16
+    
+
+    district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
+        
+
     iteration_count = -1
     
     for i in range(iteration_number):
@@ -40,7 +100,7 @@ def run_model(iteration_number):
             original_day_dict[i] = []
         
         ###Making index case###
-        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
+        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions_fitting.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
         
         if write_file:
 
@@ -49,7 +109,7 @@ def run_model(iteration_number):
         susceptibles_left = True
          
         ###Run the epidemic###
-        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit, a)
 
         
         remove_set = set()   
@@ -157,77 +217,7 @@ def run_model(iteration_number):
         size_output.write(f"{iteration_count},{size},{dists},{clusters}\n")
 
     
-iteration_number_outside = 10000
-iteration_count = -1
-
-if iteration_count == -1:
-    
-    print("Successfully importing modules")
-    
-    from collections import defaultdict
-    from multiprocessing.pool import ThreadPool
-    
-    import Tree_simulator as cts
-    import file_functions 
-    from make_contact_dicts import *
-    from individual_class import *
-    from case_class import *
-    import distribution_functions
-    import index_functions
-    from epidemic_function import *
-    
-    
-    dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-    results_path = "Looping models/Results/Fitting/"
-   
-    
-    capped = True
-    case_limit = 50000
-    
-    print("Defining parameters")
-    
-    
-    popn_size = 7092142
-    epidemic_length = 148
-    cfr = 0.7
-    sampling_percentage = 0.16
-    
-    district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
-    
-    distributions = distribution_functions.define_distributions() 
-
-    print("Importing dictionaries")
-    
-    contact_structure = make_contact_dicts(dropbox_path)
-            
-        
-    
-    
-    run_number = 1
-    
-    try:
-        file_functions.make_directories(dropbox_path, results_path, run_number)
-    
-    except FileExistsError:
-        pass
-
-    R0_output, size_output, most_recent_tip_file, length_output = file_functions.make_summary_files(dropbox_path, results_path, run_number)
-    
-    if capped:
-        run_out_summary = file_functions.prep_runout_summary(dropbox_path, results_path, run_number)
-
 
             
-pool = ThreadPool(4)
 
-print("Running infection model")
 
-pool.map(run_model,(iteration_number_outside,))        
-        
-R0_output.close()
-size_output.close()
-length_output.close()
-most_recent_tip_file.close()
-                                  
-if capped:
-    run_out_summary.close()
