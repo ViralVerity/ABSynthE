@@ -248,18 +248,11 @@ class tree():
                    
                     #Who is going to coalesce?
                     lucky_pair = random.sample(active_pop, k=2)
-                    #print("Coalescing " + str(lucky_pair))
-                     
-                    #print("current height = " + str(current_height))
                         
                     current_height += tau
-                    
-                    #print("tau = " + str(tau))
-                        
+                                            
                     #ie the coalescent event of the pair selected above
                     parent_node = nc.node(uuid.uuid1(), "Coal", height=current_height, children=lucky_pair, subtree=self)
-                    #print("made a node" + str(parent_node))
-                    #print("new node is " + str(parent_node.id) + " " + str(parent_node.relative_height))
                     
                     lucky_pair[0].node_parent = parent_node
                     lucky_pair[1].node_parent = parent_node
@@ -315,7 +308,6 @@ class tree():
 
                         #Will need to check that this is always a sample. In between it may be transmission but that's ok
                         self.most_recent_date = subtree.most_recent_tip
-                        #self.most_recent_date = float(subtree.most_recent_tip)
                         
                     if subtree.sample_time <= self.oldest_sample_date:
                         self.oldest_sample_date = subtree.sample_time
@@ -325,8 +317,6 @@ class tree():
                     for tip in subtree.tips:
                         
                         if tip.type == "Trans":
-                            
-                            #print("trans tip = " + str(tip))
                             
                             donor_tree = tip.infector.subtree
                             recipient_tree = tip.infectee.subtree

@@ -3,10 +3,10 @@ from collections import Counter
 
 def calculate_topology_params(coalescent_tree):
     
-    
     #colless and staircase measures
     colless = 0
     sum_ratios = []
+    uneven = 0
     
     for nde in coalescent_tree.final_nodes:
 
@@ -49,7 +49,7 @@ def calculate_topology_params(coalescent_tree):
     
     tup_list = []
 
-    for k,v in depth.items():
+    for k,v in depths.items():
         tup = (k,v)
         tup_list.append(tup)
 
