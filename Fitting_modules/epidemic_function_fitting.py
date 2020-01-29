@@ -3,7 +3,7 @@ from individual_class_fitting import *
 from case_class_fitting import *
 
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit, a):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a):
     
     epidemic_capped = False
     day_count = 0
@@ -52,12 +52,9 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
                         nodes.append(focal_individual.unique_id)
 
-                        if write_file == True:
-                            info_file.write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id}, {focal_individual.hh},{focal_individual.dist},{day},{day+focal_individual.incubation_day}, {day + focal_individual.incubation_day}\n')
 
-
-                            if focal_individual.dist != focal_individual.parent.dist:
-                                dist_mvmt[focal_individual.dist,focal_individual.parent.dist].append(day)
+                        if focal_individual.dist != focal_individual.parent.dist:
+                            dist_mvmt[focal_individual.dist,focal_individual.parent.dist].append(day)
 
 
                         if focal_individual.dist not in districts_present:
@@ -90,7 +87,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             for i in range(1000):
                 day_dict[original_length + i] = []
 
-            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit, a)
+            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a)
         else:
             pass
         
