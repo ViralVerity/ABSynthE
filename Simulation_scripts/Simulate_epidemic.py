@@ -169,7 +169,10 @@ if iteration_count == -1:
     
     import Tree_simulator as cts
     import file_functions 
-    from make_contact_dicts import *
+    
+    #from make_contact_dicts import *
+    from make_contact_dicts_chiefdom import *
+    
     from individual_class import *
     from case_class import *
     import distribution_functions
