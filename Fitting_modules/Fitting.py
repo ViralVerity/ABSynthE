@@ -36,14 +36,14 @@ distributions = distribution_functions.define_distributions()
 contact_structure = make_contact_dicts(dropbox_path)
 
 
-iterations_per_value = 10000 #So this might actually be only one, and we change a each time
+iterations_per_value = 1 #So this might actually be only one, and we change a each time
 
 a = ??
 
 run_number = 1 #iterate upwards as we go through a values
 
 
-trees = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
+tree = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
 
 
 size_file.close()
