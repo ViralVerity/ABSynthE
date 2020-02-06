@@ -518,32 +518,34 @@ class tree():
             
             lineages_through_time[coalescent_intervals[key]] = lineages
 
-            count_weird_trees = 0
+            
+            #Not using this for fitting#
+            #count_weird_trees = 0
 
-            if lineages == 1: #This should work because the tree can never start with one lineage
-                try:
-                    Ne = Ne
-                except UnboundLocalError:
-                    count_weird_trees += 1
-                    Ne = 0.000000001
-                    tree_file = open("error_trees" + str(count_weird_trees) + ".csv", 'w')
-                    to_newick(whole_tree.root, whole_tree, those_sampled)
+            #if lineages == 1: #This should work because the tree can never start with one lineage
+             #   try:
+              #      Ne = Ne
+               # except UnboundLocalError:
+                #    count_weird_trees += 1
+                 #   Ne = 0.000000001
+                  #  tree_file = open("error_trees" + str(count_weird_trees) + ".csv", 'w')
+                   # to_newick(whole_tree.root, whole_tree, those_sampled)
 
-            else:
+           # else:
                 
-                a =  np.log(special.binom(lineages,2))
-                b = np.log(tau)
-                
-                Ne = a + b
+            #    a = np.log(special.binom(lineages,2))
+             #   b = np.log(tau)
+              #  
+               # Ne = a + b
 
-            new_key = (coalescent_intervals[key][0], coalescent_intervals[key][1])
-
-
-            Ne_dict[new_key] = Ne
+            #new_key = (coalescent_intervals[key][0], coalescent_intervals[key][1])
 
 
-        return Ne_dict, coalescent_intervals, lineages_through_time
-    
+            #Ne_dict[new_key] = Ne
+
+
+        #return Ne_dict, coalescent_intervals, lineages_through_time
+        return lineages_through_time
     
     
 

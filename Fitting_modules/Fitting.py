@@ -1,11 +1,9 @@
 
 from collections import defaultdict
 from Simulate_epidemic_fitting import *
-
-
-import branch_length_parameters as BL
-import topology_set as TOP
-
+from vector_comparisons import *
+import random
+from multiprocessing.pool import ThreadPool
 
 import sys
  
@@ -23,7 +21,7 @@ from make_contact_dicts import *
 import distribution_functions
 
 
-
+##Setting things up for model running##
 dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
 results_path = "Looping models/Results/Fitting/test/"
 
@@ -31,19 +29,80 @@ size_file = open(dropbox_path + results_path + "epidemic_sizes.csv", 'w')
 
 size_file.write("a_value,size,\n")
 
-distributions = distribution_functions.define_distributions() 
+distributions = distribution_functions.define_distributions()
 
+print("Defining contact structures")
 contact_structure = make_contact_dicts(dropbox_path)
 
 
+##ABC setup###
+observed_SS = get_observed_SS()
+
+print(observed_SS[4])
+
 iterations_per_value = 1 #So this might actually be only one, and we change a each time
 
-a = ??
+rejection_threshold = 80
+#rejection_threshold_other = ?? #play with these to get a good value. May be different for each set
+
+accepted = []
 
 run_number = 1 #iterate upwards as we go through a values
 
+###Define rejection algorithm so that can be multithreaded###
 
-tree = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
+
+def abc_algorithm(accepted):
+    
+    print("Starting ABC")
+    
+    count = 0
+    N = 100
+    
+    while len(accepted) < N and count < 500: 
+      
+        count += 1
+        
+        if count % 10 == 0:
+            print("parameters tried = " + str(count))
+
+        a = random.uniform(0,1)
+      
+        output = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
+        
+        if output: #So there'll only be output if the cases are between 1800 and 2800 already
+            
+            tree = output[0]
+            
+            difference = get_tip_difference(observed_SS, tree) #Just keeping this in to test, but can take it out in a bit
+            
+            if difference <= rejection_threshold:
+
+                #Comment these out depending on what we are interested in for that run#
+                #branch_diff = compare_BL(observed_SS, tree)
+                #top_diff = compare_topology(observed_SS, tree)
+                #LTT_stat_diff = compare_LTT_stats(observed_SS, tree)
+                #LTT_point_diff = compare_LTT_points(observed_SS, tree)
+
+                #if branch_diff <= branch_threshold:
+                #if top_diff <= top_threshold:
+                #if LTT_stat_diff <= LTT_stat_threshold:
+                #if LTT_point_diff <= LTT_point_threshold:
+
+                print("accepted a value")
+                accepted.append(a)
+             
+
+        
+    return accepted
+
+
+
+pool = ThreadPool(4)
+
+pool.map(abc_algorithm, (accepted,))  
+
+print(accepted)
 
 
 size_file.close()

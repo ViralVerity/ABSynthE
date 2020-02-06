@@ -15,19 +15,20 @@ def simulate_epidemic(a, iteration_number_outside, distributions, contact_struct
 
     #pool = ThreadPool(4)
 
-    print("Running infection model")
+    #print("Running infection model")
 
     #pool.map(run_model,(a,iteration_number_outside, distributions, contact_structure, dropbox_path, results_path,))   
 
     capped = True
 
-    run_model(a,iteration_number_outside, distributions, contact_structure, capped, size_file)
+    result = run_model(a,iteration_number_outside, distributions, contact_structure, capped, size_file)
 
+    return result
 
 def run_model(a,iteration_number, distributions, contact_structure, capped, size_file):
     
     
-    case_limit = 50000
+    case_limit = 10000 #This may not be high enough, so we'll need to check if the epidemics are big enough
     popn_size = 7092142
     epidemic_length = 148
     cfr = 0.7
@@ -97,34 +98,23 @@ def run_model(a,iteration_number, distributions, contact_structure, capped, size
         day_dict[0].append(index_case_case) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
 
         ###Getting results and writing to file###
-        
-     
 
         last_day = max(onset_times)
         
-        result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
+        if len(case_dict) > 1800 and len(case_dict) < 2800: #Conditioning to speed up ABC
             
-        if result:
+            size = len(case_dict)
 
-            newick_string = result[0]
-            skyline = result[1]
-            tree = result[2]
-            lineages_through_time = result[6]
+            size_file.write(f"{a},{size}\n")
 
-            logpop_count = 0
-            #start_interval = 0.0
+            result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
+            
+            return result
 
-            lineage_count = 0
-                    
-        size = len(case_dict)
 
-        size_file.write(f"{iteration_count},{size},{dists},{clusters}\n")
         
-        if result:
-            return result[2]
         else:
             return
-    
 
             
 
