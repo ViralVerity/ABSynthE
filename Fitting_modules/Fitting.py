@@ -4,6 +4,7 @@ from Simulate_epidemic_fitting import *
 from vector_comparisons import *
 import random
 from multiprocessing.pool import ThreadPool
+import time
 
 import sys
  
@@ -16,7 +17,7 @@ print("Successfully importing modules")
 
 import Tree_simulator as cts
 import file_functions 
-from make_contact_dicts import *
+from make_contact_dicts_chiefdom import *
 
 import distribution_functions
 
@@ -38,12 +39,13 @@ contact_structure = make_contact_dicts(dropbox_path)
 ##ABC setup###
 observed_SS = get_observed_SS()
 
-print(observed_SS[4])
-
 iterations_per_value = 1 #So this might actually be only one, and we change a each time
 
 rejection_threshold = 80
 #rejection_threshold_other = ?? #play with these to get a good value. May be different for each set
+
+rejection_threshold_b = 13 #For now - check with the new tree for these two. They are the HPDs
+rejection_threshold_c = 7
 
 accepted = []
 
@@ -59,14 +61,14 @@ def abc_algorithm(accepted):
     count = 0
     N = 100
     
-    while len(accepted) < N and count < 500: 
+    while len(accepted) < N and count < 50000: 
       
         count += 1
         
-        if count % 10 == 0:
+        if count % 100 == 0:
             print("parameters tried = " + str(count))
 
-        a = random.uniform(0,1)
+        a = random.uniform(0.5,1) #Try this for now
       
         output = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
         
@@ -89,7 +91,7 @@ def abc_algorithm(accepted):
                 #if LTT_stat_diff <= LTT_stat_threshold:
                 #if LTT_point_diff <= LTT_point_threshold:
 
-                print("accepted a value")
+                #print("accepted a value")
                 accepted.append(a)
              
 
@@ -97,8 +99,9 @@ def abc_algorithm(accepted):
     return accepted
 
 
+start = time.time()
 
-pool = ThreadPool(4)
+pool = ThreadPool(8)
 
 pool.map(abc_algorithm, (accepted,))  
 
@@ -106,3 +109,9 @@ print(accepted)
 
 
 size_file.close()
+
+end = time.time()
+
+print("completed in " + str(end-start))
+
+

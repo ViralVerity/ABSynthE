@@ -83,7 +83,7 @@ class Individual():
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
         a = a
-        b = 0.5 #Will change this after the tree has finished
+        b = 0.14 #Will change this after the tree has finished - roughly twice as many as district jumps so worth trying
         c = 0.07
 
         Hh_number = function(lamb)

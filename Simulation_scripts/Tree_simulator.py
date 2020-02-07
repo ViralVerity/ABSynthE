@@ -122,15 +122,15 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
         
         #Not needed for fitting
-        #R0 = get_R0(node_dict)
-        #newick_tree = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
+        R0 = get_R0(node_dict)
+        newick_tree = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
 
         #for fitting
-        #Ne_dict, coal_intervals, lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
-        lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
+        Ne_dict, coal_intervals, lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
+        #lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
        
-        #return newick_tree, Ne_dict, coalescent_tree, R0, those_sampled, coal_intervals, lineages_through_time
-        return coalescent_tree, lineages_through_time
+        return newick_tree, Ne_dict, coalescent_tree, R0, those_sampled, coal_intervals, lineages_through_time
+        #return coalescent_tree, lineages_through_time
 
 
     else:

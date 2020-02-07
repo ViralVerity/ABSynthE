@@ -16,11 +16,17 @@ def run_model(iteration_number):
             print(str(iteration_count) + " runs completed")
 
         original_dist_mvmt = defaultdict(list)
+        original_ch_mvmt = defaultdict(list)
 
         for item1 in district_list:
             for item2 in district_list:
                 if item1 != item2:
                     original_dist_mvmt[item1,item2] = []
+                    
+        for item1 in ch_list:
+            for item2 in ch_list:
+                if item1 != item2:
+                    original_ch_mvmt[item1, item2] = []
 
         original_case_dict = {}
         original_day_dict = defaultdict(list)
@@ -49,7 +55,7 @@ def run_model(iteration_number):
         susceptibles_left = True
          
         ###Run the epidemic###
-        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, original_ch_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
 
         
         remove_set = set()   
@@ -89,7 +95,7 @@ def run_model(iteration_number):
 
         
         if write_file or epidemic_capped:
-            tree_file, district_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
+            tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
 
         last_day = max(onset_times)
 
@@ -100,6 +106,12 @@ def run_model(iteration_number):
                     district_mvmt_file.write(key[0] + "," + key[1] + "," + ",".join([str(i) for i in value]) + "\n")
 
             district_mvmt_file.close()
+            
+            for key, value in ch_mvmt.items():
+                if len(value) != 0:
+                    ch_mvmt_file.write(key[0] + "," + key[1] + "," + ",".join([str(i) for i in value]) + "\n")
+                    
+            ch_mvmt_file.close()
             
             result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
             
@@ -157,7 +169,7 @@ def run_model(iteration_number):
         size_output.write(f"{iteration_count},{size},{dists},{clusters}\n")
 
     
-iteration_number_outside = 10000
+iteration_number_outside = 1000
 iteration_count = -1
 
 if iteration_count == -1:
@@ -197,6 +209,8 @@ if iteration_count == -1:
     
     district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
     
+    ch_list = ['badjia', 'bagbo', 'bagbwe', 'baoma', 'bumpengawo', 'gbo', 'jaiama-bongor', 'nongobabullom', 'sittia', 'sogbini', 'yawbeko', 'biriwa', 'gbanti-kamaranka', 'gbendembungowahun', 'libeisaygahun', 'magbaimbandorhahun', 'makarigbanti', 'makenicity', 'pakimasabong', 'safrokolimba', 'sandaloko', 'sandatendaren', 'sellalimba', 'tambakka', 'benducha', 'bum', 'dema', 'imperi', 'jong', 'kongbora', 'kori', 'kowa', 'kpangakemo', 'kwamebaikrim', 'lowerbanta', 'ribbi', 'timdale', 'upperbanta', 'dea', 'jawie', 'kissikama', 'kissiteng', 'kissitongi', 'kpejebongre', 'kpejewest', 'luawa', 'malema', 'mandu', 'njaluahun', 'penguia', 'upperbambara', 'yawei', 'bramaia', 'gbinle-dixing', 'magbema', 'mambolo', 'masungbala', 'samu', 'sulima', 'tonkolimba', 'warawarabafodia', 'warawarayagala', 'dama', 'dodo', 'gaura', 'goramamende', 'kandulekpeama', 'kenemacity', 'koya_k', 'langrama', 'malegohun', 'niawa', 'nomo', 'nongowa', 'simbaru', 'smallbo', 'tunkia', 'wandor', 'dembeliasinkunia', 'diang', 'follosabadembelia', 'kasunko', 'malalmara', 'mongo', 'neya', 'nieni', 'sambaya', 'tane', 'yoni', 'fiama', 'gbane', 'gbanekandor', 'gbense', 'goramakono', 'kamara', 'koidu/new', 'lei', 'mafindor', 'nimikoro', 'nimiyama', 'sandor', 'soa', 'tankoro', 'toli', 'bagruwa', 'bumpeh', 'dasse', 'fakunya', 'kagboro', 'kaiyamba', 'kamajei', 'pangakrim', 'pejeh', 'sorogbema', 'sowa', 'bkm', 'buyaromende', 'dibia', 'kaffubullom', 'koya_pl', 'lokomasama', 'maforki', 'marampa', 'masimera', 'sandamagbolontor', 'tms', 'barri', 'gallinasperi', 'kpaka', 'kpanga-kabonde', 'makpele', 'malen', 'manosakrim', 'bocity', 'gbonkolenken', 'kafesimira', 'kakua', 'kalansogoia', 'kholifamabang', 'kolifarowalla', 'komboya', 'kunikebarina', 'kunikesanda', 'lugbu', 'niawalenga', 'selenga', 'tikonko', 'valunia', 'wunde', 'westernarearural', 'westernareaurban']
+    
     distributions = distribution_functions.define_distributions() 
 
     print("Importing dictionaries")
@@ -206,7 +220,7 @@ if iteration_count == -1:
         
     
     
-    run_number = 1
+    run_number = 4
     
     try:
         file_functions.make_directories(dropbox_path, results_path, run_number)

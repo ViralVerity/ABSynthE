@@ -7,6 +7,7 @@ def make_directories(dropbox_path, results_path, run_number):
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "log_files"))
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number),"trees"))
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number),"dist_mvmt"))
+    os.mkdir(os.path.join(dropbox_path, results_path, str(run_number),"ch_mvmt"))
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "skylines"))
     #os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), "issues")
     os.mkdir(os.path.join(dropbox_path, results_path, str(run_number), 'lineages'))
@@ -31,6 +32,8 @@ def prep_other_files(dropbox_path, results_path, run_number, iteration_count):
     tree_file = open(dropbox_path + results_path + str(run_number) + "/trees/tree_for_" + str(iteration_count) + ".txt", 'w')
 
     district_mvmt_file = open(dropbox_path + results_path + str(run_number) + "/dist_mvmt/mvmt_for_" + str(iteration_count) + ".csv", 'w')
+    
+    ch_mvmt_file = open(dropbox_path + results_path + str(run_number) + "/ch_mvmt/mvmt_for_" + str(iteration_count) + ".csv", 'w')
 
     skyline_file = open(dropbox_path + results_path + str(run_number) + "/skylines/skyline_for_" + str(iteration_count) + ".csv", 'w')
 
@@ -42,7 +45,7 @@ def prep_other_files(dropbox_path, results_path, run_number, iteration_count):
                                 
     ltt_file.write("number,start,end,lineages\n")
 
-    return tree_file, district_mvmt_file, skyline_file, ltt_file
+    return tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file
 
 def prep_runout_summary(dropbox_path, results_path, run_number):
     
