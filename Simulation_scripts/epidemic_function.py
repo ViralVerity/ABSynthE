@@ -56,7 +56,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
                             if focal_individual.dist != focal_individual.parent.dist:
                                 dist_mvmt[focal_individual.dist,focal_individual.parent.dist].append(day)
-                            if focal_individual.comm != focal_individual.parent.comm:
+                            if focal_individual.comm != focal_individual.parent.comm: #This is going to include between district movements too remember
                                 ch_mvmt[focal_individual.comm,focal_individual.parent.comm].append(day)
 
 

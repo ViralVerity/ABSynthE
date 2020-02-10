@@ -3,7 +3,7 @@ from individual_class_fitting import *
 from case_class_fitting import *
 
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a, b, c):
     
     epidemic_capped = False
     day_count = 0
@@ -55,15 +55,19 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
                         if focal_individual.dist != focal_individual.parent.dist:
                             dist_mvmt[focal_individual.dist,focal_individual.parent.dist].append(day)
+                        
+                        #so ch_mvmt is only within district
+                        if focal_individual.comm != focal_individual.parent.comm and focal_individual.dist == focal_individual.parent.dist:
+                            ch_mvmt[focal_individual.comm, focal_individual.parent.comm].append(day)
 
 
-                        if focal_individual.dist not in districts_present:
-                            districts_present.append(focal_individual.dist)
+                       # if focal_individual.dist not in districts_present:
+                        #    districts_present.append(focal_individual.dist)
 
-                        if focal_individual.comm not in cluster_set:
-                            cluster_set.add(focal_individual.comm)
+                        #if focal_individual.comm not in cluster_set:
+                         #   cluster_set.add(focal_individual.comm)
 
-                        poss_case_dict = focal_individual.get_possible_cases(a) #Gives dict of contact_level: number of people
+                        poss_case_dict = focal_individual.get_possible_cases(a,b,c) #Gives dict of contact_level: number of people
                         
                         for level, number in poss_case_dict.items():
                             for person in range(number):

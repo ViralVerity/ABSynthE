@@ -28,12 +28,52 @@ results_path = "Looping models/Results/Fitting/test/"
 
 size_file = open(dropbox_path + results_path + "epidemic_sizes.csv", 'w')
 
-size_file.write("a_value,size,\n")
+size_file.write("a_value, b_value, c_value, size,\n")
 
 distributions = distribution_functions.define_distributions()
 
 print("Defining contact structures")
 contact_structure = make_contact_dicts(dropbox_path)
+
+district_list = ["bo", 'bombali', 'bonthe', 'kailahun', 'kambia', 'kenema', 'koinadugu', 'kono', 'moyamba', 'portloko', 'pujehun', 'tonkolili', 'westernarearural', 'westernareaurban']
+
+ch_list = 
+
+
+original_dist_mvmt = defaultdict(list)
+original_ch_mvmt = defaultdict(list)
+
+for item1 in district_list:
+    for item2 in district_list:
+        if item1 != item2:
+            original_dist_mvmt[item1,item2] = []
+            
+for item3 in ch_list:
+    for item4 in ch_list:
+        if item3 != item4:
+            original_ch_mvmt[item3, item4] = []
+            
+            
+
+original_case_dict = {}
+original_day_dict = defaultdict(list)
+option_dict_districtlevel = defaultdict(list)
+infected_individuals_set = set()
+cdf_array = []
+cdf_len_set = set()
+#original_districts_present = []
+#original_cluster_set = set()
+original_trans_dict = defaultdict(list)
+original_child_dict = defaultdict(list)
+original_nodes = []
+original_onset_times = []
+
+
+
+epidemic_length = 148
+
+for i in range(epidemic_length):
+    original_day_dict[i] = []
 
 
 ##ABC setup###
@@ -51,15 +91,15 @@ accepted = []
 
 run_number = 1 #iterate upwards as we go through a values
 
-###Define rejection algorithm so that can be multithreaded###
-
 
 def abc_algorithm(accepted):
     
     print("Starting ABC")
     
     count = 0
-    N = 100
+    N = 1000
+    
+    function = random.uniform
     
     while len(accepted) < N and count < 50000: 
       
@@ -68,9 +108,11 @@ def abc_algorithm(accepted):
         if count % 100 == 0:
             print("parameters tried = " + str(count))
 
-        a = random.uniform(0.5,1) #Try this for now
+        a = function(0.5,1) #Try this for now
+        b = function(0,0.5) #Maybe make these much narrower, like 0 to 0.01
+        c = function(0,0.5)
       
-        output = simulate_epidemic(a, iterations_per_value, distributions, contact_structure, size_file)
+        output = simulate_epidemic(a, b, c, iterations_per_value, distributions, contact_structure, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times)
         
         if output: #So there'll only be output if the cases are between 1800 and 2800 already
             

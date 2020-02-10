@@ -71,7 +71,7 @@ class Individual():
 
 
     ###Running epidemic functions###
-    def get_possible_cases(self, a):
+    def get_possible_cases(self, a, b, c):
         """Get the number of exposed secondary cases at each contact level"""
         #Not storing each individuals possible case dict due to memory concerns
         #If you want to get this, add self. in front of each poss_contact_dict mention
@@ -83,8 +83,8 @@ class Individual():
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
         a = a
-        b = 0.14 #Will change this after the tree has finished - roughly twice as many as district jumps so worth trying
-        c = 0.07
+        b = b
+        c = c
 
         Hh_number = function(lamb)
         comm_number = function(a*lamb)

@@ -46,7 +46,7 @@ class Case():
             return False
 
         if self.level == "Hh":
-            poss_case = random.choice(hh_to_ppl[parent_individual.hh])
+            poss_case = random.choice([person for person in hh_to_ppl[parent_individual.hh] if person != parent_individual.unique_id]) #fix this to not include self
 
         elif self.level == "Comm":
             poss_case = random.choice(random.choice([hh_to_ppl[hh] for hh in cluster_to_hh[parent_individual.comm] 
