@@ -5,3 +5,5 @@ def get_LTT_SS(ltt_dict):
     t_max_L = max(ltt_dict, key = lambda k:ltt_dict[k])
     
     
+    
+    

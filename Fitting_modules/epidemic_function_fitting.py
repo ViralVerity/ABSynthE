@@ -96,4 +96,4 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             pass
         
 
-    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, onset_times, districts_present, cluster_set, epidemic_capped
+    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_capped

@@ -11,7 +11,7 @@ sys.path.insert(1, "../Simulation_scripts/")
 import Tree_simulator as cts
 
 
-def simulate_epidemic(a, b, c, iteration_number_outside, distributions, contact_structure, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times):
+def simulate_epidemic(a, b, c, LTT, iteration_number_outside, distributions, contact_structure, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times):
 
     #pool = ThreadPool(4)
 
@@ -25,7 +25,7 @@ def simulate_epidemic(a, b, c, iteration_number_outside, distributions, contact_
 
     return result
 
-def run_model(a, b, c, iteration_number, distributions, contact_structure, capped, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times)):
+def run_model(a, b, c, iteration_number, distributions, contact_structure, capped, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times):
     
     
     case_limit = 10000 #This may not be high enough, so we'll need to check if the epidemics are big enough
@@ -80,9 +80,10 @@ def run_model(a, b, c, iteration_number, distributions, contact_structure, cappe
 
             size_file.write(f"{a}, {b}, {c}, {size}\n")
 
-            result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
+            #This will either return just the tree, or the tree and the LTT if required
+            result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
             
-            return result
+            return result, dist_mvmt, ch_mvmt
 
 
         

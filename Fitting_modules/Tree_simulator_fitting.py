@@ -1,8 +1,8 @@
 from collections import defaultdict
 import random
 
-from node_class import *
-from tree_class import *
+from tree_class_fitting import *
+from node_class_fitting import *
 
 
 def sampling(trans_dict, sampled_percentage, epidemic_len): 
@@ -95,7 +95,7 @@ def plot_skyline(Ne_dict):
     plt.step(names,values)
 
 
-def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_len): 
+def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_len, LTT): 
     """Function to simulate a coalescent tree"""
             
     sampling_output = sampling(trans_dict, sampling_proportion, epidemic_len)
@@ -119,14 +119,19 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         
         node(index_case, "Ind", trans_dict=trans_dict, child_dict=child_dict, those_sampled=those_sampled, node_dict=node_dict)
             
-        coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
-        
-        R0 = get_R0(node_dict)
-        newick_tree = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
+        coalescent_tree = tree.tree(node_dict=node_dict, epidemic_len=epidemic_len)
 
-        Ne_dict, coal_intervals, lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
-       
-        return newick_tree, Ne_dict, coalescent_tree, R0, those_sampled, coal_intervals, lineages_through_time
+        if LTT:
+            
+            lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
+  
+            return coalescent_tree, lineages_through_time
+        
+        else:
+            
+            return coalescent_tree
+        
+     
 
 
     else:
