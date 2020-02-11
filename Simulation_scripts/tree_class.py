@@ -427,13 +427,14 @@ class tree():
     
     
     def get_active_population(self):
-        """Get active population at each coalescent interval"""
-    
+        
         coalescent_times = set()
-
-        coalescent_intervals = defaultdict(tuple)
-
-        active_population = defaultdict(list)
+        
+        waiting_times = {}
+        
+        coal_tups = []
+        
+        active_population = {}
 
         sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
         
@@ -444,48 +445,59 @@ class tree():
                 coalescent_times.add(height)
 
         coalescent_times = sorted(coalescent_times)
-        coalescent_points = list(coalescent_times)
 
         current_time = 0
-
-        count = 0
-
         non_parent_set = set() 
 
+
         for time in coalescent_times:
-
-            count += 1
-
-            coalescent_intervals[count] = (float(current_time),float(time))
-
+            
+            tup = (float(current_time),float(time))
+            coal_tups.append(tup)
+            
+            waiting_times[tup] = time - current_time
+            active_population[tup] = 0
+            
             current_time = time
 
-
-        parent_index = 0
+            
+        previous_index = 1
 
         for nde, height in sorted_dict.items():
-            index = parent_index - 1 #the minus one so it can be in the same interval as its parent
-            
+
+            first_hit = 0
+
+            index = previous_index - 1
+
             if not nde.node_parent:
-                active_population[len(coalescent_points)].append(nde)
                 non_parent_set.add(nde)
+                pass
 
-            for times in coalescent_points[parent_index:]:            
+            else:
 
-                index += 1
-                
-                if height < times and self.heights[nde.node_parent] >= times:
+                parent_height = tree.heights[nde.node_parent]
 
-                    parent_index = index
-                    
-                    active_population[index + 1].append(nde)
+                for time1, time2 in coal_tups[index:]:
+                    index += 1
 
-                    break #because it can only appear once in the list
+                    if ((height <= time1 or (height <= time2 and height >=time1)) and parent_height >= time2) and height != parent_height:
+                        first_hit += 1
+
+                        active_population[time1, time2] += 1
+
+                        if first_hit == 1:
+
+                            previous_index = index
+
+                        if parent_height == time2:
+
+                            break 
         
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
 
-        return active_population, coalescent_intervals, sorted_dict
+        
+        return active_population, waiting_times
     
     
     def calculate_ne(self, those_sampled):
@@ -497,14 +509,10 @@ class tree():
 
         result = self.get_active_population()
 
-        active_population = result[0]
-        coalescent_intervals = result[1]
-        sorted_dict = result[2]
+        active_population = result[0] #This is already lineages through time now 
+        waiting_times = result[1]
         
         Ne_dict = {}
-
-        for key, value in coalescent_intervals.items():
-            waiting_times[key] = value[1] - value[0]
 
         for key, value in waiting_times.items():
 
@@ -514,9 +522,7 @@ class tree():
                 print("tau is zero here")
                 print(key, value)
 
-            lineages = len(active_population[key])
-            
-            lineages_through_time[coalescent_intervals[key]] = lineages
+            lineages = active_population[key]
 
             count_weird_trees = 0
 
@@ -542,7 +548,7 @@ class tree():
             Ne_dict[new_key] = Ne
 
 
-        return Ne_dict, coalescent_intervals, lineages_through_time
+        return Ne_dict, coalescent_intervals, active_population
     
     
 

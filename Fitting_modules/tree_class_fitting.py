@@ -430,8 +430,6 @@ class tree():
         """Get active population at each coalescent interval"""
     
         coalescent_times = set()
-
-        coalescent_intervals = defaultdict(tuple)
         coal_tups = []
         
         active_population = {}
