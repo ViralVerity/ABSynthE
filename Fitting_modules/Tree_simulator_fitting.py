@@ -130,10 +130,7 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
         else:
             
             return coalescent_tree
-        
-     
-
-
+       
     else:
         print("triggered here")
         return
