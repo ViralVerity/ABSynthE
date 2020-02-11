@@ -433,12 +433,8 @@ class tree():
 
         coalescent_intervals = defaultdict(tuple)
         coal_tups = []
-
-        #active_population = defaultdict(list)
-        #active_population2 = defaultdict(list)
         
         active_population = {}
-        active_population2 = {}
 
         sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
         
@@ -449,112 +445,56 @@ class tree():
                 coalescent_times.add(height)
 
         coalescent_times = sorted(coalescent_times)
-        coalescent_points = list(coalescent_times)
 
         current_time = 0
-
-        count = 0
-
         non_parent_set = set() 
 
         for time in coalescent_times:
-
-            count += 1
-
-            coalescent_intervals[count] = (float(current_time),float(time))
             
             tup = (float(current_time),float(time))
             coal_tups.append(tup)
             
-            active_population[count] = 0
-            active_population2[tup] = 0
-
-            print(active_population2)
+            active_population[tup] = 0
             
             current_time = time
 
-        #print(coalescent_intervals)
             
-        parent_index = 0
-        
+        previous_index = 1
 
         for nde, height in sorted_dict.items():
-            index = parent_index - 1 #the minus one so it can be in the same interval as its parent
-            count = 0
+
+            first_hit = 0
+
+            index = previous_index - 1
+
             if not nde.node_parent:
-                #active_population[len(coal_tups)].append(nde)
-                active_population[len(coal_tups)] += 1
                 non_parent_set.add(nde)
+                pass
 
-            #for time1, time2 in coal_tups[parent_index:]:            
-            for time1, time2 in coal_tups:
-                #index += 1
-                
-               
-                count += 1
-                if height <= time1 and self.heights[nde.node_parent] >= time2:
+            else:
 
-                    print(time1, time2, height, self.heights[nde.node_parent])
-                    
-                    #parent_index = index
-                    
-                    #active_population[index + 1].append(nde)
-                    #active_population[count].append(nde)
-                    #active_population2[time1,time2].append(nde)
-                    
-                    active_population[count] += 1
-                    #active_population2[time1, time2] += 1
+                parent_height = tree.heights[nde.node_parent]
 
-                    if self.heights[nde.node_parent] == time2:
-                        
-                        break 
+                for time1, time2 in coal_tups[index:]:
+                    index += 1
+
+                    if ((height <= time1 or (height <= time2 and height >=time1)) and parent_height >= time2) and height != parent_height:
+                        first_hit += 1
+
+                        active_population[time1, time2] += 1
+
+                        if first_hit == 1:
+
+                            previous_index = index
+
+                        if parent_height == time2:
+
+                            break 
         
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
 
-        print(active_population)
-        print(active_population2)
         
-        return active_population, coalescent_intervals, sorted_dict, active_population2
-    
-    
-    def calculate_ne(self, those_sampled):
-        """Get effective population sizes in each coalescent interval"""
-        
-        lineages_through_time = {}
-        
-        waiting_times = {}
-
-        result = self.get_active_population()
-
-        active_population = result[0]
-        
-        #print(active_population)
-        
-        coalescent_intervals = result[1]
-        sorted_dict = result[2]
-        
-        Ne_dict = {}
-
-        for key, value in coalescent_intervals.items():
-            waiting_times[key] = value[1] - value[0]
-
-        for key, value in waiting_times.items():
-
-            tau = value 
-
-            if tau == 0:
-                print("tau is zero here")
-                print(key, value)
-
-            #lineages = len(active_population[key])
-            
-            #lineages_through_time[coalescent_intervals[key]] = lineages
-
-        
-        
-        #print(lineages_through_time)
-            
         return active_population
     
     

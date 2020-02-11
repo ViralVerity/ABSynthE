@@ -123,7 +123,7 @@ def simulate_tree(trans_dict, child_dict, nodes, sampling_proportion, epidemic_l
 
         if LTT:
             
-            lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
+            lineages_through_time = coalescent_tree.get_active_population()
   
             return coalescent_tree, lineages_through_time
         
