@@ -19,8 +19,6 @@ sys.path.insert(1, "../Simulation_scripts/")
 
 print("Successfully importing modules")
 
-
-import Tree_simulator as cts
 import file_functions 
 from make_contact_dicts_chiefdom import *
 

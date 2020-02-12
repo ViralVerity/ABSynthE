@@ -471,7 +471,7 @@ class tree():
 
             else:
 
-                parent_height = tree.heights[nde.node_parent]
+                parent_height = self.heights[nde.node_parent]
 
                 for time1, time2 in coal_tups[index:]:
                     index += 1
@@ -491,6 +491,9 @@ class tree():
         
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
+            
+            
+        self.lineages_through_time = active_population
 
         
         return active_population

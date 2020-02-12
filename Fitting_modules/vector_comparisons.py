@@ -1,6 +1,8 @@
 import branch_length_parameters as BL
 import topology_set as TOP
 
+import json
+
 import numpy as np
 
 #Need to recalculate these when we get the new tree
@@ -47,11 +49,10 @@ def get_observed_SS():
     #LTT set#
 
 
-    ##
+
+    obs_LTT_points_pre = [53.14274216100124, 110.8591972315072, 134.32012378033238, 136.88603187626754, 141.79283007931681, 99.92958023626413, 75.66925004968692, 62.702353762861016, 51.64930119445268, 52.110751732458105, 72.74663279140115, 79.16184842239603, 51.048797530829425, 49.81492749361463, 44.18875202397806, 19.49287400488278, 12.4945282724165, 7.666291528846369, 2, 2]
     
-    #LTT points#
-    
-    ##
+    LTT_bins = [(0, 0.02093569540357783), (0.02093569540357783, 0.04187139080715566), (0.04187139080715566, 0.0628070862107335), (0.0628070862107335, 0.08374278161431133), (0.08374278161431133, 0.10467847701788915), (0.10467847701788915, 0.125614172421467), (0.125614172421467, 0.14654986782504484), (0.14654986782504484, 0.16748556322862268), (0.16748556322862268, 0.18842125863220052), (0.18842125863220052, 0.20935695403577836), (0.20935695403577836, 0.2302926494393562), (0.2302926494393562, 0.25122834484293405), (0.25122834484293405, 0.27216404024651186), (0.27216404024651186, 0.2930997356500897), (0.2930997356500897, 0.3140354310536675), (0.3140354310536675, 0.3349711264572453), (0.3349711264572453, 0.3559068218608231), (0.3559068218608231, 0.37684251726440093), (0.37684251726440093, 0.39777821266797875), (0.39777821266797875, 0.41871390807155656)]
     
     obs_BL_pre = [obs_max_H, obs_min_H, obs_mean_lengths, obs_median_lengths, obs_var_lengths, obs_mean_external, obs_median_external, obs_var_external, obs_mean_internal, obs_median_internal, obs_var_internal, obs_mean_ratio, obs_median_ratio, obs_var_ratio]
 
@@ -59,14 +60,13 @@ def get_observed_SS():
 
     obs_LTT_pre = []
     
-    obs_LTT_points_pre = []
     
     obs_BL = normalise(obs_BL_pre)
     obs_top = normalise(obs_top_pre)
     obs_LTT = normalise(obs_LTT_pre)
     obs_LTT_points = normalise(obs_LTT_points_pre)
     
-    return obs_BL, obs_top, obs_LTT, obs_LTT_points, obs_tips
+    return obs_BL, obs_top, obs_LTT, obs_LTT_points, LTT_bins, obs_tips
 
 
 def compare_BL(obs_vectors, coalescent_tree):
@@ -107,7 +107,9 @@ def compare_LTT_stats(obs_vectors, coalescent_tree):
 
 def compare_LTT_points(obs_vectors, coalescent_tree):
     
-    sim_LTT_points_pre = LTT.get_LTT_points(coalescent_tree)
+    LTT_bins = obs_vectors[4]
+    
+    sim_LTT_points_pre = LTT.bin_sim(coalescent_tree.lineages_through_time, LTT_bins)
     sim_LTT_points = normalise(sim_LTT_points_pre)
     
     obs_LTT_points = obs_vectors[3]
@@ -118,7 +120,7 @@ def compare_LTT_points(obs_vectors, coalescent_tree):
     
 def get_tip_difference(obs_vectors, coalescent_tree):
     
-    obs_tips = obs_vectors[4]
+    obs_tips = obs_vectors[5]
     sim_tips = len(coalescent_tree.tips)
     
     tip_difference = abs(obs_tips - sim_tips)
