@@ -48,6 +48,11 @@ def get_observed_SS():
 
     #LTT set#
 
+    max_L = 
+    t_max_L = 
+    slope_1 = 
+    slope_2 = 
+    slope_ratio = 
 
 
     obs_LTT_points_pre = [53.14274216100124, 110.8591972315072, 134.32012378033238, 136.88603187626754, 141.79283007931681, 99.92958023626413, 75.66925004968692, 62.702353762861016, 51.64930119445268, 52.110751732458105, 72.74663279140115, 79.16184842239603, 51.048797530829425, 49.81492749361463, 44.18875202397806, 19.49287400488278, 12.4945282724165, 7.666291528846369, 2, 2]
@@ -58,7 +63,7 @@ def get_observed_SS():
 
     obs_top_pre = [obs_colless, obs_sackin, obs_WD_ratio, obs_delta_W, obs_max_ladder, obs_IL_nodes, obs_staircase_1, obs_staircase_2]
 
-    obs_LTT_pre = []
+    obs_LTT_pre = [max_L, t_max_L, slope_1, slope_2, slope_ratio]
     
     
     obs_BL = normalise(obs_BL_pre)
@@ -114,9 +119,12 @@ def compare_LTT_points(obs_vectors, coalescent_tree):
     
     obs_LTT_points = obs_vectors[3]
     
-    LTT_point_difference = np.linalg.norm(obs_LTT_points - sim_LTT_points)
+    if len(obs_LTT_points) == len(sim_LTT_points):
+        LTT_point_difference = np.linalg.norm(obs_LTT_points - sim_LTT_points)
     
-    return LTT_point_difference
+        return LTT_point_difference
+    else:
+        return
     
 def get_tip_difference(obs_vectors, coalescent_tree):
     

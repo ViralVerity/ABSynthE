@@ -150,18 +150,21 @@ def abc_algorithm(accepted):
             dist_difference = get_jumps(observed_dist, dist_mvmt)
                         
             if ch_difference <= rejection_b and dist_difference <= rejection_c:
-                            
+                  
+                #NB ALL LTT IS GOING BACKWARDS IN TIME
                 if LTT:
                     LTT_stat_diff = compare_LTT_stats(observed_SS, tree)
                     LTT_point_diff = compare_LTT_points(observed_SS, tree)
+                    
+                    if LTT_point_diff: #This means that there has to be lineages in the all of the coalescent intervals
                 
-                    if LTT_stat_diff <= LTT_stat_threshold and LTT_point_diff <= LTT_point_threshold:
-                        
-                        tup = (a,b,c)
-                        
-                        accepted.append(tup)
-                        
-                        accepted_file.write(f"{a}, {b}, {c}\n")
+                        if LTT_stat_diff <= LTT_stat_threshold and LTT_point_diff <= LTT_point_threshold:
+
+                            tup = (a,b,c)
+
+                            accepted.append(tup)
+
+                            accepted_file.write(f"{a}, {b}, {c}\n")
                         
                 elif branches:
                     
