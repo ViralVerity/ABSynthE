@@ -59,10 +59,10 @@ def prep_info_file(dropbox_path, results_path, run_number, index_case_individual
          
     info_file = open(dropbox_path + results_path + str(run_number) + "/log_files/information_file_for_" + str(iteration_count) + ".csv", 'w')
     
-    info_file.write("Individual,Parent,Household,District,Day_infected,Day_onset,Day_sampled\n") 
+    info_file.write("Individual,Parent,Household,Chiefdom,District,Day_infected,Day_onset,Day_sampled\n") 
 
 
-    info_file.write(f"{index_case_individual.unique_id},NA,{index_case_individual.hh},{index_case_individual.dist},0,{index_case_individual.incubation_day},{index_case_individual.incubation_day}\n")
+    info_file.write(f"{index_case_individual.unique_id},NA,{index_case_individual.hh},{index_case_individual.comm},{index_case_individual.dist},0,{index_case_individual.incubation_day},{index_case_individual.incubation_day}\n")
 
     
     return info_file

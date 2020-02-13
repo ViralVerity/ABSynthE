@@ -36,6 +36,9 @@ def make_contact_dicts(dropbox_path):
 
     with open(dropbox_path + "Contact_structure/district_relative_distance.txt") as json_file:
         district_distance = json.load(json_file)
+        
+    with open(dropbox_path + "Contact_structure/With_ch/dist_to_ch.txt") as json_file:
+        dist_to_ch = json.load(json_file)
 
   
     #Do we actually use this one? Drawn from census directly anyway
@@ -45,4 +48,4 @@ def make_contact_dicts(dropbox_path):
             district_pops[toks[0]] = int(toks[1])
             
             
-    return agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, district_distance, district_pops
+    return agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, dist_to_ch, district_distance,  district_pops

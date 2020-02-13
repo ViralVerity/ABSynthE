@@ -3,7 +3,7 @@ from individual_class_fitting import *
 from case_class_fitting import *
 
 
-def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a, b, c):
+def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cdf_len_set, cdf_array, dist_mvmt, ch_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a, b, c):
     
     epidemic_capped = False
     day_count = 0
@@ -19,6 +19,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     break
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
+                    #print(day, focal_case.case_id)
                     parent = case_dict[focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case object
 
                     #May need to check that the new individual is coming out of this
@@ -31,7 +32,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                     elif assignment == False: #If there is no-one left
                         print("All members of the population infected")
                         susceptibles_left = False
-                        return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times, dist_present, cluster_set
+                        return day_dict, case_dict, nodes, trans_dict, dist_mvmt, onset_times
                     
                     #Test that this only comes up when type = Individual
                     else: #There is a successful assignation to a specific individual
@@ -61,12 +62,6 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                             ch_mvmt[focal_individual.comm, focal_individual.parent.comm].append(day)
 
 
-                       # if focal_individual.dist not in districts_present:
-                        #    districts_present.append(focal_individual.dist)
-
-                        #if focal_individual.comm not in cluster_set:
-                         #   cluster_set.add(focal_individual.comm)
-
                         poss_case_dict = focal_individual.get_possible_cases(a,b,c) #Gives dict of contact_level: number of people
                         
                         for level, number in poss_case_dict.items():
@@ -91,9 +86,9 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             for i in range(1000):
                 day_dict[original_length + i] = []
 
-            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a)
+            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cdf_len_set, cdf_array, dist_mvmt, contact_structure, cfr, distributions, iteration_count, capped, epidemic_length, case_limit, a)
         else:
             pass
         
 
-    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_capped
+    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, epidemic_capped

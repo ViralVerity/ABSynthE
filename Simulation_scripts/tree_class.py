@@ -475,7 +475,7 @@ class tree():
 
             else:
 
-                parent_height = tree.heights[nde.node_parent]
+                parent_height = self.heights[nde.node_parent]
 
                 for time1, time2 in coal_tups[index:]:
                     index += 1
@@ -542,13 +542,11 @@ class tree():
                 
                 Ne = a + b
 
-            new_key = (coalescent_intervals[key][0], coalescent_intervals[key][1])
+
+            Ne_dict[key] = Ne
 
 
-            Ne_dict[new_key] = Ne
-
-
-        return Ne_dict, coalescent_intervals, active_population
+        return Ne_dict, active_population
     
     
 

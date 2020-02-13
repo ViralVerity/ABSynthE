@@ -496,7 +496,7 @@ class tree():
         self.lineages_through_time = active_population
 
         
-        return active_population
+        return 
     
     
 

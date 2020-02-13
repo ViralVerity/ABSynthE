@@ -4,7 +4,7 @@ import random
 
 def make_index_case(agent_location, cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict):
     
-    index_case_individual = Individual(random.choice(range(1382431,1908832)), agent_location, cfr, distributions) #These should be the IDs of the range in Kailahun
+    index_case_individual = Individual(random.choice(range(1169263,1214412)), agent_location, cfr, distributions) #These should be the IDs of the range in Kissi Teng, Kailahun
 
     index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
 
@@ -22,12 +22,12 @@ def make_index_case(agent_location, cfr, distributions, original_case_dict, orig
 
     original_cluster_set.add(index_case_individual.comm)
 
-    #poss_case_dict = get_possible_cases(index_case_individual)
+    #From Wauqier 2015
     index_case_dict = {}
-    index_case_dict["Hh"] = 5
+    index_case_dict["Hh"] = 2
     index_case_dict["Comm"] = 7
-    index_case_dict["Dist"] = 2
-    index_case_dict["Country"] = 0
+    index_case_dict["Dist"] = 3
+    index_case_dict["Country"] = 2
 
     #print(poss_case_dict)
 
