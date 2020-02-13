@@ -1,5 +1,7 @@
 import branch_length_parameters as BL
 import topology_set as TOP
+import LTT_metrics as LTT
+
 
 import json
 
@@ -48,11 +50,11 @@ def get_observed_SS():
 
     #LTT set#
 
-    max_L = 
-    t_max_L = 
-    slope_1 = 
-    slope_2 = 
-    slope_ratio = 
+    max_L = 141.79283007931681
+    t_max_L = 0.08374278161431133
+    slope_1 = 417.3279994541845
+    slope_2 = 1058.599752831301
+    slope_ratio = 0.3942264282019818
 
 
     obs_LTT_points_pre = [53.14274216100124, 110.8591972315072, 134.32012378033238, 136.88603187626754, 141.79283007931681, 99.92958023626413, 75.66925004968692, 62.702353762861016, 51.64930119445268, 52.110751732458105, 72.74663279140115, 79.16184842239603, 51.048797530829425, 49.81492749361463, 44.18875202397806, 19.49287400488278, 12.4945282724165, 7.666291528846369, 2, 2]
@@ -65,7 +67,7 @@ def get_observed_SS():
 
     obs_LTT_pre = [max_L, t_max_L, slope_1, slope_2, slope_ratio]
     
-    
+  
     obs_BL = normalise(obs_BL_pre)
     obs_top = normalise(obs_top_pre)
     obs_LTT = normalise(obs_LTT_pre)
@@ -78,6 +80,8 @@ def compare_BL(obs_vectors, coalescent_tree):
     
     sim_BL_pre = BL.calculate_branch_statistics(coalescent_tree)
     sim_BL = normalise(sim_BL_pre)
+    
+    print(sim_BL)
     
     obs_BL = obs_vectors[0]
     
@@ -97,11 +101,9 @@ def compare_topology(obs_vectors, coalescent_tree):
     return topology_difference
 
 
-##Need to do the code for calculating these things##
-
 def compare_LTT_stats(obs_vectors, coalescent_tree):
     
-    sim_LTT_pre = LTT.calculate_LTT_params(coalescent_tree)
+    sim_LTT_pre = LTT.calculate_LTT_metrics(coalescent_tree.lineages_through_time)
     sim_LTT = normalise(sim_LTT_pre)
     
     obs_LTT = obs_vectors[2]
@@ -115,6 +117,7 @@ def compare_LTT_points(obs_vectors, coalescent_tree):
     LTT_bins = obs_vectors[4]
     
     sim_LTT_points_pre = LTT.bin_sim(coalescent_tree.lineages_through_time, LTT_bins)
+        
     sim_LTT_points = normalise(sim_LTT_points_pre)
     
     obs_LTT_points = obs_vectors[3]
