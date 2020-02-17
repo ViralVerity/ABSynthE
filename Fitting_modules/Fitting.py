@@ -3,32 +3,32 @@ import random
 from multiprocessing.pool import ThreadPool
 import time
 import os
-import sys
+
 
 import Tree_simulator_fitting as cts
 from Simulate_epidemic_fitting import *
 from vector_comparisons import *
 from movement_fitting import *
+from make_contact_dicts_chiefdom import *
+import distribution_functions
  
-sys.path.insert(1, "../Simulation_scripts/")
 
 #iteration_number_outside = 10000
 
 print("Successfully importing modules")
 
-from make_contact_dicts_chiefdom import *
-import distribution_functions
-
 
 ##Setting things up for model running##
-dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+#dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
 
-results_path_start = "Looping models/Results/Fitting/"
+#results_path_start = "Looping models/Results/Fitting/"
+
+dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
 #Which parameter set are we using
-results_path = results_path_start + "LTT/"
-#results_path = results_path_start + "topology/"
-#results_path = results_path_start + "branches/"
+#results_path = "LTT/"
+results_path = "topology/"
+#results_path = "branches/"
 
 run_number = 1 
 
@@ -68,8 +68,8 @@ for item3 in ch_list:
 ##ABC setup###
 
 observed_SS = get_observed_SS()
-observed_dist = 60
-observed_ch = 60
+observed_dist = 93
+observed_ch = 30
 
 iterations_per_value = 1 #So this might actually be only one, and we change a each time
 
@@ -79,8 +79,8 @@ top_threshold = 0.1
 LTT_stat_threshold = 0.1
 LTT_point_threshold = 0.1
 
-rejection_threshold_b = 13 #13 #For now - check with the new tree for these two. They are the HPDs
-rejection_threshold_c = 7 #7
+rejection_threshold_b = 9 
+rejection_threshold_c = 13 
 
 accepted = []
 
@@ -97,14 +97,14 @@ def abc_algorithm(accepted):
     N = 1000
     
     ######FOR WHICH ONE WE'RE FITTING ON - remember to check above and change results path####
-    LTT = True
-    branches = False
+    LTT = False
+    branches = True
     topology = False
     ######
     
     function = random.uniform
     
-    while len(accepted) < N and count < 50000: 
+    while len(accepted) < N and count < 5000000: 
         
         #These two bits are to log every 50 successful parameters
         if len(accepted)%50 == 1:
@@ -188,7 +188,7 @@ def abc_algorithm(accepted):
 start = time.time()
 
 
-pool = ThreadPool(8)
+pool = ThreadPool(24)
 
 
 pool.map(abc_algorithm, (accepted,))  

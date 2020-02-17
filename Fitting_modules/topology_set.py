@@ -68,20 +68,30 @@ def calculate_topology_params(coalescent_tree):
     
     ##max_ladder and IL_nodes
     count_list = []
+    node_set = set()
 
     for nde in coalescent_tree.final_nodes:
 
-        ladder_count = 0
+        ladder_length = 0
 
-        go_up_ladder(nde, ladder_count, count_list)
-        
-    longest_ladder = max(count_list)
-    
-    ladder_likeness = longest_ladder/len(coalescent_tree.tips)
-    
-    return colless, sackin, WD_ratio, delta_w, longest_ladder, ladder_likeness, staircase_1, staircase_2
+        if nde not in node_set:
+            go_up_ladder(nde, ladder_length, count_list)
 
+    max_ladder = max(count_list)/len(coalescent_tree.tips)
     
+    
+    nodes_in_ladders = 0
+
+    for i in count_list:
+        if i != 0:
+            
+            nodes_in_ladders += 1
+
+    IL_nodes = nodes_in_ladders/len(nodes)
+    
+    return colless, sackin, WD_ratio, delta_w, max_ladder, IL_nodes, staircase_1, staircase_2
+
+
     
     
     

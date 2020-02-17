@@ -58,7 +58,7 @@ def bin_sim(sim_ltt, obs_bins):
 
             lineage_num = ((lineage_num_a*weight_a) + (lineage_num_b*weight_b))
 
-            sim_bins[bins[binn_pos]] = lineage_num
+            sim_bins[obs_bins[binn_pos]] = lineage_num
 
 
         elif len(interval_pos_list) > 2:
