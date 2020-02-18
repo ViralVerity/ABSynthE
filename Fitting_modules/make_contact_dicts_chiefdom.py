@@ -8,7 +8,7 @@ def make_contact_dicts(dropbox_path):
     agent_location = defaultdict(list)
     district_pops = {}
 
-    with open(dropbox_path + "Contact_structure/agent_location.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/agent_location.txt") as json_file:
         data = json.load(json_file)
 
     for key in data.keys():
@@ -16,28 +16,28 @@ def make_contact_dicts(dropbox_path):
         agent_location[new_key] = data[key]
 
 
-    with open(dropbox_path + "Contact_structure/District_to_hh.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/District_to_hh.txt") as json_file:
         dist_to_hh = json.load(json_file)
 
-    with open(dropbox_path + "Contact_structure/household_to_chiefdom.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/household_to_chiefdom.txt") as json_file:
         hh_to_cluster = json.load(json_file)
 
-    with open(dropbox_path + "Contact_structure/Chiefdom_to_hh.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/Chiefdom_to_hh.txt") as json_file:
         cluster_to_hh = json.load(json_file)
 
-    with open(dropbox_path + "Contact_structure/Hh_to_people.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/Hh_to_people.txt") as json_file:
         hh_to_ppl = json.load(json_file)
 
-    with open(dropbox_path + "Contact_structure/chiefdom_to_people.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/chiefdom_to_people.txt") as json_file:
         cluster_to_ppl = json.load(json_file)
 
-    with open(dropbox_path + "Contact_structure/District_to_ppl.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/District_to_ppl.txt") as json_file:
         dist_to_ppl = json.load(json_file)
 
     with open(dropbox_path + "Contact_structure/district_relative_distance.txt") as json_file:
         district_distance = json.load(json_file)
         
-    with open(dropbox_path + "Contact_structure/dist_to_ch.txt") as json_file:
+    with open(dropbox_path + "Contact_structure/With_ch/dist_to_ch.txt") as json_file:
         dist_to_ch = json.load(json_file)
 
   

@@ -97,9 +97,9 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
             size_file.write(f"{a}, {b}, {c}, {size}\n")
 
             
-            tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
+            #tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
             
-            return tree, dist_mvmt, ch_mvmt
+            return dist_mvmt, ch_mvmt
 
 
         
