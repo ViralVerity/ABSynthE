@@ -115,37 +115,40 @@ def abc_algorithm(parameter_sets):
  
         count += 1
         
-        if count/len(parameter_sets) % 10 == 0:
+        if count % 100 == 0:
             print(str((count/len(parameter_sets))*100) + "% complete")
 
         a = float(parameter_set[0])
         b = float(parameter_set[1])
         c = float(parameter_set[2] )
         
+        internal_iterations = 1
         iterations_per_value = 10
         LTT = False
       
-        output = simulate_epidemic(a, b, c, LTT, iterations_per_value, distributions, contact_structure, size_file, dist_keys, ch_keys)
+        for i in range(iterations_per_value):
+            output = simulate_epidemic(a, b, c, LTT, internal_iterations, distributions, contact_structure, size_file, dist_keys, ch_keys)
 
-        if output: #So there'll only be output if the cases are between 1800 and 2800 already
-            
-            district_mvmt = output[0]
-            ch_mvmt = output[1]
-            
-            ch_difference = get_jumps(observed_ch, ch_mvmt)
-            dist_difference = get_jumps(observed_dist, district_mvmt)
-                        
-            if ch_difference <= rejection_threshold_b and dist_difference <= rejection_threshold_c:
-                
-                accepted_both.write(f"{a}, {b}, {c}\n")
-            
-            elif ch_difference <= rejection_threshold_b and dist_difference > rejection_threshold_c:
-                
-                accepted_b.write(f"{a}, {b}, {c}\n")
-                    
-            elif ch_difference > rejection_threshold_b and dist_difference <= rejection_threshold_c:
-                    
-                accepted_c.write(f"{a}, {b}, {c}\n")
+            if output: #So there'll only be output if the cases are between 1800 and 2800 already
+
+                district_mvmt = output[0]
+                ch_mvmt = output[1]
+
+                ch_difference = get_jumps(observed_ch, ch_mvmt)
+                dist_difference = get_jumps(observed_dist, district_mvmt)
+
+                if ch_difference <= rejection_threshold_b and dist_difference <= rejection_threshold_c:
+
+                    print("Both accepted!")
+                    accepted_both.write(f"{a}, {b}, {c}\n")
+
+                elif ch_difference <= rejection_threshold_b and dist_difference > rejection_threshold_c:
+
+                    accepted_b.write(f"{a}, {b}, {c}\n")
+
+                elif ch_difference > rejection_threshold_b and dist_difference <= rejection_threshold_c:
+
+                    accepted_c.write(f"{a}, {b}, {c}\n")
                 
                 
                 
@@ -160,7 +163,7 @@ def abc_algorithm(parameter_sets):
     
 start = time.time()
 
-pool = ThreadPool(11)
+pool = ThreadPool(8)
 
 pool.map(abc_algorithm, (parameter_sets,))  
 

@@ -82,9 +82,9 @@ class Individual():
 
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
-        a = a
-        b = b
-        c = c
+        a = float(a)
+        b = float(b)
+        c = float(c)
 
         Hh_number = function(lamb)
         comm_number = function(a*lamb)

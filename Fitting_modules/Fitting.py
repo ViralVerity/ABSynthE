@@ -26,8 +26,8 @@ print("Successfully importing modules")
 dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
 #Which parameter set are we using
-#results_path = "LTT/"
-results_path = "topology/"
+results_path = "LTT/"
+#results_path = "topology/"
 #results_path = "branches/"
 
 run_number = 1 
@@ -88,7 +88,7 @@ accepted = []
 def abc_algorithm(accepted):
     
     accepted_file = open(dropbox_path + results_path + str(run_number) + "/accepted_parameter_values.csv", 'w')
-    
+    accepted_bc = open(dropbox_path + results_path + str(run_number) + "/accepted_b_and_c_values.csv", 'w')
    
     print("Starting ABC")
     
@@ -97,14 +97,14 @@ def abc_algorithm(accepted):
     N = 1000
     
     ######FOR WHICH ONE WE'RE FITTING ON - remember to check above and change results path####
-    LTT = False
-    branches = True
+    LTT = True
+    branches = False
     topology = False
     ######
     
     function = random.uniform
     
-    while len(accepted) < N and count < 5000000: 
+    while len(accepted) < N and count < 50000000: 
         
         #These two bits are to log every 50 successful parameters
         if len(accepted)%50 == 1:
@@ -121,8 +121,8 @@ def abc_algorithm(accepted):
             print("parameters tried = " + str(count))
 
         a = function(0.5,1) #Try this for now
-        b = function(0,0.5) #Maybe make these much narrower, like 0 to 0.1
-        c = function(0,0.15) #I estimated it to be 0.07 so this gives a bit more
+        b = function(0,0.2) #Maybe make these much narrower, like 0 to 0.1
+        c = function(0,0.5) #I estimated it to be 0.07 so this gives a bit more
       
         output = simulate_epidemic(a, b, c, LTT, iterations_per_value, distributions, contact_structure, size_file, dist_keys, ch_keys)
 
@@ -137,7 +137,10 @@ def abc_algorithm(accepted):
             dist_difference = get_jumps(observed_dist, district_mvmt)
                         
             if ch_difference <= rejection_threshold_b and dist_difference <= rejection_threshold_c:
-                  
+                
+                print("accepted b and c!")
+                accepted_bc.write(f"{a}, {b}, {c}\n")
+                
                 #NB ALL LTT IS GOING BACKWARDS IN TIME
                 if LTT:
                     LTT_stat_diff = compare_LTT_stats(observed_SS, tree)
@@ -147,7 +150,11 @@ def abc_algorithm(accepted):
                 
                         if LTT_stat_diff <= LTT_stat_threshold and LTT_point_diff <= LTT_point_threshold:
 
+                            print("accepted a value!")
+                            
                             tup = (a,b,c)
+                            
+                            print(str(tup))
 
                             accepted.append(tup)
 
@@ -181,6 +188,7 @@ def abc_algorithm(accepted):
       
                          
     accepted_file.close()
+    accepted_bc.close()
     
     return accepted
 

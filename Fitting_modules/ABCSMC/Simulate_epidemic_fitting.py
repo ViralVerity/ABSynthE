@@ -10,12 +10,18 @@ import Tree_simulator_fitting as cts
 from make_contact_dicts_chiefdom import *
 import distribution_functions
 
+import LTT_metrics as LTT_metrics
+
+def normalise(vector):
+    norm=np.linalg.norm(vector, ord=1)
+    return vector/norm
 
 distributions = distribution_functions.define_distributions()
 
-dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+#dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
-
+size_file = open(dropbox_path + "epidemic_size.csv", 'w')
 
 print("Defining contact structures")
 contact_structure = make_contact_dicts(dropbox_path)
@@ -36,9 +42,14 @@ for item3 in ch_list:
     for item4 in ch_list:
         if item3 != item4:
             ch_keys.append((item3, item4))
+            
+            
+LTT_bins = [(0, 0.021361168777556623), (0.021361168777556623, 0.042722337555113246), (0.042722337555113246, 0.06408350633266988), (0.06408350633266988, 0.08544467511022649), (0.08544467511022649, 0.10680584388778311), (0.10680584388778311, 0.12816701266533972), (0.12816701266533972, 0.14952818144289634), (0.14952818144289634, 0.17088935022045296), (0.17088935022045296, 0.19225051899800957), (0.19225051899800957, 0.2136116877755662), (0.2136116877755662, 0.2349728565531228), (0.2349728565531228, 0.25633402533067945), (0.25633402533067945, 0.27769519410823607), (0.27769519410823607, 0.2990563628857927), (0.2990563628857927, 0.3204175316633493), (0.3204175316633493, 0.3417787004409059), (0.3417787004409059, 0.36313986921846253), (0.36313986921846253, 0.38450103799601915), (0.38450103799601915, 0.40586220677357576), (0.40586220677357576, 0.4272233755511324)]
+            
+            
 
-
-def simulate_epidemic(a, b, c, distributions=distributions, contact_structure=contact_structure, district_keys=dist_keys, ch_keys=ch_keys):
+            
+def simulate_epidemic(a, b, c, distributions=distributions, contact_structure=contact_structure, district_keys=dist_keys, ch_keys=ch_keys, size_file=size_file):
 
     original_dist_mvmt = defaultdict(list)
     original_ch_mvmt = defaultdict(list)
@@ -69,7 +80,12 @@ def simulate_epidemic(a, b, c, distributions=distributions, contact_structure=co
     
     #Change this here instead of above
     LTT = True
-
+    
+    #b = 0.02
+    #c = 0.1
+    
+    iteration_number_outside = 1
+    
     result = run_model(a, b, c, LTT, iteration_number_outside, distributions, contact_structure, capped, size_file, original_dist_mvmt, original_ch_mvmt, original_case_dict, original_day_dict, option_dict_district_level, infected_individuals_set, cdf_array, cdf_len_set, original_trans_dict, original_child_dict, original_nodes, original_onset_times)
 
     return result
@@ -129,15 +145,30 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
 
             size_file.write(f"{a}, {b}, {c}, {size}\n")
 
-            
+
             tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
+
+            #This is where we choose the SS group
+            #sim_LTT_pre = LTT_metrics.calculate_LTT_metrics(tree.lineages_through_time)
+            sim_LTT_points_pre = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
+            sim_LTT = normalise(sim_LTT_points_pre)
             
-            return tree, dist_mvmt, ch_mvmt
+
+            ch_jumps = 0
+            for v in ch_mvmt.values():
+                ch_jumps += len(v)
+            dist_jumps = 0
+            for v in dist_mvmt.values():
+                dist_jumps += len(v)
 
 
+            return sim_LTT, ch_jumps, dist_jumps
+            #return tree
         
         else:
-            return
+            
+            return 0,0,0
+
 
             
 
