@@ -63,9 +63,9 @@ def get_observed_SS():
     
     LTT_bins = [(0, 0.021361168777556623), (0.021361168777556623, 0.042722337555113246), (0.042722337555113246, 0.06408350633266988), (0.06408350633266988, 0.08544467511022649), (0.08544467511022649, 0.10680584388778311), (0.10680584388778311, 0.12816701266533972), (0.12816701266533972, 0.14952818144289634), (0.14952818144289634, 0.17088935022045296), (0.17088935022045296, 0.19225051899800957), (0.19225051899800957, 0.2136116877755662), (0.2136116877755662, 0.2349728565531228), (0.2349728565531228, 0.25633402533067945), (0.25633402533067945, 0.27769519410823607), (0.27769519410823607, 0.2990563628857927), (0.2990563628857927, 0.3204175316633493), (0.3204175316633493, 0.3417787004409059), (0.3417787004409059, 0.36313986921846253), (0.36313986921846253, 0.38450103799601915), (0.38450103799601915, 0.40586220677357576), (0.40586220677357576, 0.4272233755511324)]
     
-    obs_BL_pre = [obs_max_H, obs_min_H, obs_mean_lengths, obs_median_lengths, obs_var_lengths, obs_mean_external, obs_median_external, obs_var_external, obs_mean_internal, obs_median_internal, obs_var_internal, obs_mean_ratio, obs_median_ratio, obs_var_ratio]
+    obs_BL_pre = [obs_tips, obs_max_H, obs_min_H, obs_mean_lengths, obs_median_lengths, obs_var_lengths, obs_mean_external, obs_median_external, obs_var_external, obs_mean_internal, obs_median_internal, obs_var_internal, obs_mean_ratio, obs_median_ratio, obs_var_ratio]
 
-    obs_top_pre = [obs_colless, obs_sackin, obs_WD_ratio, obs_delta_W, obs_max_ladder, obs_IL_nodes, obs_staircase_1, obs_staircase_2]
+    obs_top_pre = [obs_tips, obs_colless, obs_sackin, obs_WD_ratio, obs_delta_W, obs_max_ladder, obs_IL_nodes, obs_staircase_1, obs_staircase_2]
 
     obs_LTT_pre = [max_L, t_max_L, slope_1, slope_2, slope_ratio]
     
@@ -82,9 +82,7 @@ def compare_BL(obs_vectors, coalescent_tree):
     
     sim_BL_pre = BL.calculate_branch_statistics(coalescent_tree)
     sim_BL = normalise(sim_BL_pre)
-    
-    print(sim_BL)
-    
+        
     obs_BL = obs_vectors[0]
     
     branch_difference = np.linalg.norm(obs_BL - sim_BL)

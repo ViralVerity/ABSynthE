@@ -11,6 +11,8 @@ from make_contact_dicts_chiefdom import *
 import distribution_functions
 
 import LTT_metrics as LTT_metrics
+from branch_length_parameters import *
+from topology_set import *
 
 def normalise(vector):
     norm=np.linalg.norm(vector, ord=1)
@@ -21,7 +23,7 @@ distributions = distribution_functions.define_distributions()
 #dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
 dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
-size_file = open(dropbox_path + "epidemic_size.csv", 'w')
+size_file = open(dropbox_path + "ABCSMC/epidemic_size.csv", 'w')
 
 print("Defining contact structures")
 contact_structure = make_contact_dicts(dropbox_path)
@@ -79,7 +81,7 @@ def simulate_epidemic(a, b, c, distributions=distributions, contact_structure=co
     capped = True
     
     #Change this here instead of above
-    LTT = True
+    LTT = False
     
     #b = 0.02
     #c = 0.1
@@ -152,8 +154,12 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
         #sim_LTT_pre = LTT_metrics.calculate_LTT_metrics(tree.lineages_through_time)
         
         if tree:
-            sim_LTT_points_pre = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
-            sim_LTT = normalise(sim_LTT_points_pre)
+            #sim_LTT_points_pre = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
+            #sim_LTT = normalise(sim_LTT_points_pre)
+            
+            bl = calculate_branch_statistics(tree)
+            
+            #top = calculate_topology_params(tree)
 
 
             ch_jumps = 0
@@ -165,7 +171,10 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
          
 
 
-            return sim_LTT, ch_jumps, dist_jumps
+            #return sim_LTT, ch_jumps, dist_jumps
+            #return top, ch_jumps, dist_jumps
+            return bl, ch_jumps, dist_jumps
+            
         
         
         else: #If no sampled cases

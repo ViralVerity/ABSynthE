@@ -24,4 +24,6 @@ def calculate_branch_statistics(coalescent_tree):
     median_ratio = int_median/ext_median
     var_ratio = int_var/ext_var
     
-    return max_H, min_H, mean, median, var, ext_mean, ext_median, ext_var, int_mean, int_median, int_var, mean_ratio, median_ratio, var_ratio 
+    tip_number = len(coalescent_tree.tips)
+    
+    return tip_number, max_H, min_H, mean, median, var, ext_mean, ext_median, ext_var, int_mean, int_median, int_var, mean_ratio, median_ratio, var_ratio 

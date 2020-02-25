@@ -18,7 +18,9 @@ import pyabc
 
 dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
-results_path = "LTT_ABCSMC/"
+#results_path = "LTT_ABCSMC/"
+#results_path = "top_ABCSMC/"
+results_path = "bl_ABCSMC/"
 
 #dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
 #results_path = "Looping models/Results/Fitting/LTT/"
@@ -32,9 +34,13 @@ except FileExistsError:
 
 observed_SS = get_observed_SS()
 
-new_LTT = list(observed_SS[2])
-      
-observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
+#new_LTT = list(observed_SS[2])
+#top = list(observed_SS[1])
+bl = list(observed_SS[0])
+
+#observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
+#observed = {"a":top, "b":observed_SS[7], "c":observed_SS[6]} 
+observed = {"a":bl, "b":observed_SS[7], "c":observed_SS[6]}
 
 def distance(x,y): #inputs are the dictionaries
     
@@ -68,18 +74,19 @@ parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
 prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
 
 
-pool = ThreadPoolExecutor(max_workers=4)
+pool = ThreadPoolExecutor(max_workers=24)
 sampler = ConcurrentFutureSampler(pool)
 
 abc = pyabc.ABCSMC(simulate_pyabc, prior, distance, sampler=sampler)
 
-db_path = ("sqlite:///results.db")
+#db_path = ("sqlite:///topology.db")
+db_path = ("sqlite:///branch_lens.db")
 
 abc_id = abc.new(db_path, observed)
 
 
 
-history = abc.run(max_nr_populations=1000, minimum_epsilon=0.3)
+history = abc.run(max_nr_populations=50, minimum_epsilon=0.3)
 
 
 
