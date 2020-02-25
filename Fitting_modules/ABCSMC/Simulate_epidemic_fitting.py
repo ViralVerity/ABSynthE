@@ -139,20 +139,22 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
 
         last_day = max(onset_times)
         
-        if len(case_dict) > 1800 and len(case_dict) < 2800: #Conditioning to speed up ABC
+        #if len(case_dict) > 1800 and len(case_dict) < 2800: #Conditioning to speed up ABC
             
-            size = len(case_dict)
+        size = len(case_dict)
 
-            size_file.write(f"{a}, {b}, {c}, {size}\n")
+        size_file.write(f"{a}, {b}, {c}, {size}\n")
 
 
-            tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
+        tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
 
-            #This is where we choose the SS group
-            #sim_LTT_pre = LTT_metrics.calculate_LTT_metrics(tree.lineages_through_time)
+        #This is where we choose the SS group
+        #sim_LTT_pre = LTT_metrics.calculate_LTT_metrics(tree.lineages_through_time)
+        
+        if tree:
             sim_LTT_points_pre = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
             sim_LTT = normalise(sim_LTT_points_pre)
-            
+
 
             ch_jumps = 0
             for v in ch_mvmt.values():
@@ -160,14 +162,16 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
             dist_jumps = 0
             for v in dist_mvmt.values():
                 dist_jumps += len(v)
+         
 
 
             return sim_LTT, ch_jumps, dist_jumps
-            #return tree
         
-        else:
-            
+        
+        else: #If no sampled cases
             return 0,0,0
+        #return tree
+
 
 
             

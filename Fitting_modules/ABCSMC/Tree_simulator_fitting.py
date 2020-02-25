@@ -15,49 +15,51 @@ def sampling(trans_dict, sampled_percentage, epidemic_len):
     total = len(trans_dict) #Doesn't have NA in it because that can't be sampled
     
     number_of_people = round(total*sampled_percentage)
+    
+    those_sampled = set(random.sample(trans_dict.keys(), k = number_of_people))
 
-    weeks = round(epidemic_len/7)
-    
-    if weeks > 0:
-        samples_per_week = round(number_of_people/weeks)
-    else:
-        return
-    
-    if samples_per_week < 1:
-        not_enough_cases = True
-        return 
-    
-                
-    for i in range(weeks):
-        weeks_cases[i] = []
-        
+    #weeks = round(epidemic_len/7)
+
+    #if weeks > 0:
+     #   samples_per_week = round(number_of_people/weeks)
+    #else:
+     #   return
+
+    #if samples_per_week < 1:
+     #   not_enough_cases = True
+      #  return 
+
+
+    #for i in range(weeks):
+     #   weeks_cases[i] = []
+
     #week_bins[len(week_bins) - 1] = (140,148)
     #Leaving this out because it's a specific conditioning on the long epidemics. Can put back in when needed
 
-    
-    for key,value in trans_dict.items():
-        date_sampled = value[2]
-        week_number = int(date_sampled/7)
-        weeks_cases[week_number].append(key)
-                
+
+    #for key,value in trans_dict.items():
+     #   date_sampled = value[2]
+      #  week_number = int(date_sampled/7)
+       # weeks_cases[week_number].append(key)
+
     #if len(weeks_cases[(140,148)]) == 0:
      #   not_enough_cases = True
       #  return
-                
-    for week, lst in weeks_cases.items():
-        if len(lst) >= samples_per_week:
-            for i in random.sample(lst, k=samples_per_week):
-                those_sampled.add(i)
-            
-    more_needed = number_of_people - len(those_sampled)
-    
-    if more_needed > 0:
-        try:
-            for i in random.sample(trans_dict.keys(), k=more_needed):
-                those_sampled.add(i)
-        except ValueError:
-            not_enough_cases = True
-            return 
+
+   # for week, lst in weeks_cases.items():
+    #    if len(lst) >= samples_per_week:
+     #       for i in random.sample(lst, k=samples_per_week):
+      #          those_sampled.add(i)
+
+    #more_needed = number_of_people - len(those_sampled)
+
+    #if more_needed > 0:
+     #   try:
+      #      for i in random.sample(trans_dict.keys(), k=more_needed):
+       #         those_sampled.add(i)
+       # except ValueError:
+        #    not_enough_cases = True
+         #   return 
 
     
     return those_sampled

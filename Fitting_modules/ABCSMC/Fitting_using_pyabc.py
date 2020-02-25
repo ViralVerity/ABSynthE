@@ -45,7 +45,7 @@ def distance(x,y): #inputs are the dictionaries
     if new_a_x.size == new_a_y.size:
         dist_a = np.linalg.norm(new_a_x - new_a_y)
     else:
-        dist_a == 1
+        dist_a = 1
     
     dist_b = np.linalg.norm(x["b"] - y["b"])
     dist_c = np.linalg.norm(x["c"] - y["c"])
@@ -58,8 +58,6 @@ def distance(x,y): #inputs are the dictionaries
     return dist
     
 
-
-#distance = pyabc.PNormDistance(p=2)
 
 def simulate_pyabc(parameter):
     result = simulate_epidemic(**parameter)
@@ -75,12 +73,17 @@ sampler = ConcurrentFutureSampler(pool)
 
 abc = pyabc.ABCSMC(simulate_pyabc, prior, distance, sampler=sampler)
 
-db_path = ("sqlite:///" +
-           os.path.join(tempfile.gettempdir(), "results.db"))
+db_path = ("sqlite:///results.db")
 
 abc_id = abc.new(db_path, observed)
 
 
 
-history = abc.run(max_nr_populations=10, minimum_epsilon=0.1)
+history = abc.run(max_nr_populations=1000, minimum_epsilon=0.3)
+
+
+
+
+
+
 
