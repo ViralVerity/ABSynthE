@@ -8,8 +8,9 @@ def bin_sim(sim_ltt, obs_bins):
     bin_dict = defaultdict(list)
     sim_bins = {}
 
-
-
+    for item in obs_bins:
+        sim_bins[item] = 0
+    
     for key, value in sim_ltt.items():
         start_interval = key[0]
         end_interval = key[1]
@@ -25,6 +26,7 @@ def bin_sim(sim_ltt, obs_bins):
     for position, interval in enumerate(intervals):
 
         for bin_position,binn in enumerate(obs_bins):
+            
 
             if interval[0] == 0 and binn[0] == 0.0:
                 bin_dict[bin_position].append(position)
@@ -91,6 +93,8 @@ def bin_sim(sim_ltt, obs_bins):
             sim_bins[obs_bins[binn_pos]] = lins
             
             
+    print(sim_bins)
+    
     lineage_vector = list(sim_bins.values())
     
     return lineage_vector
@@ -103,8 +107,6 @@ def calculate_LTT_metrics(ltt_dict_input):
     max_L = max(ltt_dict.values())
     
     t_max_L = max(ltt_dict, key = lambda k:ltt_dict[k])[0] #We'll get the start of that interval
-    
-    
     
     y1 = max_L
     y0 = next(iter(ltt_dict.values()))

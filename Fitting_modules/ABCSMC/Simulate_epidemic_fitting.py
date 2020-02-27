@@ -23,7 +23,7 @@ distributions = distribution_functions.define_distributions()
 #dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
 dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
-size_file = open(dropbox_path + "ABCSMC/epidemic_size.csv", 'w')
+size_file = open("epidemic_size.csv", 'w')
 
 print("Defining contact structures")
 contact_structure = make_contact_dicts(dropbox_path)
@@ -150,35 +150,34 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
 
         tree = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day, LTT)
 
-        #This is where we choose the SS group
-        #sim_LTT_pre = LTT_metrics.calculate_LTT_metrics(tree.lineages_through_time)
+        ch_jumps = 0
+        for v in ch_mvmt.values():
+            ch_jumps += len(v)
+        dist_jumps = 0
+        for v in dist_mvmt.values():
+            dist_jumps += len(v)
+
         
         if tree:
-            #sim_LTT_points_pre = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
-            #sim_LTT = normalise(sim_LTT_points_pre)
             
-            bl = calculate_branch_statistics(tree)
-            
-            #top = calculate_topology_params(tree)
-
-
-            ch_jumps = 0
-            for v in ch_mvmt.values():
-                ch_jumps += len(v)
-            dist_jumps = 0
-            for v in dist_mvmt.values():
-                dist_jumps += len(v)
-         
-
+            #sim_LTT = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
+            top = calculate_topology_params(tree)
+            #bl = calculate_branch_statistics(tree)
 
             #return sim_LTT, ch_jumps, dist_jumps
-            #return top, ch_jumps, dist_jumps
-            return bl, ch_jumps, dist_jumps
+            return top, ch_jumps, dist_jumps
+            #return bl, ch_jumps, dist_jumps
             
+            #SO NOW RETURNING NON-NORMALISED VECTORS
         
         
-        else: #If no sampled cases
-            return 0,0,0
+        else: #If no sampled cases 
+            #LTT
+            #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ch_jumps, dist_jumps
+            #top
+            return [0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
+            #bl
+            #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
         #return tree
 
 
