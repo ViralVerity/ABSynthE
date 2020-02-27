@@ -93,7 +93,7 @@ def bin_sim(sim_ltt, obs_bins):
             sim_bins[obs_bins[binn_pos]] = lins
             
             
-    print(sim_bins)
+    #print(sim_bins)
     
     lineage_vector = list(sim_bins.values())
     

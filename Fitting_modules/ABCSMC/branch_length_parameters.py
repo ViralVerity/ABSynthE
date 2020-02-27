@@ -4,8 +4,6 @@ import statistics
 
 def calculate_branch_statistics(coalescent_tree):
     
-    
-    
     max_H = coalescent_tree.most_recent_date
     min_H = coalescent_tree.oldest_sample_date
 

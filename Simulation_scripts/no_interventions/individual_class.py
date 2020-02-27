@@ -77,10 +77,12 @@ class Individual():
 
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
+        #######FROM ABCSMC FITTING PROCESS######
         a = 1
         b = 0.05 
         c = 0.06
-
+        ###############
+        
         Hh_number = function(lamb)
         comm_number = function(a*lamb)
         dist_number = function(b*lamb)

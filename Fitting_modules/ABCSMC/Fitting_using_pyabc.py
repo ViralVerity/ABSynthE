@@ -39,12 +39,12 @@ except FileExistsError:
 
 observed_SS = get_observed_SS()
 
-#new_LTT = list(observed_SS[2])
-top = list(observed_SS[1])
+new_LTT = list(observed_SS[3])
+#top = list(observed_SS[1])
 #bl = list(observed_SS[0])
 
-#observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
-observed = {"a":top, "b":observed_SS[7], "c":observed_SS[6]} 
+observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
+#observed = {"a":top, "b":observed_SS[7], "c":observed_SS[6]} 
 #observed = {"a":bl, "b":observed_SS[7], "c":observed_SS[6]}
 
 def distance(x,y): #inputs are the dictionaries
@@ -61,19 +61,24 @@ def distance(x,y): #inputs are the dictionaries
     if None not in sim_a_vector:
         mid_a_x = normalise(sim_a_vector)
         new_a_x = np.array(mid_a_x)
+        new_a_y = np.array(obs_a_vector)
     else:
         indices = [i for i,x in enumerate(sim_a_vector) if x == None]
-        sim_a_vector.remove(None)
         
-        mid_a_x = normalise(sim_a_vector)
+        processing = list(sim_a_vector)
+        processing.remove(None)
+       
+        mid_a_x = normalise(processing)
         new_a_x = np.array(mid_a_x)
         
         count = 0
+        processing_y = list(obs_a_vector)
         for i in indices:
-            obs_a_vector.pop(i-count)
+            processing_y.pop(i-count)
             count += 1
-            
-    new_a_y = np.array(obs_a_vector)
+        
+        new_a_y = np.array(processing_y)
+    
 
     if new_a_x.size == new_a_y.size: 
         dist_a = np.linalg.norm(new_a_x - new_a_y)

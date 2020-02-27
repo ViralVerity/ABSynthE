@@ -20,8 +20,8 @@ def normalise(vector):
 
 distributions = distribution_functions.define_distributions()
 
-#dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
+dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+#dropbox_path = "/localdisk/home/s1732989/ABM/Fitting/"
 
 size_file = open("epidemic_size.csv", 'w')
 
@@ -81,7 +81,7 @@ def simulate_epidemic(a, b, c, distributions=distributions, contact_structure=co
     capped = True
     
     #Change this here instead of above
-    LTT = False
+    LTT = True
     
     #b = 0.02
     #c = 0.1
@@ -160,12 +160,14 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
         
         if tree:
             
-            #sim_LTT = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
-            top = calculate_topology_params(tree)
+            sim_LTT = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
+            #top = calculate_topology_params(tree)
             #bl = calculate_branch_statistics(tree)
+            
+            print(sim_LTT)
 
-            #return sim_LTT, ch_jumps, dist_jumps
-            return top, ch_jumps, dist_jumps
+            return sim_LTT, ch_jumps, dist_jumps
+            #return top, ch_jumps, dist_jumps
             #return bl, ch_jumps, dist_jumps
             
             #SO NOW RETURNING NON-NORMALISED VECTORS
@@ -173,9 +175,9 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
         
         else: #If no sampled cases 
             #LTT
-            #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ch_jumps, dist_jumps
+            return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ch_jumps, dist_jumps
             #top
-            return [0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
+            #return [0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
             #bl
             #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
         #return tree
