@@ -90,7 +90,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             for i in range(1000):
                 day_dict[original_length + i] = []
 
-            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+            run_epidemic(new_start, day_dict, susceptibles_left, case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
         else:
             pass
         

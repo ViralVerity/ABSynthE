@@ -160,26 +160,26 @@ def run_model(a, b, c, LTT, iteration_number, distributions, contact_structure, 
         
         if tree:
             
-            sim_LTT = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
+            #sim_LTT = LTT_metrics.bin_sim(tree.lineages_through_time, LTT_bins)
             #top = calculate_topology_params(tree)
-            #bl = calculate_branch_statistics(tree)
+            bl = calculate_branch_statistics(tree)
             
-            print(sim_LTT)
+            #print(sim_LTT)
 
-            return sim_LTT, ch_jumps, dist_jumps
+            #return sim_LTT, ch_jumps, dist_jumps
             #return top, ch_jumps, dist_jumps
-            #return bl, ch_jumps, dist_jumps
+            return bl, ch_jumps, dist_jumps
             
             #SO NOW RETURNING NON-NORMALISED VECTORS
         
         
         else: #If no sampled cases 
             #LTT
-            return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ch_jumps, dist_jumps
+            #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ch_jumps, dist_jumps
             #top
             #return [0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
             #bl
-            #return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
+            return [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ch_jumps, dist_jumps
         #return tree
 
 

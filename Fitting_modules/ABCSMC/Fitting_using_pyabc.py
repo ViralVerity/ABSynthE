@@ -39,13 +39,13 @@ except FileExistsError:
 
 observed_SS = get_observed_SS()
 
-new_LTT = list(observed_SS[3])
+#new_LTT = list(observed_SS[3])
 #top = list(observed_SS[1])
-#bl = list(observed_SS[0])
+bl = list(observed_SS[0])
 
-observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
+#observed = {"a":new_LTT, "b":observed_SS[7], "c":observed_SS[6]}
 #observed = {"a":top, "b":observed_SS[7], "c":observed_SS[6]} 
-#observed = {"a":bl, "b":observed_SS[7], "c":observed_SS[6]}
+observed = {"a":bl, "b":observed_SS[7], "c":observed_SS[6]}
 
 def distance(x,y): #inputs are the dictionaries
     
@@ -66,7 +66,7 @@ def distance(x,y): #inputs are the dictionaries
         indices = [i for i,x in enumerate(sim_a_vector) if x == None]
         
         processing = list(sim_a_vector)
-        processing.remove(None)
+        processing[:] = [x for x in processing if x != None]
        
         mid_a_x = normalise(processing)
         new_a_x = np.array(mid_a_x)
@@ -83,7 +83,7 @@ def distance(x,y): #inputs are the dictionaries
     if new_a_x.size == new_a_y.size: 
         dist_a = np.linalg.norm(new_a_x - new_a_y)
     else:
-        print("error - not the same len for a")
+        print("error - not the same len for a" + str(len(new_a_x) + " " + str(len(new_a_y))
         return
     
     dist_b = np.linalg.norm(sim_b - obs_b)

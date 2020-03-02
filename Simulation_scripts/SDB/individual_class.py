@@ -101,9 +101,10 @@ class Individual():
 
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
 
-        a = 1
-        b = 0.05 
-        c = 0.06
+        #mean density from branch lengths fitting
+        a = 0.65
+        b = 0.11
+        c = 0.32
 
         Hh_number = function(lamb)
         comm_number = function(a*lamb)

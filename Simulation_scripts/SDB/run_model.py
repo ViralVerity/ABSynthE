@@ -21,11 +21,12 @@ if iteration_count == -1:
     from epidemic_function import *
     from model_function import *
     
-    dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
-    results_path = "Looping models/Results/Fitting/"
+    #dropbox_path = "/Users/s1743989/VirusEvolution Dropbox/Verity Hill/Agent_based_model/"
+    #results_path = "Looping models/Results/Fitting/"
+    
    
     
-    capped = True
+    capped = False
     case_limit = 50000
     
     print("Defining parameters")
