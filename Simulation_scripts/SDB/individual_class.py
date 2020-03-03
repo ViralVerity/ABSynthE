@@ -1,12 +1,15 @@
-#going to need:
-
 import numpy as np
 import random
 import distribution_functions
 
 class Individual(): 
-    def __init__(self, unique_id, agent_location, cfr, distributions, current_day=current_day, SDB_start=SDB_start, SDB_success=SDB_success): #optional so first case doesn't take them
+    def __init__(self, unique_id, agent_location, cfr, distributions, day_arg=None, SDB_start_arg=None, SDB_success_arg=None): #optional so first case doesn't take them
         """Defines infection course parameters for individual"""
+        
+        current_day = day_arg
+        SDB_start = SDB_start_arg
+        SDB_success = SDB_success_arg
+        
         inccdf = distributions[0]
         death_cdf = distributions[1]
         recovery_cdf = distributions[2]
@@ -17,31 +20,42 @@ class Individual():
 
         self.hh = agent_location[self.unique_id][0]
         self.comm = agent_location[self.unique_id][1]
-        #self.ch = agent_location[self.unique_id][2]
         self.dist = agent_location[self.unique_id][2]
 
-        self.incubation_time(inccdf)
-        self.death_prob(cfr)
-
         
-        if self.death_state == True:  
-            self.death_time(death_cdf)
-            #self.infectious_period = self.death_day + 7
-            
-            absolute_day = self.death_day + current_day
-            
-            if absolute_day >= SDB_start and SDB_state: #So it is after when SDB starts and they are successfully buried
-            
-                #effective SDB, so infection risk stops at death
-                self.infectious_period = self.death_day
-                
-            else:
-                
-                self.infectious_period = self.death_day + 7
+        if SDB_start: #ie if it's not the index case, do all these things. Otherwise, the index should be dealt with
+        
+            self.incubation_time(inccdf)
+            self.death_prob(cfr)
 
-        else:
-            self.recovery_time(recovery_cdf)
-            self.infectious_period = self.recovery_day
+
+            if self.death_state == True:  
+                self.death_time(death_cdf)
+                #self.infectious_period = self.death_day + 7
+
+                absolute_day = self.death_day + current_day
+                
+
+                if absolute_day >= SDB_start: #So it is after when SDB starts 
+                    
+                    self.successful_SDB(SDB_success) #Is the SDB successful?
+                    
+                    if self.SDB_state:#effective SDB, so infection risk stops at death
+                    
+                        self.infectious_period = self.death_day
+                    else:
+                        self.infectious_period = self.death_day + 7
+
+                else:
+
+                    self.infectious_period = self.death_day + 7
+
+
+            else:
+                self.recovery_time(recovery_cdf)
+                self.infectious_period = self.recovery_day
+       
+
 
     def death_prob(self, cfr):
 
@@ -58,11 +72,11 @@ class Individual():
         
         success_poss = np.random.uniform(0, 1.0)
 
-        if sucess_poss > SDB_success: 
+        if success_poss > SDB_success: 
             self.SDB_state = False
         else:
             self.SDB_state = True
-
+            
         return self.SDB_state
 
     def incubation_time(self, inccdf):

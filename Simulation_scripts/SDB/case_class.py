@@ -78,7 +78,7 @@ class Case():
 
         #Is the person actually susceptible
         if poss_case not in infected_individuals_set:
-            new_individual = Individual(poss_case, agent_location, cfr, distributions, current_day, SDB_start, SDB_success)
+            new_individual = Individual(poss_case, agent_location, cfr, distributions, day_arg=current_day, SDB_start_arg=SDB_start, SDB_success_arg=SDB_success)
             case_dict[self] = new_individual
             infected_individuals_set.add(poss_case)
             
