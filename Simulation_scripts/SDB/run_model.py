@@ -8,12 +8,12 @@ def run_model(iteration_number):
     ##Setting things up for running###
         iteration_count += 1
 
-        if iteration_count%5 == 0:
+        if iteration_count%10 == 0:
             write_file = True
         else:
             write_file = False
 
-        if iteration_count%10 == 0:
+        if iteration_count%1 == 0:
             print(str(iteration_count) + " runs completed")
 
         original_dist_mvmt = defaultdict(list)
@@ -119,9 +119,9 @@ def run_model(iteration_number):
             if result:
                 
                 newick_string = result[0]
-                skyline = result[1]
-                tree = result[2]
-                lineages_through_time = result[5]
+                #skyline = result[1]
+                tree = result[1]
+                #lineages_through_time = result[5]
                 
                 most_recent_tip_file.write(str(iteration_count) + "," + str(tree.most_recent_date) + "\n")
 
@@ -132,21 +132,21 @@ def run_model(iteration_number):
                 logpop_count = 0
                 #start_interval = 0.0
                 
-                for key, value in skyline.items():
-                    logpop_count += 1
+                #for key, value in skyline.items():
+                 #   logpop_count += 1
                     
-                    skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
+                  #  skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
 
-                skyline_file.close()
+                #skyline_file.close()
                 
-                lineage_count = 0
+                #ineage_count = 0
                 
-                for k,v in lineages_through_time.items():
-                    lineage_count += 1
-                    ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
+                #for k,v in lineages_through_time.items():
+                 #   lineage_count += 1
+                  #  ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
                 
-                if result[3]:
-                    R0 = str(result[3])
+                if result[2]:
+                    R0 = str(result[2])
                     
                     R0_output.write(f"{iteration_count},{R0}\n")
                     
@@ -169,7 +169,7 @@ def run_model(iteration_number):
 
         size_output.write(f"{iteration_count},{size},{dists},{clusters}\n")
 
-iteration_number_outside = 1000
+iteration_number_outside = 100
 iteration_count = -1
 
 if iteration_count == -1:
@@ -202,8 +202,7 @@ if iteration_count == -1:
     
     print("Defining parameters")
     
-    
-    popn_size = 7092142
+    popn_size = 6917504
     epidemic_length = 148
     cfr = 0.7
     sampling_percentage = 0.16
@@ -221,7 +220,7 @@ if iteration_count == -1:
     
     contact_structure = make_contact_dicts(dropbox_path)
     
-    run_number = 1
+    run_number = 2
     
     try:
         file_functions.make_directories(dropbox_path, results_path, run_number)

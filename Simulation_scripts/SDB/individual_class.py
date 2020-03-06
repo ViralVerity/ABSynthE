@@ -5,6 +5,7 @@ import distribution_functions
 class Individual(): 
     def __init__(self, unique_id, agent_location, cfr, distributions, day_arg=None, SDB_start_arg=None, SDB_success_arg=None): #optional so first case doesn't take them
         """Defines infection course parameters for individual"""
+        #print("initialising individual")
         
         current_day = day_arg
         SDB_start = SDB_start_arg
@@ -30,21 +31,21 @@ class Individual():
 
 
             if self.death_state == True:  
+                
                 self.death_time(death_cdf)
                 #self.infectious_period = self.death_day + 7
 
                 absolute_day = self.death_day + current_day
+                #print("absolute_day is " + str(absolute_day))
                 
-
                 if absolute_day >= SDB_start: #So it is after when SDB starts 
+                    #print("here")
+                    #self.successful_SDB(SDB_success) #Is the SDB successful?
                     
-                    self.successful_SDB(SDB_success) #Is the SDB successful?
-                    
-                    if self.SDB_state:#effective SDB, so infection risk stops at death
-                    
-                        self.infectious_period = self.death_day
-                    else:
-                        self.infectious_period = self.death_day + 7
+                    #if self.SDB_state:#effective SDB, so infection risk stops at death
+                    self.infectious_period = self.death_day
+                    #else:
+                        #self.infectious_period = self.death_day + 7
 
                 else:
 
@@ -162,6 +163,7 @@ class Individual():
 
         random_number = random.uniform(0,1)
 
+        #Check that this works the way I think it does - that if the day is after the person is infectious, it returns none
         try:
             day = np.argmax(cdf > random_number)
 

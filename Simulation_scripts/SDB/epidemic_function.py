@@ -70,6 +70,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
                         
                         for level, number in poss_case_dict.items():
                             for person in range(number):
+                                #when the potential cases are infected
                                 day_inf_output = focal_individual.when_infected(day, person, cdf_len_set, cdf_array)[0]
                                 
                                 if day_inf_output == None:
