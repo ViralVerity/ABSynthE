@@ -1,5 +1,19 @@
 import os
 import sys
+import yaml
+
+
+def parse_population_information(configfile):
+
+    with open(configfile,"r") as f:
+        try:
+            population_config = yaml.load(f, Loader=yaml.FullLoader)
+        except:
+            sys.stderr.write(cyan(f'Error: failed to read config file. Ensure your file in correct yaml format.\n'))
+            sys.exit(-1)
+        
+    return population_config
+
 
 def make_directories(output_directory):
     

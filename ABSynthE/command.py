@@ -26,6 +26,7 @@ def main(sysargs = sys.argv[1:]):
 
     parser.add_argument("--input-directory", "-indir", dest="input_directory", help="directory containing contact structure jsons")
     parser.add_argument("--output-directory", "-outdir", dest="output_directory")
+    parser.add_argument("--population-config", "-popcon", dest="population_config")
     parser.add_argument("--case-limit", dest="case_limit", help="Cap the epidemic at this many cases")
     parser.add_argument("--day-limit", dest="day_limit", help="Cap the epidemic at this many days.")
     parser.add_argument("--cfr", help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
@@ -59,13 +60,15 @@ def main(sysargs = sys.argv[1:]):
     R0_output, size_output, most_recent_tip_file, length_output = file_funcs.make_summary_files(output_directory)
     
     if case_limit or day_limit:
-        run_out_summary = file_functions.prep_runout_summary(output_directory) #need to get those secondary args
+        run_out_summary = file_funcs.prep_runout_summary(output_directory) #need to get those secondary args
     
-    #where does the info file get prepped?
+    #where does the info file get prepped? Must be internal to the run
 
+    population_info = file_funcs.parse_population_information(population_config)
 
     pool = ThreadPool(25)
 
+    #what is iteration_number_outside I don't know
     pool.map(run_model,(iteration_number_outside,)) #calls the run_model.py script       
             
     R0_output.close()
