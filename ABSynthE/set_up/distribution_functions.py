@@ -3,7 +3,6 @@ import numpy as np
 from scipy import stats
 
 
-
 def define_distributions():
     
     clinical_x = np.linspace(0, 40, 40)
