@@ -8,6 +8,7 @@ from multiprocessing.pool import ThreadPool
 
 import absynthe.stochastic.tree_simulator as tree_sim #was called cts before
 from absynthe.stochastic.epidemic_functions import *
+from absynthe.stochastic.run_model import *
 
 import absynthe.set_up.file_functions as file_funcs
 from absynthe.set_up.make_contact_dicts import *
@@ -32,6 +33,10 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--cfr", help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
     parser.add_argument("--sampling-percentage", "-spct",  dest="sampling_percentage", help="Percentage of cases sampled, used in generating the phylogeny from cases. Default is 0.16 for Ebola", default=0.16)
 
+    parser.add_argument("--number-model-iterations", dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
+    parser.add_argument("--log-every", dest="log_every", help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
+    
+
     if len(sysargs)<1: 
         parser.print_help()
         sys.exit(0)
@@ -41,35 +46,45 @@ def main(sysargs = sys.argv[1:]):
             parser.print_help()
             sys.exit(0)
     
-    input_directory = args.input_directory
-    output_directory = args.output_directory
-    case_limit = args.case_limit
-    day_limit = args.day_limit
-    cfr = args.cfr
-    args.sampling_percentage = args.sampling_percentage
+    config = {}
+    config["number_model_iterations"] = args.number_model_iterations
+    config["log_every"] = args.log_every*args.number_model_iterations
+    config["cfr"] = args.cfr
+    config["sampling_percentage"] = args.sampling_percentage
+
+    config["input_directory"] = args.input_directory
+    config["output_directory"] = args.output_directory
+    config["case_limit"] = args.case_limit
+    config["day_limit"] = args.day_limit #default is 148 for ebola in SLE
+
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
-    
-    epidemic_length = 148 #can't remember if this is used when capped is false, so leaving in here for a minute
-    
+        
     distributions = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
-    contact_structure = make_contact_dicts(input_directory)
+    config = make_contact_dicts(input_directory, config)
                 
     file_funcs.make_directories(output_directory)
     R0_output, size_output, most_recent_tip_file, length_output = file_funcs.make_summary_files(output_directory)
     
     if case_limit or day_limit:
-        run_out_summary = file_funcs.prep_runout_summary(output_directory) #need to get those secondary args
+        run_out_summary = file_funcs.prep_runout_summary(output_directory)
+    else:
+        run_out_summary = ""
     
     #where does the info file get prepped? Must be internal to the run
 
     population_info = file_funcs.parse_population_information(population_config)
 
-    pool = ThreadPool(25)
+    config = {}
+    config["population_info"] = population_info
+    config["distributions"] = distributions 
+    config["files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
+    config["contact_structure"] = contact_structure
 
-    #what is iteration_number_outside I don't know
-    pool.map(run_model,(iteration_number_outside,)) #calls the run_model.py script       
+    #see if the multi-threading still works
+    pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict
+    pool.map(run_model,(config, )) #calls the run_model.py script       
             
     R0_output.close()
     size_output.close()
