@@ -1,9 +1,10 @@
 from case_class import *
 from individual_class import *
 
+#needs tidying and integrating config for the args
 def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict, child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, onset_times, nodes, cluster_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit):
     
-    epidemic_capped = False
+    epidemic_stopped = False
     day_count = 0
     
     try: 
@@ -11,9 +12,9 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             if not susceptibles_left:
                 break
             day_count += 1
-            if capped:
-                if day_count > epidemic_length or len(case_dict) > case_limit:
-                    epidemic_capped = True
+            if config["capped"]:
+                if day_count > config["day_limit"] or len(case_dict) > config["case_limit"]:
+                    epidemic_stopped  = True
                     break
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
@@ -83,7 +84,7 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
 
 
     except RuntimeError:
-        if not capped:
+        if not config["capped"]:
             
             original_length = len(day_dict)
             new_start = day #Should start again from when the error was thrown, so for now will recalculate all the infecteds for that day
@@ -95,4 +96,4 @@ def run_epidemic(start_day, day_dict, susceptibles_left , case_dict, trans_dict,
             pass
         
 
-    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_capped
+    return day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_stopped

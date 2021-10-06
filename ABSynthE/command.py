@@ -6,19 +6,12 @@ import argparse
 from collections import defaultdict
 from multiprocessing.pool import ThreadPool
 
-import absynthe.stochastic.tree_simulator as tree_sim #was called cts before
-from absynthe.stochastic.epidemic_functions import *
 from absynthe.stochastic.run_model import *
 
 import absynthe.set_up.file_functions as file_funcs
 from absynthe.set_up.make_contact_dicts import *
 import absynthe.set_up.index_functions as index_funcs
 import absynthe.set_up.distribution_functions as dist_funcs
-
-from abysnthe.classes.individual_class import *
-from abysnthe.classes.case_class import *
-
-
 
 def main(sysargs = sys.argv[1:]):
 
@@ -32,6 +25,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--day-limit", dest="day_limit", help="Cap the epidemic at this many days.")
     parser.add_argument("--cfr", help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
     parser.add_argument("--sampling-percentage", "-spct",  dest="sampling_percentage", help="Percentage of cases sampled, used in generating the phylogeny from cases. Default is 0.16 for Ebola", default=0.16)
+    parser.add_argument("--make-skyline", dest="make_skyline", action="store_true",help="Make skyline when tree is generated.")
+    parser.add_argument("--make-ltt", dest="make_ltt", action="store_true", help="Calculate lineages through time when tree is generated.")
 
     parser.add_argument("--number-model-iterations", dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
     parser.add_argument("--log-every", dest="log_every", help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
@@ -57,6 +52,9 @@ def main(sysargs = sys.argv[1:]):
     config["case_limit"] = args.case_limit
     config["day_limit"] = args.day_limit #default is 148 for ebola in SLE
 
+    config["make_skyline"] = args.make_skyline
+    config["make_ltt"] = args.make_ltt
+
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
@@ -68,6 +66,7 @@ def main(sysargs = sys.argv[1:]):
     R0_output, size_output, most_recent_tip_file, length_output = file_funcs.make_summary_files(output_directory)
     
     if case_limit or day_limit:
+        config["capped"] = True
         run_out_summary = file_funcs.prep_runout_summary(output_directory)
     else:
         run_out_summary = ""
@@ -80,7 +79,6 @@ def main(sysargs = sys.argv[1:]):
     config["population_info"] = population_info
     config["distributions"] = distributions 
     config["files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
-    config["contact_structure"] = contact_structure
 
     #see if the multi-threading still works
     pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict

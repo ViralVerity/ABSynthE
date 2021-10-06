@@ -1,69 +1,41 @@
-iteration_number_outside = 100
-iteration_count = -1
+from collections import defaultdict
+import absynthe.set_up.index_functions import *
+import absynthe.stochastic.tree_simulator as tree_sim
 
-def run_model(iteration_number):
+
+def run_model(config):
     
     iteration_count = -1
     
-    for i in range(iteration_number):
+    for i in range(config["number_model_iterations"]):
     
     ##Setting things up for running###
-        iteration_count += 1
 
-        if iteration_count%10 == 0:
+        ##writing to file and screen
+        iteration_count += 1
+        if iteration_count%config["log_every"] == 0:
             write_file = True
         else:
             write_file = False
-
         if iteration_count%10 == 0:
-            print(str(iteration_count) + " runs completed")
+            sys.stdout.write(f'{iteration_count} runs completed')
 
-        original_dist_mvmt = defaultdict(list)
-        original_ch_mvmt = defaultdict(list)
-
-        for item1 in district_list:
-            for item2 in district_list:
-                if item1 != item2:
-                    original_dist_mvmt[item1,item2] = []
-                    
-        for item1 in ch_list:
-            for item2 in ch_list:
-                if item1 != item2:
-                    original_ch_mvmt[item1, item2] = []
-
-        original_case_dict = {}
-        original_day_dict = defaultdict(list)
-        option_dict_districtlevel = defaultdict(list)
-        infected_individuals_set = set()
-        cdf_array = []
-        cdf_len_set = set()
-        original_districts_present = []
-        original_cluster_set = set()
-        original_trans_dict = defaultdict(list)
-        original_child_dict = defaultdict(list)
-        original_nodes = []
-        original_onset_times = []
- 
-
-        for i in range(epidemic_length):
-            original_day_dict[i] = []
+        data_structures = index_functions.make_data_structures(config)        
         
         ###Making index case###
-        index_case_case, index_case_individual, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict = index_functions.make_index_case(contact_structure[0], cfr, distributions, original_case_dict, original_trans_dict, original_child_dict, original_nodes, infected_individuals_set, original_districts_present, original_cluster_set, original_day_dict)
+        index_case_case, index_case_individual, case_dict, trans_dict, child_dict, nodes, infected_individuals_set, districts_present, chiefdom_set, day_dict, dist_mvmt, ch_mvmt = index_functions.make_index_case(config, data_structures)
         
-        if write_file:
-
-            info_file = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
+        if write_file: #check that info file gets written to in the epidemic run like I think it does
+            config["info_file"] = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
         
-        susceptibles_left = True
-         
         ###Run the epidemic###
-        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, cluster_set, epidemic_capped = run_epidemic(0, original_day_dict, susceptibles_left , original_case_dict, original_trans_dict, original_child_dict, infected_individuals_set, popn_size, option_dict_districtlevel, original_onset_times, original_nodes, original_cluster_set, cdf_len_set, cdf_array, original_districts_present, original_dist_mvmt, original_ch_mvmt, contact_structure, cfr, distributions, write_file, info_file, iteration_count, capped, epidemic_length, case_limit)
+        #this function needs work in terms of the config - also want to look at all these data_structures - part of config or something?
+        config["susceptibles_left"] = True #needs to be external because run_epidemic is recursive
+        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, chiefdom_set, epidemic_stopped = run_epidemic(config, 0, day_dict, case_dict, trans_dict, child_dict, infected_individuals_set, option_dict_districtlevel, onset_times, nodes, chiefdom_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, iteration_count)
 
-        
-        remove_set = set()   
     
         ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
+        remove_set = set()   
         for key, value in case_dict.items():
             if type(value) != Individual:
                 remove_set.add(key)
@@ -77,13 +49,23 @@ def run_model(iteration_number):
             day_dict[key] = case_list
 
         day_dict[0].append(index_case_case) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
+        last_day = max(onset_times)
 
         ###Getting results and writing to file###
+        # could separate these out and put them in the file functions file? Should probably just have a write to file option
+        size = len(case_dict)
+        dists = len(districts_present)
+        chiefdoms = len(chiefdom_set)
+
+        config["files"]["length_output"].write(f"{iteration_count},{last_day}\n")
+        config["files"]["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
         
-        if epidemic_capped and not write_file: #ie if it's capped but not already being written
+        if epidemic_stopped:
+            config["files"]["run_out_summary"].write(f"{iteration_count},{size}\n")
+        
+        if epidemic_stopped and not write_file: #ie if it's been stopped because it's reached the day or case cap but not already being written
             
-            runout_file = file_functions.prep_runout_file(dropbox_path, results_path, run_number, iteration_count)
-         
+            runout_file = file_functions.prep_runout_file(config["output_directory"], iteration_count)
             for indie in case_dict.values():
 
                 day = trans_dict[indie.unique_id][1]
@@ -95,81 +77,63 @@ def run_model(iteration_number):
 
                 except AttributeError:
                     runout_file.write(f"{indie.unique_id},NA,{indie.hh},{indie.dist},{day},{symptoms},{sampled},\n")
+            runout_file.close()
 
         
-        if write_file or epidemic_capped:
-            tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(dropbox_path, results_path, run_number, iteration_count)
-
-        last_day = max(onset_times)
-
-        if write_file or epidemic_capped:
-
-            for key, value in dist_mvmt.items():
-                if len(value) != 0:
-                    district_mvmt_file.write(key[0] + "," + key[1] + "," + ",".join([str(i) for i in value]) + "\n")
-
+        if write_file or epidemic_stopped:
+            tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(config["output_directory"], iteration_count)
+            
+            for district_pair, count_list in dist_mvmt.items(): #what is the value here - is it counts or days that they're happening on?
+                if len(count_list) != 0:
+                    counts = ",".join([str(i) for i in value])
+                    district_mvmt_file.write(f'{district_pair[0]},{district_pair[1]},{counts}"\n"')
             district_mvmt_file.close()
             
-            for key, value in ch_mvmt.items():
-                if len(value) != 0:
-                    ch_mvmt_file.write(key[0] + "," + key[1] + "," + ",".join([str(i) for i in value]) + "\n")
-                    
+            for ch_pair, count_list in ch_mvmt.items():
+                if len(count_list) != 0:
+                    counts = ",".join([str(i) for i in value])
+                    ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
             ch_mvmt_file.close()
             
-            result = cts.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day)
-            
+            #all this tree sim still needs tidying
+            #add in if statements for if skyline, if ltts
+            result = tree_sim.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day) 
             if result:
-                
                 newick_string = result[0]
                 #skyline = result[1]
                 tree = result[1]
                 #lineages_through_time = result[5]
                 
-                most_recent_tip_file.write(str(iteration_count) + "," + str(tree.most_recent_date) + "\n")
+                connfig["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
 
+                #gets opened above - possibly not wanted? end pu with a lot of empty files?
                 tree_file.write(newick_string)
-
                 tree_file.close()
 
-                logpop_count = 0
                 #start_interval = 0.0
+                #I think this is all commented out so that it doesn't slow down post-fitting things - should still be tidied up though.
+                if config["make_skyline"]: 
+                    logpop_count = 0
+                    for key, value in skyline.items():
+                        logpop_count += 1
+                        skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
+                    skyline_file.close()
                 
-               # for key, value in skyline.items():
-                #    logpop_count += 1
-                    
-                 #   skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
-
-                #skyline_file.close()
-                
-                lineage_count = 0
-                
-               # for k,v in lineages_through_time.items():
-                #    lineage_count += 1
-                 #   ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
+                if config["make_ltt"]: 
+                    lineage_count = 0
+                    for k,v in lineages_through_time.items():
+                        lineage_count += 1
+                        ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
+                    ltt_file.close()
                 
                 if result[2]:
                     R0 = str(result[2])
-                    
-                    R0_output.write(f"{iteration_count},{R0}\n")
+                    config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
                     
 
-        if write_file:
-            info_file.close()
-        if epidemic_capped and not write_file:
-            runout_file.close()
-        
-        if epidemic_capped:
-            size = len(case_dict)
+        if write_file: #is there a way to check if a file is open?
+            config["info_file"].close()
             
-            run_out_summary.write(f"{iteration_count},{size}\n")
-        
-        size = len(case_dict)
-        dists = len(districts_present)
-        clusters = len(cluster_set)
-        
-        length_output.write(f"{iteration_count},{last_day}\n")
-
-        size_output.write(f"{iteration_count},{size},{dists},{clusters}\n")
 
 
 
