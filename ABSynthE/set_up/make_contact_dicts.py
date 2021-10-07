@@ -22,10 +22,10 @@ def make_contact_dicts(input_directory, config):
         config["dist_to_hh"] = json.load(json_file)
 
     with open((os.path.join(input_directory,"household_to_chiefdom.txt")) as json_file:
-        config["hh_to_cluster"] = json.load(json_file)
+        config["hh_to_ch"] = json.load(json_file)
 
     with open((os.path.join(input_directory,"Chiefdom_to_hh.txt")) as json_file:
-        config["cluster_to_hh"] = json.load(json_file)
+        config["ch_to_hh"] = json.load(json_file)
 
     with open((os.path.join(input_directory,"Hh_to_people.txt")) as json_file:
         config["hh_to_ppl"] = json.load(json_file)

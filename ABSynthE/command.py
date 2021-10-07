@@ -69,7 +69,7 @@ def main(sysargs = sys.argv[1:]):
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
         
-    distributions = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
+    distribution_dict = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
     config = make_contact_dicts(input_directory, config)
                 
     file_funcs.make_directories(output_directory)
@@ -87,7 +87,7 @@ def main(sysargs = sys.argv[1:]):
 
     config = {}
     config["population_info"] = population_info
-    config["distributions"] = distributions 
+    config["distributions"] = distribution_dict 
     config["summary_files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
 
     #see if the multi-threading still works

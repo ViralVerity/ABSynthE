@@ -1,96 +1,72 @@
-from individual_class import *
+from absynthe.classes.individual_class import *
+import sys
 
 class Case():
     
     def __init__(self, case_id, level, parent):
 
         self.children = []
-
         self.case_id = case_id
-
         self.level = level
-        
         self.parent = parent
-
-        #print("case ID " + str(self.case_id) + " is level " + str(self.level))
-
-        if self.case_id != 0 and self.level == None:
-            print("ERROR " + str(self.case_id))
             
-            
-    def get_options_district(self, option_dict_districtlevel, dist_to_ch, cluster_to_ppl, parent_individual):
+    def get_options_district(self, option_dict_district_level, config, parent_individual):
 
-        if parent_individual.comm not in option_dict_districtlevel.keys():
-
-            dist_ppl_list = ([cluster_to_ppl[clust] for clust in dist_to_ch[parent_individual.dist] if clust != parent_individual.comm])
-
-            option_dict_districtlevel[parent_individual.comm] = dist_ppl_list
+        if parent_individual.ch in option_dict_district_level.keys():
+            dist_ppl_list = option_dict_districtlevel[parent_individual.ch]
 
         else:
+            dist_ppl_list = ([config["cluster_to_ppl"]["population_structure"][chief] for chief in config["cluster_to_ppl"]["population_structure"]["dist_to_ch"][parent_individual.dist] if chief != parent_individual.ch])
+            option_dict_district_level[parent_individual.comm] = dist_ppl_list
 
-            dist_ppl_list = option_dict_districtlevel[parent_individual.comm]
-    
-        
-        return dist_ppl_list, option_dict_districtlevel
+        return dist_ppl_list, option_dict_district_level
 
 
-    
-    def who_am_I(self, infected_individuals_set, popn_size, option_dict_districtlevel, contact_structure, case_dict, parent_individual, day, cfr, distributions): 
+    def who_am_I(self, parent_individual, day, config, epidemic_config): 
         """Input is case object that has already been initialised.
         Finds out which of the parent's potential contacts are still susceptible"""
-        
-        agent_location, dist_to_hh, hh_to_cluster, cluster_to_hh, hh_to_ppl, cluster_to_ppl, dist_to_ppl, dist_to_ch, district_distance,  district_pops = contact_structure
-        
-        if len(infected_individuals_set) == popn_size: 
-            return False
+                
+        if len(epidemic_config["infected_individuals_set"]) == config["population_structure"]["popn_size"]: 
+            return 0
 
         if self.level == "Hh":
-            poss_case = random.choice([person for person in hh_to_ppl[parent_individual.hh] if person != parent_individual.unique_id]) 
+            poss_case = random.choice([person for person in config["population_structure"]["hh_to_ppl"][parent_individual.hh] if person != parent_individual.unique_id]) 
 
-        elif self.level == "Comm":
-            
-            poss_case = random.choice(random.choice([hh_to_ppl[hh] for hh in cluster_to_hh[parent_individual.comm] 
+        elif self.level == "Ch":
+            poss_case = random.choice(random.choice([config["population_structure"]["hh_to_ppl"][hh] for hh in config["population_structure"]["ch_to_hh"][parent_individual.ch] 
                                                 if hh != parent_individual.hh]))
-          
         elif self.level == "Dist":
-            
-            if parent_individual.dist == "westernarearural" or parent_individual.dist == "westernareaurban":
-                return
-            
-            else:
-            
-                dist_ppl_list = self.get_options_district(option_dict_districtlevel, dist_to_ch, cluster_to_ppl, parent_individual)[0]
-
-                poss_case = random.choice(random.choice(dist_ppl_list))
+            ##don't remember why I did this, so commenting out for now
+            # if parent_individual.dist == "westernarearural" or parent_individual.dist == "westernareaurban":
+            #     return #why would I would to not assign someone if their parent was in WAR/WAU?
+            # else:
+            dist_ppl_list, option_dict_district_level = self.get_options_district(epidemic_config["option_dict_district_level"], config, parent_individual)
+            poss_case = random.choice(random.choice(dist_ppl_list))
+            epidemic_config['option_dict_district_level'] - option_dict_district_level
 
         elif self.level == "Country":        
-
             if day == 0:
                 district = "kenema"
             else:
-                district = random.choice(district_distance[parent_individual.dist])
-
+                district = random.choice(config["population_structure"]["district_distance"][parent_individual.dist])
             poss_case = random.choice(dist_to_ppl[district])
 
         else:
-            print("ERROR no level assigned")
-
+            sys.stderr.write("ERROR no level assigned")
 
         #Is the person actually susceptible
-        if poss_case not in infected_individuals_set:
-            new_individual = Individual(poss_case, agent_location, cfr, distributions)
-            case_dict[self] = new_individual
-            infected_individuals_set.add(poss_case)
+        if poss_case not in epidemic_config["infected_individuals_set"]:
+            new_individual = Individual(poss_case, config["population_structure"], config["agent_location"], config["cfr"], config["distributions"])
+            epidemic_config["case_dict"][self] = new_individual
+            epidemic_config["infected_individuals_set"].add(poss_case)
             
         elif day == 0: #So that there are actually 14 cases in the first transmission cluster
-            self.who_am_I(infected_individuals_set, popn_size, option_dict_districtlevel, contact_structure, case_dict, parent_individual, day, cfr, distributions)
+            self.who_am_I(parent_individual, day, config, epidemic_config)
 
         else:
-            #print("Already infected")
-            return
+            return False
 
-        #print("Time taken to define self = " + str(end-start))
-        return poss_case, case_dict, infected_individuals_set
+        return poss_case, config, epidemic_config
     
     
     

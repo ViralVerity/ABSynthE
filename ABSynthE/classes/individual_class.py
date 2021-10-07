@@ -2,25 +2,24 @@
 
 import numpy as np
 import random
-import distribution_functions
+import absynthe.set_up.distribution_functions
 
 class Individual(): 
     def __init__(self, unique_id, agent_location, cfr, distributions): 
         """Defines infection course parameters for individual"""
-        inccdf = distributions[0]
-        death_cdf = distributions[1]
-        recovery_cdf = distributions[2]
+        
+        inc_cdf = distributions["inc_cdf"]]
+        death_cdf = distributions["death_cdf"]
+        recovery_cdf = distributions["recovery_cdf"]
         
         self.unique_id = unique_id
-
         self.children = [] 
-
+        
         self.hh = agent_location[self.unique_id][0]
-        self.comm = agent_location[self.unique_id][1]
-        #self.ch = agent_location[self.unique_id][2]
+        self.ch = agent_location[self.unique_id][1]
         self.dist = agent_location[self.unique_id][2]
 
-        self.incubation_time(inccdf)
+        self.incubation_time(inc_cdf)
         self.death_prob(cfr)
 
         if self.death_state == True: 
@@ -31,37 +30,27 @@ class Individual():
             self.infectious_period = self.recovery_day
 
     def death_prob(self, cfr):
-
         death_poss = np.random.uniform(0, 1.0)
-
         if death_poss > cfr: #So they are still alive
             self.death_state = False
         else:
             self.death_state = True
-
         return self.death_state
 
-    def incubation_time(self, inccdf):
-
+    def incubation_time(self, incc_df):
         random_number = random.uniform(0,1)
-        self.incubation_day = np.argmax(inccdf > random_number)
-
+        self.incubation_day = np.argmax(inc_cdf > random_number)
         return self.incubation_day
 
     def death_time(self, death_cdf):
-
         random_number = random.uniform(0,1)
-
         self.death_day = np.argmax(death_cdf > random_number)
-
         return self.death_day
 
     def recovery_time(self, recovery_cdf):
-
         #Can't recover before day 4 - taken from the NEJM paper figure
         random_number = random.uniform(recovery_cdf[3],1)
         self.recovery_day = np.argmax(recovery_cdf > random_number)
-
         return self.recovery_day
 
 
@@ -72,10 +61,8 @@ class Individual():
         #If you want to get this, add self. in front of each poss_contact_dict mention
 
         poss_contact_dict = {}
-
         function = np.random.poisson
-
-        lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65
+        lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65 - that is from a paper somewhere, should be in the docs
 
         #######FROM ABCSMC FITTING PROCESS######
         a = 0.65
@@ -84,7 +71,7 @@ class Individual():
         ###############
         
         Hh_number = function(lamb)
-        comm_number = function(a*lamb)
+        ch_number = function(a*lamb)
         dist_number = function(b*lamb)
         country_number = function(c*lamb)
 
@@ -94,9 +81,9 @@ class Individual():
             poss_contact_dict["Hh"] = 0
 
         if comm_number != None:
-            poss_contact_dict["Comm"] = comm_number
+            poss_contact_dict["Ch"] = ch_number
         else:
-            poss_contact_dict["Comm"] = 0
+            poss_contact_dict["Ch"] = 0
 
         if dist_number != None:
             poss_contact_dict["Dist"] = dist_number
@@ -127,15 +114,10 @@ class Individual():
 
         try:
             day = np.argmax(cdf > random_number)
-
-            try:
-                day_inf = day + current_day + self.incubation_day
-                return day_inf, cdf_len_set
-            except TypeError:
-                #Raise exception here instead of return?
-                return "Type", cdf_len_set, cdf_array
+            day_inf = day + current_day + self.incubation_day
+            return day_inf, cdf_len_set
             
-        except ValueError:
+        except ValueError: #so this comes up if they finish their infection before the exposure happens - should have an if statement really
             return None, cdf_len_set, cdf_array
 
         
