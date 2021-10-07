@@ -6,7 +6,7 @@ class node():
     def __init__(self, unique_id, node_type, transmission_dict=None, child_dict=None, those_sampled=None, node_dict=None, height=None, children=None, subtree=None, infector=None, infectee=None):
         
         self.id = unique_id #Need to think about the IDs for the three types
-        self.type = node_type #ie transmission, coalescent or individual - meaning for a transmission tree, a coalescent tree, or just as a person.
+        self.type = node_type #ie transmission, coalescent or individual - meaning for a transmission tree, a coalescent tree, or just as a person which is a tip if it's sampled
         
         self.removed = False
         
@@ -36,7 +36,7 @@ class node():
             self.find_time_of_day_infected_sampled(transmission_dict, those_sampled, node_dict) 
             self.find_children(transmission_dict, child_dict, those_sampled, node_dict)
             
-            #If the lineage is sampled
+            #If the lineage is sampled or it's child is
             if self.sampled or len(self.sampled_infections) != 0:
                 self.root_to_tip = self.time_sampled
                 self.subtree = tree(tree_type = "subtree", focal_person=self)
@@ -50,7 +50,7 @@ class node():
         if self.type == "coalescent":
             self.relative_height = height
             self.subtree = subtree
-            self.root_to_tip = 0.0
+            self.root_to_tip = 0.0 #not sure about this
 
             if children:
                 self.node_children = children
@@ -63,7 +63,7 @@ class node():
         self.branch_len_calculated = False
         self.remove_func_called = False
         
-        return node_dict
+        return node_dict #?
         
         
     def find_time_of_day_infected_sampled(self, transmission_dict, those_sampled, node_dict):
@@ -106,19 +106,6 @@ class node():
             if new_child.sampled:
                 self.sampled_infections.add(new_child)
 
+            #to give all downstream sampled infections
             self.sampled_infections = self.sampled_infections.union(new_child.sampled_infections)
-
-            
-    
-    
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
 

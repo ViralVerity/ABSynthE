@@ -111,8 +111,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         node_dict = {}
         
         #this is recursive, so calling it once generates the whole node dictionary
-        node(index_case, "individual", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
-        #will the node dictionary be held in memory and passed on though? Might need to return it
+        node_dict = node(index_case, "individual", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
         coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
         
         if config["calculate_R0"]:

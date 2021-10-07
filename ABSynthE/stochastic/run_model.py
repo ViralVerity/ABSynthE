@@ -168,10 +168,10 @@ def write_runout_file(config, epidemic_config):
     runout_file = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"],iteration_count)
         
     for individual in epidemic_config["case_dict"].values():
-
-        day = epidemic_config["transmission_dict"][individual.unique_id][1]
-        symptoms = epidemic_config["transmission_dict"][individual.unique_id][1]
-        sampled = epidemic_config["transmission_dict"][individual.unique_id][1] #for now they get sampled on the first day of symptoms
+        #it's weird to use the transmission dict here
+        day = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"]
+        symptoms = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] #for now they get sampled on the first day of symptoms
+        sampled = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] 
         
         if individual.parent:
             runout_file.write(f"{individual.unique_id},{individual.parent.unique_id},{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
