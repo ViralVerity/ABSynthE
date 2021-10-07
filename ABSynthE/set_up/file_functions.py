@@ -71,9 +71,7 @@ def prep_runout_summary(output_directory):
 def prep_info_file(output_directory, index_case_individual, iteration_count):
          
     info_file = open(os.path.join(output_directory,"log_files",f"information_file_for_{iteration_count}.csv", 'w')
-    
     info_file.write("Individual,Parent,Household,Chiefdom,District,Day_infected,Day_onset,Day_sampled\n") 
-
     info_file.write(f"{index_case_individual.unique_id},NA,{index_case_individual.hh},{index_case_individual.comm},{index_case_individual.dist},0,{index_case_individual.incubation_day},{index_case_individual.incubation_day}\n")
 
     return info_file

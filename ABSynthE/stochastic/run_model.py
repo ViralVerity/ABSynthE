@@ -26,7 +26,7 @@ def run_model(config):
         epidemic_config = index_functions.make_index_case(config, epidemic_config)
         
         if write_file: #check that info file gets written to in the epidemic run like I think it does
-            config["info_file"] = file_functions.prep_info_file(config["output_directory"]), index_case_individual, iteration_count)
+            config["info_file"] = file_functions.prep_info_file(config["output_directory"]), epidemic_config["index_case_individual"], iteration_count)
         
         ###Run the epidemic###
         epidemic_config = run_epidemic(0, config, epidemic_config)
@@ -49,87 +49,15 @@ def run_model(config):
         last_day = max(epidemic_config["onset_times"])
 
         ###Getting results and writing to file###
-        # could separate these out and put them in the file functions file? Should probably just have a write to file option
-        size = len(epidemic_config["case_dict"])
-        dists = len(epidemic_config["districts_present"])
-        chiefdoms = len(epidemic_config["chiefdoms_present"])
+        write_to_summary_files(config, epidemic_config, iteration_count, last_day)
 
-        config["summary_files"]["length_output"].write(f"{iteration_count},{last_day}\n")
-        config["summary_files"]["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
-        
-        if epidemic_config["epidemic_stopped"]:
-            config["summary_files"]["run_out_summary"].write(f"{iteration_count},{size}\n")
-        
-        if epidemic_config["epidemic_stopped"] and not config["write_file"]: #ie if it's been stopped because it's reached the day or case cap but not already being written
-            
-            runout_file = file_functions.prep_runout_file(config["output_directory"], iteration_count)
-            
-            for individual in case_dict.values():
+        if epidemic_config["epidemic_stopped"] and not config["write_file"]:
+            write_runout_file(config, epidemic_config)
 
-                day = epidemic_config["transmission_dict"][individual.unique_id][1]
-                symptoms = epidemic_config["transmission_dict"][individual.unique_id][1]
-                sampled = epidemic_config["transmission_dict"][individual.unique_id][1] #for now they get sampeld on the first day of symptoms
-                
-                if individual.parent:
-                    runout_file.write(f"{individual.unique_id},{individual.parent.unique_id},{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
-                else:
-                    runout_file.write(f"{individual.unique_id},NA,{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
-            
-            runout_file.close()
+        if epidemic_config["epidemic_stopped"] or config["write_file"]:
+            record_individual_epidemic(config, epidemic_config)        
 
-        
-        if config["write_file"] or epidemic_config["epidemic_stopped"]:
-            tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(config["output_directory"], iteration_count)
-            
-            for district_pair, count_list in epidemic_config["dist_mvmt"].items(): #what is the value here - is it counts or days that they're happening on?
-                if len(count_list) != 0:
-                    counts = ",".join([str(i) for i in value])
-                    district_mvmt_file.write(f'{district_pair[0]},{district_pair[1]},{counts}"\n"')
-            district_mvmt_file.close()
-            
-            for ch_pair, count_list in epidemic_config["ch_mvmt"].items():
-                if len(count_list) != 0:
-                    counts = ",".join([str(i) for i in value])
-                    ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
-            ch_mvmt_file.close()
-            
-            #all this tree sim still needs tidying
-            #add in if statements for if skyline, if ltts
-            result = tree_sim.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day) 
-            if result:
-                newick_string = result[0]
-                #skyline = result[1]
-                tree = result[1]
-                #lineages_through_time = result[5]
-                
-                connfig["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
-
-                #gets opened above - possibly not wanted? end pu with a lot of empty files?
-                tree_file.write(newick_string)
-                tree_file.close()
-
-                #start_interval = 0.0
-                #I think this is all commented out so that it doesn't slow down post-fitting things - should still be tidied up though.
-                if config["make_skyline"]: 
-                    logpop_count = 0
-                    for key, value in skyline.items():
-                        logpop_count += 1
-                        skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
-                    skyline_file.close()
-                
-                if config["make_ltt"]: 
-                    lineage_count = 0
-                    for k,v in lineages_through_time.items():
-                        lineage_count += 1
-                        ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
-                    ltt_file.close()
-                
-                if result[2]:
-                    R0 = str(result[2])
-                    config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
-                    
-
-        if write_file: #is there a way to check if a file is open?
+        if config["write_file"]: #is there a way to check if a file is open?
             config["info_file"].close()
             
 def run_epidemic(start_day, config, epidemic_config):
@@ -220,6 +148,88 @@ def run_epidemic(start_day, config, epidemic_config):
         
 
     return epidemic_config
+
+
+
+def write_to_summary_files(config, epidemic_config, iteration_count, last_day):
+
+    size = len(epidemic_config["case_dict"])
+    dists = len(epidemic_config["districts_present"])
+    chiefdoms = len(epidemic_config["chiefdoms_present"])
+
+    config["summary_files"]["length_output"].write(f"{iteration_count},{last_day}\n")
+    config["summary_files"]["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
+    
+    if epidemic_config["epidemic_stopped"]:
+        config["summary_files"]["run_out_summary"].write(f"{iteration_count},{size}\n")
+
+
+def write_runout_file(config, epidemic_config):
+
+    runout_file = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"],iteration_count)
+        
+    for individual in epidemic_config["case_dict"].values():
+
+        day = epidemic_config["transmission_dict"][individual.unique_id][1]
+        symptoms = epidemic_config["transmission_dict"][individual.unique_id][1]
+        sampled = epidemic_config["transmission_dict"][individual.unique_id][1] #for now they get sampled on the first day of symptoms
+        
+        if individual.parent:
+            runout_file.write(f"{individual.unique_id},{individual.parent.unique_id},{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
+        
+    runout_file.close()
+
+
+def record_individual_epidemic(config, epidemic_config):
+
+    tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(config["output_directory"], iteration_count)
+            
+    for district_pair, count_list in epidemic_config["dist_mvmt"].items(): #what is the value here - is it counts or days that they're happening on?
+        if len(count_list) != 0:
+            counts = ",".join([str(i) for i in value])
+            district_mvmt_file.write(f'{district_pair[0]},{district_pair[1]},{counts}"\n"')
+    district_mvmt_file.close()
+    
+    for ch_pair, count_list in epidemic_config["ch_mvmt"].items():
+        if len(count_list) != 0:
+            counts = ",".join([str(i) for i in value])
+            ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
+    ch_mvmt_file.close()
+    
+    #all this tree sim still needs tidying
+    #add in if statements for if skyline, if ltts
+    result = tree_sim.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day) 
+    if result:
+        newick_string = result[0]
+        #skyline = result[1]
+        tree = result[1]
+        #lineages_through_time = result[5]
+        
+        config["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+
+        #gets opened above - possibly not wanted? end pu with a lot of empty files?
+        tree_file.write(newick_string)
+        tree_file.close()
+
+        #start_interval = 0.0
+        #I think this is all commented out so that it doesn't slow down post-fitting things - should still be tidied up though.
+        if config["make_skyline"]: 
+            logpop_count = 0
+            for key, value in skyline.items():
+                logpop_count += 1
+                skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
+            skyline_file.close()
+        
+        if config["make_ltt"]: 
+            lineage_count = 0
+            for k,v in lineages_through_time.items():
+                lineage_count += 1
+                ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
+            ltt_file.close()
+        
+        if result[2]:
+            R0 = str(result[2])
+            config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
 
 
 
