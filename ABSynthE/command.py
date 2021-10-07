@@ -24,6 +24,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--case-limit", dest="case_limit", help="Cap the epidemic at this many cases")
     parser.add_argument("--day-limit", dest="day_limit", help="Cap the epidemic at this many days.")
     parser.add_argument("--cfr", help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
+    #sampling delay after symptoms can be added in - probably wants a distribution, so maybe this owuld just be a flag
     parser.add_argument("--sampling-percentage", "-spct",  dest="sampling_percentage", help="Percentage of cases sampled, used in generating the phylogeny from cases. Default is 0.16 for Ebola", default=0.16)
     parser.add_argument("--make-skyline", dest="make_skyline", action="store_true",help="Make skyline when tree is generated.")
     parser.add_argument("--make-ltt", dest="make_ltt", action="store_true", help="Calculate lineages through time when tree is generated.")
@@ -78,7 +79,7 @@ def main(sysargs = sys.argv[1:]):
     config = {}
     config["population_info"] = population_info
     config["distributions"] = distributions 
-    config["files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
+    config["summary_files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
 
     #see if the multi-threading still works
     pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict

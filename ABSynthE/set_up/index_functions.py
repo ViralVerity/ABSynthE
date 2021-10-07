@@ -7,7 +7,7 @@ def make_data_structures(config):
 
     epidemic_config = {}
 
-    epidemic_config["case_dict"] = {}
+    epidemic_config["case_dict"] = {} #case object to individual object
     epidemic_config["transmission_dict"] = {}
     epidemic_config["child_dict"] = {}
     epidemic_config["day_dict"] = {}
@@ -53,7 +53,7 @@ def make_index_case(config, epidemic_config):
     index_case_case = Case(0, None, None)
     
     epidemic_config["case_dict"][index_case_case] = index_case_individual
-    epidemic_config["transmission_dict"][index_case_individual.unique_id] = ["NA", '0', index_case_individual.incubation_day]
+    epidemic_config["transmission_dict"][index_case_individual.unique_id] = [None, 0, index_case_individual.incubation_day]
     
     epidemic_config["nodes"].append(index_case_individual.unique_id)
     epidemic_config["child_dict"]["NA"] = [index_case_individual.unique_id]
