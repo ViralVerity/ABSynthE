@@ -9,8 +9,6 @@ def run_model(config):
     
     for i in range(config["number_model_iterations"]):
     
-    ##Setting things up for running###
-
         ##writing to file and screen
         iteration_count += 1
         if iteration_count%config["log_every"] == 0:
@@ -20,13 +18,13 @@ def run_model(config):
         if iteration_count%10 == 0:
             sys.stdout.write(f'{iteration_count} runs completed')
 
-        data_structures = index_functions.make_data_structures(config)        
+        epidemic_config = index_functions.make_data_structures(config)        
         
         ###Making index case###
-        index_case_case, index_case_individual, case_dict, trans_dict, child_dict, nodes, infected_individuals_set, districts_present, chiefdom_set, day_dict, dist_mvmt, ch_mvmt = index_functions.make_index_case(config, data_structures)
+        epidemic_config = index_functions.make_index_case(config, epidemic_config)
         
         if write_file: #check that info file gets written to in the epidemic run like I think it does
-            config["info_file"] = file_functions.prep_info_file(dropbox_path, results_path, run_number, index_case_individual, iteration_count)
+            config["info_file"] = file_functions.prep_info_file(config["output_directory"]), index_case_individual, iteration_count)
         
         ###Run the epidemic###
         #this function needs work in terms of the config - also want to look at all these data_structures - part of config or something?

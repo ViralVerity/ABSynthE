@@ -5,21 +5,26 @@ import random
 
 def make_data_structures(config):
 
-    case_dict = {}
-    trans_dict = defaultdict(list)
-    child_dict = defaultdict(list)
-    day_dict = defaultdict(list)
+    epidemic_config = {}
 
-    option_dict_districtlevel = defaultdict(list) #needs a better name
-    infected_individuals_set = set()
-    cdf_array = []
-    cdf_len_set = set()
-    
-    districts_present = []
-    chiefdom_set = set()
-    
-    nodes = []
-    onset_times = []
+    epidemic_config["case_dict"] = {}
+    epidemic_config["transmission_dict"] = {}
+    epidemic_config["child_dict"] = {}
+    epidemic_config["day_dict"] = {}
+
+    epidemic_config["option_dict_district_level"] = defaultdict(list)
+    epidemic_config["infected_individuals_set"] = set()
+    epidemic_config["cdf_array"] = []
+    epidemic_config["cdf_len_set"] = set()
+
+    epidemic_config["districts_present"] = []
+    epidemic_config["chiefdom_present"] = set() 
+    epidemic_config["nodes"] = []
+    epidemic_config["onset_times"] = []
+
+    epidemic_config["dist_mvmt"] = defaultdict(list)
+    epidemic_config["ch_mvmt"] = defaultdict(list)
+
 
     if config["day_limit"]:
         for i in range(config["day_limit"]): 
@@ -28,45 +33,35 @@ def make_data_structures(config):
         for i in range(1000):
             day_dict[i] = []
 
-    #setting up empty dictionaries
-    dist_mvmt = defaultdict(list)
-    ch_mvmt = defaultdict(list)
 
-    for item1 in district_list:
-        for item2 in district_list:
+    for item1 in config["population_info"]["district_list"]:
+        for item2 in config["population_info"]["district_list"]:
             if item1 != item2:
-                dist_mvmt[item1,item2] = []
+                config["dist_mvmt"][item1,item2] = []
                 
-    for item1 in ch_list:
-        for item2 in ch_list:
+    for item1 in config["population_info"]["ch_list"]:
+        for item2 in config["population_info"]["ch_list"]:
             if item1 != item2:
-                ch_mvmt[item1, item2] = []
+                config["ch_mvmt"][item1, item2] = []
 
-    return case_dict, day_dict, trans_dict, child_dict, option_dict_districtlevel, infected_individuals_set, cdf_array, cdf_len_set, districts_present, chiefdom_set, nodes, onset_times, dist_mvmt, ch_mvmt
+    return epidemic_config
 
-def make_index_case(config, data_structures):
-
-    case_dict, day_dict, trans_dict, child_dict, option_dict_districtlevel, infected_individuals_set, cdf_array, cdf_len_set, districts_present, chiefdom_set, nodes, onset_times, dist_mvmt, ch_mvmt = data_structures
+def make_index_case(config, epidemic_config):
 
     index_case_individual = Individual(random.choice(range(1169263,1214412)), config["agent_location"], config["cfr"], config["distributions"]) #These should be the IDs of the range in Kissi Teng, Kailahun
-
     index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
-
     index_case_case = Case(0, None, None)
-    case_dict[index_case_case] = index_case_individual
-
-    trans_dict[index_case_individual.unique_id] = ["NA", '0', index_case_individual.incubation_day]
-    nodes.append(index_case_individual.unique_id)
     
-    child_dict["NA"] = [index_case_individual.unique_id]
+    epidemic_config["case_dict"][index_case_case] = index_case_individual
+    epidemic_config["transmission_dict"][index_case_individual.unique_id] = ["NA", '0', index_case_individual.incubation_day]
+    
+    epidemic_config["nodes"].append(index_case_individual.unique_id)
+    epidemic_config["child_dict"]["NA"] = [index_case_individual.unique_id]
+    epidemic_config["infected_individuals_set"].add(index_case_individual.unique_id)
+    epidemic_config["districts_present"].append(index_case_individual.dist)
+    epidemic_config["cluster_present"].add(index_case_individual.comm)
 
-    infected_individuals_set.add(index_case_individual.unique_id)
-
-    districts_present.append(index_case_individual.dist)
-
-    cluster_set.add(index_case_individual.comm)
-
-    #From Wauqier 2015 - specific to EBOV SLE
+    #From Wauqier 2015 - specific to EBOV SLE, it's the number of secondary cases from the index case at the funeral
     index_case_dict = {}
     index_case_dict["Hh"] = 2
     index_case_dict["Comm"] = 7
@@ -76,10 +71,13 @@ def make_index_case(config, data_structures):
     for level, number in index_case_dict.items():
         for person in range(number):
             day_inf = 0
-            new_case = Case(len(case_dict), level, index_case_case)
-            case_dict[new_case] = None
-            day_dict[day_inf].append(new_case)
+            new_case = Case(len(epidemic_config["case_dict"]), level, index_case_case)
+            epidemic_config["case_dict"][new_case] = None
+            epidemic_config["day_dict"][day_inf].append(new_case)
+
+    epidemic_config["index_case_individual"] = index_case_individual
+    epidemic_config["index_case_case"] = index_case_case
                
-    return index_case_case, index_case_individual, case_dict, trans_dict, child_dict, nodes, infected_individuals_set, districts_present, cluster_set, day_dict, dist_mvmt, ch_mvmt
+    return epidemic_config
 
 
