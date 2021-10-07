@@ -8,19 +8,18 @@ from scipy import special
 
 class tree():   
     
-    def __init__(self, person_tree=None, subtree_dict=None, node_dict=None, epidemic_len=None):
+    def __init__(self, tree_type=None, focal_person=None, subtree_dict=None, node_dict=None, epidemic_len=None):
         
         #print("Making subtree for " + person_tree.id)
-        
         
         self.nodes = set()
         self.tips = []
         self.branch_lengths = {}
         self.heights = {}
         
-        if person_tree:
-            self.subtree = True #a lil flag
-            self.person = person_tree #will be the person as a node object it corresponds to if it's a subtree
+        if tree_type == "subtree":
+            self.subtree = True 
+            self.person = focal_person #will be the person as a node object it corresponds to if it's a subtree
             self.contains_sample = False      
             self.transmits = False
             
@@ -31,14 +30,10 @@ class tree():
             if len(self.tips) != 0:
                 
                 self.coalescent(self.tips, 0.0)
-            
                 self.define_root()
-
                 self.get_branch_lengths()
-                
-
                         
-        else:
+        elif tree_type = "whole_tree":
             #Whole tree coalescent characteristics
     
             self.whole_tree = True

@@ -74,10 +74,9 @@ def get_R0(node_dict):
     
         return R0
 
-def plot_skyline(Ne_dict):
+def plot_skyline(Ne_dict): #not really relevant in here
 
     for_plotting = {}
-    
     for key, value in Ne_dict.items():
         
         new_key = key*-1
@@ -112,7 +111,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         node_dict = {}
         
         #this is recursive, so calling it once generates the whole node dictionary
-        node(index_case, "Ind", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
+        node(index_case, "individual", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
         #will the node dictionary be held in memory and passed on though? Might need to return it
         coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
         
