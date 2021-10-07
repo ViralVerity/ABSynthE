@@ -2,8 +2,8 @@ from collections import defaultdict
 import random
 import sys
 
-from node_class import *
-from tree_class import *
+from absynthe.classes.node_class import *
+from absynthe.classes.tree_class import *
 
 
 def sampling(transmission_dict, config, epidemic_len): 
@@ -112,7 +112,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         
         #this is recursive, so calling it once generates the whole node dictionary
         node_dict = node(index_case, "individual", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
-        coalescent_tree = tree(node_dict=node_dict, epidemic_len=epidemic_len)
+        coalescent_tree = tree(tree_type="whole_tree",node_dict=node_dict, epidemic_len=epidemic_len)
         
         if config["calculate_R0"]:
             R0 = get_R0(node_dict)

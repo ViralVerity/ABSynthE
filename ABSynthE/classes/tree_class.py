@@ -1,10 +1,10 @@
-import node_class as nc
 import random
 import uuid
 import numpy as np
 from collections import defaultdict
 from collections import OrderedDict
-from scipy import special
+
+from absynthe.classes.node_class import *
 
 class tree():   
     
@@ -140,7 +140,7 @@ class tree():
             for case in focal_individual.infections:
                 if len(case.sampled_infections) != 0 or case.sampled: 
                 
-                    transmission_tip = nc.node(case, "transmission", infector=focal_individual, infectee=case) 
+                    transmission_tip = node(case, "transmission", infector=focal_individual, infectee=case) 
                     transmission_tip.absolute_time = case.time_infected
                     
                     self.transmits = True
@@ -161,7 +161,7 @@ class tree():
             
     def define_root(self):
         
-        self.root = nc.node(uuid.uuid1(), "coalescent", height=self.root_time, children=[self.penultimate], subtree=self)
+        self.root = node(uuid.uuid1(), "coalescent", height=self.root_time, children=[self.penultimate], subtree=self)
         self.heights[self.root] = self.root_time      
         self.nodes.add(self.root)
         self.penultimate.node_parent = (self.root)
@@ -216,7 +216,7 @@ class tree():
                     current_height += tau
                                             
                     #ie the coalescent event of the pair selected above
-                    parent_node = nc.node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
+                    parent_node = node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
                     
                     lucky_pair[0].node_parent = parent_node
                     lucky_pair[1].node_parent = parent_node
