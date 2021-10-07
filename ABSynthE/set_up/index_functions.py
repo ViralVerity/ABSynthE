@@ -17,8 +17,8 @@ def make_data_structures(config):
     epidemic_config["cdf_array"] = []
     epidemic_config["cdf_len_set"] = set()
 
-    epidemic_config["districts_present"] = []
-    epidemic_config["chiefdom_present"] = set() 
+    epidemic_config["districts_present"] = set() #was a list before, I don't think it needs to be
+    epidemic_config["chiefdoms_present"] = set() 
     epidemic_config["nodes"] = []
     epidemic_config["onset_times"] = []
 
@@ -59,7 +59,7 @@ def make_index_case(config, epidemic_config):
     epidemic_config["child_dict"]["NA"] = [index_case_individual.unique_id]
     epidemic_config["infected_individuals_set"].add(index_case_individual.unique_id)
     epidemic_config["districts_present"].append(index_case_individual.dist)
-    epidemic_config["cluster_present"].add(index_case_individual.comm)
+    epidemic_config["chiefdoms_present"].add(index_case_individual.comm)
 
     #From Wauqier 2015 - specific to EBOV SLE, it's the number of secondary cases from the index case at the funeral
     index_case_dict = {}

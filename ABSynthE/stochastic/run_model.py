@@ -12,9 +12,9 @@ def run_model(config):
         ##writing to file and screen
         iteration_count += 1
         if iteration_count%config["log_every"] == 0:
-            write_file = True
+            config["write_file"] = True
         else:
-            write_file = False
+            config["write_file"] = False
         if iteration_count%10 == 0:
             sys.stdout.write(f'{iteration_count} runs completed')
 
@@ -28,8 +28,8 @@ def run_model(config):
         
         ###Run the epidemic###
         #this function needs work in terms of the config - also want to look at all these data_structures - part of config or something?
-        config["susceptibles_left"] = True #needs to be external because run_epidemic is recursive
-        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, chiefdom_set, epidemic_stopped = run_epidemic(config, 0, day_dict, case_dict, trans_dict, child_dict, infected_individuals_set, option_dict_districtlevel, onset_times, nodes, chiefdom_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, iteration_count)
+        susceptibles_left = True #needs to be external because run_epidemic is recursive
+        day_dict, case_dict, nodes, trans_dict, child_dict, dist_mvmt, ch_mvmt, onset_times, districts_present, chiefdom_set, epidemic_stopped = run_epidemic(0, day_dict, case_dict, trans_dict, child_dict, infected_individuals_set, option_dict_districtlevel, onset_times, nodes, chiefdom_set, cdf_len_set, cdf_array, districts_present, dist_mvmt, ch_mvmt, iteration_count)
 
     
         ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
@@ -61,7 +61,7 @@ def run_model(config):
         if epidemic_stopped:
             config["files"]["run_out_summary"].write(f"{iteration_count},{size}\n")
         
-        if epidemic_stopped and not write_file: #ie if it's been stopped because it's reached the day or case cap but not already being written
+        if epidemic_stopped and not config["write_file"]: #ie if it's been stopped because it's reached the day or case cap but not already being written
             
             runout_file = file_functions.prep_runout_file(config["output_directory"], iteration_count)
             for indie in case_dict.values():
@@ -78,7 +78,7 @@ def run_model(config):
             runout_file.close()
 
         
-        if write_file or epidemic_stopped:
+        if config["write_file"] or epidemic_stopped:
             tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(config["output_directory"], iteration_count)
             
             for district_pair, count_list in dist_mvmt.items(): #what is the value here - is it counts or days that they're happening on?
