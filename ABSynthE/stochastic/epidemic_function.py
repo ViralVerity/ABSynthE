@@ -3,20 +3,19 @@ from absynthe.classes.individual_class import *
 import sys
 
 #needs tidying and integrating config for the args
-def run_epidemic(start_day, susceptibles_left, config, epidemic_config):
+def run_epidemic(start_day, config, epidemic_config):
     
-    epidemic_stopped = False
+    epidemic_config["epidemic_stopped"] = False
     day_count = 0
     
     try: #replace with an if statement
         for day, case_list in epidemic_config["day_dict"].items():    
-            if not susceptibles_left:
-                break
             day_count += 1
             if config["capped"]:
-                if day_count > config["day_limit"] or len(case_dict) > config["case_limit"]:
-                    epidemic_stopped  = True
-                    break
+                if day_count > config["day_limit"] or len(epidemic_config["case_dict"]) > config["case_limit"]: #but then will cases get assigned an individual? Might need to add in another function to do that
+                    sys.stdout.write("Epidemic has reached day limit or case limit")
+                    epidemic_config["epidemic_stopped"]  = True
+                    return epidemic_config
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
                     parent = epidemic_config["case_dict"][focal_case.parent]#Gets the individual object of parent (intialised last time) from the case dictionary using the case object
@@ -29,8 +28,7 @@ def run_epidemic(start_day, susceptibles_left, config, epidemic_config):
                         pass
                     elif assignment == False: #If there is no-one left
                         sys.stdout.write("All members of the population infected\n")
-                        susceptibles_left = False
-                        epidemic_stopped = True
+                        epidemic_config["epidemic_stopped"] = True
                         return epidemic_config
                     
                     #Test that this only comes up when type = Individual
