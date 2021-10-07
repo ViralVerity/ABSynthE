@@ -2,7 +2,6 @@ from collections import defaultdict
 import sys
 import absynthe.set_up.index_functions import *
 import absynthe.stochastic.tree_simulator as tree_sim
-from absynthe.stochastic.epidemic_function import *
 
 
 def run_model(config):
@@ -98,8 +97,8 @@ def run_epidemic(start_day, config, epidemic_config):
                         focal_individual.parent = parent #Gives Individual the same parent as the Case object for recording
                         parent.children.append(focal_individual)
 
-                        #when transmission actually happened - how is this used? might be better to have a dictionary.
-                        epidemic_config["transmission_dict"][focal_individual.unique_id] = [focal_individual.parent.unique_id, day, (day+focal_individual.incubation_day)]
+                        #when transmission actually happened - used to make the tree
+                        epidemic_config["transmission_dict"][focal_individual.unique_id] = {"parent":focal_individual.parent.unique_id, "day_infected":day, "day_sampled":(day+focal_individual.incubation_day)} #sample day currently same as symptom onset
                         
                         #starting new instance for child dict - this could happen in the class definition?
                         epidemic_config["child_dict"][focal_individual.unique_id] = []
@@ -182,7 +181,7 @@ def write_runout_file(config, epidemic_config):
 
 def record_individual_epidemic(config, epidemic_config):
 
-    tree_file, district_mvmt_file, ch_mvmt_file, skyline_file, ltt_file = file_functions.prep_other_files(config["output_directory"], iteration_count)
+    district_mvmt_file, ch_mvmt_file = file_functions.prep_movement_files(config["output_directory"], iteration_count)
             
     for district_pair, count_list in epidemic_config["dist_mvmt"].items(): #what is the value here - is it counts or days that they're happening on?
         if len(count_list) != 0:
@@ -196,40 +195,40 @@ def record_individual_epidemic(config, epidemic_config):
             ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
     ch_mvmt_file.close()
     
-    #all this tree sim still needs tidying
-    #add in if statements for if skyline, if ltts
-    result = tree_sim.simulate_tree(trans_dict, child_dict, nodes, sampling_percentage, last_day) 
-    if result:
-        newick_string = result[0]
-        #skyline = result[1]
-        tree = result[1]
-        #lineages_through_time = result[5]
-        
-        config["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
+        if result:
+            coalescent_tree, newick_string, skyline, R0, those_sampled, ltt = result
 
-        #gets opened above - possibly not wanted? end pu with a lot of empty files?
-        tree_file.write(newick_string)
-        tree_file.close()
+            config["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
 
-        #start_interval = 0.0
-        #I think this is all commented out so that it doesn't slow down post-fitting things - should still be tidied up though.
-        if config["make_skyline"]: 
-            logpop_count = 0
-            for key, value in skyline.items():
-                logpop_count += 1
-                skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
-            skyline_file.close()
-        
-        if config["make_ltt"]: 
-            lineage_count = 0
-            for k,v in lineages_through_time.items():
-                lineage_count += 1
-                ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
-            ltt_file.close()
-        
-        if result[2]:
-            R0 = str(result[2])
-            config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
+            if config["output_tree"]:
+                tree_file = open(os.path.join(config["output_directory"],"trees",f"tree_for_{iteration_count}.txt", 'w'))
+                tree_file.write(newick_string)
+                tree_file.close()
+
+            if config["make_skyline"]: 
+                skyline_file = open(os.path.join(output_directory,"skylines", f"skyline_for_{iteration_count}.csv", 'w'))
+                skyline_file.write("number,start_interval,end_interval,logpopsize\n")
+
+                logpop_count = 0
+                for key, value in skyline.items():
+                    logpop_count += 1
+                    skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
+                skyline_file.close()
+            
+            if config["make_ltt"]: 
+                ltt_file = open(os.path.join(output_directory,"lineages",f"ltt_for_{iteration_count}.csv", 'w')) 
+                ltt_file.write("number,start,end,lineages\n")
+
+                lineage_count = 0
+                for k,v in lineages_through_time.items():
+                    lineage_count += 1
+                    ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
+                ltt_file.close()
+            
+            if config["calculate_R0"]:
+                config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
 
 
 

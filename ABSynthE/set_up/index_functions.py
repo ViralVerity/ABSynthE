@@ -8,7 +8,7 @@ def make_data_structures(config):
     epidemic_config = {}
 
     epidemic_config["case_dict"] = {} #case object to individual object
-    epidemic_config["transmission_dict"] = {}
+    epidemic_config["transmission_dict"] = defaultdict(dict)
     epidemic_config["child_dict"] = {}
     epidemic_config["day_dict"] = {}
 
