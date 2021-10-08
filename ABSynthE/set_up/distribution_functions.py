@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 from scipy import stats
 
+#these are all ebov specific too - maybe need a directory with all ebov specific files and flags to point to them
 
 def define_distributions():
     

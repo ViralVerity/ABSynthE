@@ -24,7 +24,7 @@ class Individual():
 
         if self.death_state == True: 
             self.death_time(death_cdf)
-            self.infectious_period = self.death_day + 7
+            self.infectious_period = self.death_day + 7 #ebola specific
         else:
             self.recovery_time(recovery_cdf)
             self.infectious_period = self.recovery_day

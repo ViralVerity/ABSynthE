@@ -4,7 +4,7 @@ import glob
 import os
 import pkg_resources
 
-from beastgenpy import __version__, _program
+from absynthe import __version__, _program
 
 setup(name='ABSynthE',
       version=__version__,

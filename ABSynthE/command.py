@@ -25,7 +25,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--day-limit", dest="day_limit", help="Cap the epidemic at this many days.")
     parser.add_argument("--cfr", help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
     
-    #sampling delay after symptoms can be added in - probably wants a distribution, so maybe this owuld just be a flag
+    #sampling delay after symptoms can be added in - probably wants a distribution, so maybe this would just be a flag
     parser.add_argument("--sampling-percentage", "-spct",  dest="sampling_percentage", help="Percentage of cases sampled, used in generating the phylogeny from cases. Default is 0.16 for Ebola", default=0.16)
     parser.add_argument("--sampling-scheme", "-scheme", dest="sampling_scheme", help="Sampling scheme to make tree. Currently only uniform over time and space is available.")
 
