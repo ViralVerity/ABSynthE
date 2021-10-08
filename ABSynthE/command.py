@@ -101,3 +101,7 @@ def main(sysargs = sys.argv[1:]):
                                     
     if case_limit or day_limit:
         run_out_summary.close()
+
+
+if __name__ == '__main__':
+    main()

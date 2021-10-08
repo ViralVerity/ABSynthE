@@ -5,6 +5,7 @@ __version__ = "0.1"
 __all__ = [
     "classes",
     "non_stochastic",
-    "stochastic"]
+    "stochastic",
+    "set_up"]
 
 from absynthe import *
