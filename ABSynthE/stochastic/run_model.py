@@ -1,6 +1,6 @@
 from collections import defaultdict
 import sys
-import absynthe.set_up.index_functions import *
+from absynthe.set_up.index_functions import *
 import absynthe.stochastic.tree_simulator as tree_sim
 
 

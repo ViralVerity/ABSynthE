@@ -33,7 +33,7 @@ class tree():
                 self.define_root()
                 self.get_branch_lengths()
                         
-        elif tree_type = "whole_tree":
+        elif tree_type == "whole_tree":
             #Whole tree coalescent characteristics
     
             self.whole_tree = True

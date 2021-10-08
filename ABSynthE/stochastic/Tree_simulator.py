@@ -17,7 +17,7 @@ def sampling(transmission_dict, config, epidemic_len):
     number_of_people = round(total*sampled_percentage)
     weeks = round(epidemic_len/7)
     
-    if sampling_scheme = "uniform":
+    if sampling_scheme == "uniform":
         if weeks > 0:
             samples_per_week = round(number_of_people/weeks)
         else:

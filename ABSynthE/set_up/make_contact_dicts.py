@@ -18,7 +18,7 @@ def make_contact_dicts(input_directory, config):
         agent_location[new_key] = data[key]
     config["agent_location"] = agent_location
 
-    with open((os.path.join(input_directory,"District_to_hh.txt")) as json_file:
+    with open(os.path.join(input_directory,"District_to_hh.txt")) as json_file:
         config["dist_to_hh"] = json.load(json_file)
 
     with open((os.path.join(input_directory,"household_to_chiefdom.txt")) as json_file:

@@ -8,7 +8,7 @@ class Individual():
     def __init__(self, unique_id, agent_location, cfr, distributions): 
         """Defines infection course parameters for individual"""
         
-        inc_cdf = distributions["inc_cdf"]]
+        inc_cdf = distributions["inc_cdf"]
         death_cdf = distributions["death_cdf"]
         recovery_cdf = distributions["recovery_cdf"]
         
