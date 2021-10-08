@@ -25,7 +25,7 @@ def run_model(config):
         epidemic_config = index_functions.make_index_case(config, epidemic_config)
         
         if write_file: #check that info file gets written to in the epidemic run like I think it does
-            config["info_file"] = file_functions.prep_info_file(config["output_directory"]), epidemic_config["index_case_individual"], iteration_count)
+            config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
         
         ###Run the epidemic###
         epidemic_config = run_epidemic(0, config, epidemic_config)
