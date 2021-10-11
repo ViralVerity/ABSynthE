@@ -66,8 +66,8 @@ def make_summary_files(config):
 
 def prep_movement_files(output_directory, iteration_count):
 
-    district_mvmt_file = open(os.path.join(output_directory,"dist_mvmt", f'mvmt_for_{iteration_count}.csv', 'w'))
-    ch_mvmt_file = open(os.path.join(output_directory,"ch_mvmt",f"mvmt_for_{iteration_count}.csv", 'w'))
+    district_mvmt_file = open(os.path.join(output_directory,"dist_mvmt", f'mvmt_for_{iteration_count}.csv'), 'w')
+    ch_mvmt_file = open(os.path.join(output_directory,"ch_mvmt",f"mvmt_for_{iteration_count}.csv"), 'w')
     
     district_mvmt_file.write("district_one,district_two,times\n") 
     ch_mvmt_file.write("chiefdom_one,chiefdom_two,times\n")                      

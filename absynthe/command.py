@@ -38,6 +38,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
     
     parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
+    parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
     parser.add_argument("-h","--help",action="store_true",dest="help")
 
     if len(sysargs)<1: 
@@ -68,6 +69,7 @@ def main(sysargs = sys.argv[1:]):
     config["calculate_R0"] = args.calculate_R0
 
     config["overwrite"] = args.overwrite
+    config["verbose"] = args.verbose
 
     sys.stdout.write("Setting up for running epidemics\n")
     

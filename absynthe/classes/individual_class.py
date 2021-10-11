@@ -2,7 +2,7 @@
 
 import numpy as np
 import random
-import absynthe.set_up.distribution_functions
+import absynthe.set_up.distribution_functions as distribution_functions
 
 class Individual(): 
     def __init__(self, unique_id, parent, agent_location, cfr, distributions, day, epidemic_config): 
@@ -24,7 +24,7 @@ class Individual():
         self.incubation_time(inc_cdf)
         self.death_prob(cfr)
 
-        if self.death_state == True: 
+        if self.death_state: 
             self.death_time(death_cdf)
             self.infectious_period = self.death_day + 7 #ebola specific
         else:

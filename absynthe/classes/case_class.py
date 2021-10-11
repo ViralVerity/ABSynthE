@@ -16,8 +16,8 @@ class Case():
             dist_ppl_list = option_dict_district_level[parent_individual.ch]
         elif parent_individual.dist == "westernarearural" or parent_individual.dist == "westernareaurban":
             #not sure if this is the right behaviour
-            dist_ppl_list = random.choice([config["population_structure"]["hh_to_ppl"][hh] for hh in config["population_structure"]["ch_to_hh"][parent_individual.ch] 
-                                                if hh != parent_individual.hh]))
+            dist_ppl_list = ([config["population_structure"]["hh_to_ppl"][hh] for hh in config["population_structure"]["ch_to_hh"][parent_individual.ch] 
+                                                if hh != parent_individual.hh])
         else:
             dist_ppl_list = ([config["population_structure"]["ch_to_ppl"][chief] for chief in config["population_structure"]["dist_to_ch"][parent_individual.dist] if chief != parent_individual.ch])
             option_dict_district_level[parent_individual.ch] = dist_ppl_list

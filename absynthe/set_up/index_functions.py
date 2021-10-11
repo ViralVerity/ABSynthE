@@ -1,5 +1,5 @@
-from absynthe.classes.individual_class import *
-from absynthe.classes.case_class import *
+from absynthe.classes.individual_class import Individual
+from absynthe.classes.case_class import Case
 import random
 from collections import defaultdict
 #stick this in make_contact_dicts
