@@ -1,6 +1,7 @@
 import os
 import sys
 import yaml
+import datetime as dt
 
 
 def parse_population_information(configfile):
@@ -15,33 +16,39 @@ def parse_population_information(configfile):
     return population_config
 
 
-def make_directories(output_directory):
-    
-    if not os.path.exists(output_directory):
-        os.mkdir(output_directory)
+def make_directories(config):
 
-    if not os.path.exists(os.path.join(output_directory, "log_files")):
-        os.mkdir(os.path.join(output_directory, "log_files"))
-    else:
-        sys.stderr.write(f"Results already exist at {output_directory}. Please provide a different output directory.\n")
+    if not config["output_directory"]:
+        config["output_directory"] = f'absynthe_results_{dt.date.today()}'
+    
+    if not os.path.exists(config["output_directory"]):
+        os.mkdir(config["output_directory"])
+
+    if not os.path.exists(os.path.join(config["output_directory"], "log_files")):
+        os.mkdir(os.path.join(config["output_directory"], "log_files"))
+    elif os.listdir(os.path.join(config["output_directory"], "log_files")) != []:
+        sys.stderr.write(f"Results already exist at {config['output_directory']}. Please provide a different output directory.\n")
         sys.exit(-1)
 
-    os.mkdir(os.path.join(output_directory,"trees"))
-    os.mkdir(os.path.join(output_directory,"dist_mvmt"))
-    os.mkdir(os.path.join(output_directory,"ch_mvmt"))
-    os.mkdir(os.path.join(output_directory, "skylines"))
-    os.mkdir(os.path.join(output_directory, 'lineages'))
-    
-def make_summary_files(output_directory):
+    if not os.path.exists(os.path.join(config["output_directory"],"trees")):
+        os.mkdir(os.path.join(config["output_directory"],"trees"))
+        os.mkdir(os.path.join(config["output_directory"],"dist_mvmt"))
+        os.mkdir(os.path.join(config["output_directory"],"ch_mvmt"))
+        os.mkdir(os.path.join(config["output_directory"], "skylines"))
+        os.mkdir(os.path.join(config["output_directory"], 'lineages'))
+
+    return config
+        
+def make_summary_files(config):
     
     if config["calculate_R0"]:
-        R0_output = open(os.path.join(output_directory,"R0_run.csv"), 'w')
+        R0_output = open(os.path.join(config["output_directory"],"R0_run.csv"), 'w')
     else:
         R0_output = None
         
-    size_output = open(os.path.join(output_directory, "epidemic_size.csv"),'w')
-    most_recent_tip_file = open(os.path.join(output_directory, "most_recent_dates.csv"),'w')
-    length_output = open(os.path.join(output_directory, "persistence.csv"), 'w')
+    size_output = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
+    most_recent_tip_file = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
+    length_output = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
     
     most_recent_tip_file.write("number,most_recently_sampled_tip\n")
     size_output.write("number,size,districts_involved,communities_involved\n")
