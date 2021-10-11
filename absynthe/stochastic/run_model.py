@@ -158,11 +158,11 @@ def write_to_summary_files(config, epidemic_config, iteration_count, last_day):
     dists = len(epidemic_config["districts_present"])
     chiefdoms = len(epidemic_config["chiefdoms_present"])
 
-    config["summary_files"]["length_output"].write(f"{iteration_count},{last_day}\n")
-    config["summary_files"]["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
+    config["length_output"].write(f"{iteration_count},{last_day}\n")
+    config["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
     
     if epidemic_config["epidemic_stopped"]:
-        config["summary_files"]["run_out_summary"].write(f"{iteration_count},{size}\n")
+        config["run_out_summary"].write(f"{iteration_count},{size}\n")
 
 
 def write_runout_file(config, epidemic_config):

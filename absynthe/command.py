@@ -74,7 +74,7 @@ def main(sysargs = sys.argv[1:]):
     config = make_contact_dicts(config["input_directory"], config)
                 
     config = file_funcs.make_directories(config)
-    R0_output, size_output, most_recent_tip_file, length_output = file_funcs.make_summary_files(config)
+    config = file_funcs.make_summary_files(config)
     
     if config["case_limit"] or config["day_limit"]:
         config["capped"] = True
@@ -88,7 +88,6 @@ def main(sysargs = sys.argv[1:]):
 
     config["population_info"] = population_info
     config["distributions"] = distribution_dict 
-    config["summary_files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
 
     print("\n**** CONFIG ****")
     no_print = ["agent_location", "hh_to_ch", "hh_to_ppl", "ch_to_hh", "ch_to_ppl", "dist_to_hh", "dist_to_ppl", "dist_to_ch", "district_distance",

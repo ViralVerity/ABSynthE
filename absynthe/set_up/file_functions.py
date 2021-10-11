@@ -45,17 +45,18 @@ def make_summary_files(config):
         R0_output = open(os.path.join(config["output_directory"],"R0_run.csv"), 'w')
     else:
         R0_output = None
-        
-    size_output = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
-    most_recent_tip_file = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
-    length_output = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
-    
-    most_recent_tip_file.write("number,most_recently_sampled_tip\n")
-    size_output.write("number,size,districts_involved,communities_involved\n")
-    length_output.write("number,length_of_epidemic\n")
-    
-    return R0_output, size_output, most_recent_tip_file, length_output
 
+    config["R0_output"] = R0_output
+        
+    config["size_output"] = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
+    config["most_recent_tip_file"] = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
+    config["length_output"] = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
+    
+    config["most_recent_tip_file"].write("number,most_recently_sampled_tip\n")
+    config["size_output"].write("number,size,districts_involved,communities_involved\n")
+    config["length_output"].write("number,length_of_epidemic\n")
+    
+    return config
 
 def prep_movement_files(output_directory, iteration_count):
 
