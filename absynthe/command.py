@@ -34,8 +34,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--output-ltt", dest="output_ltt", action="store_true", help="Calculate lineages through time when tree is generated.")
     parser.add_argument("--calculate-R0", "-R0", dest="calculate_R0", action="store_true", help="Calculate R0 when outbreak is logged")
     
-    parser.add_argument("--number-model-iterations",type=float, dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
-    parser.add_argument("--log-every", dest="log_every",type=float, help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
+    parser.add_argument("--number-model-iterations",type=int, dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
+    parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
     
     parser.add_argument("-h","--help",action="store_true",dest="help")
 
@@ -76,7 +76,7 @@ def main(sysargs = sys.argv[1:]):
     config = file_funcs.make_directories(config)
     R0_output, size_output, most_recent_tip_file, length_output = file_funcs.make_summary_files(config)
     
-    if case_limit or day_limit:
+    if config["case_limit"] or config["day_limit"]:
         config["capped"] = True
         run_out_summary = file_funcs.prep_runout_summary(config["output_directory"])
     else:
@@ -84,13 +84,19 @@ def main(sysargs = sys.argv[1:]):
     
     #where does the info file get prepped? Must be internal to the run
 
-    population_info = file_funcs.parse_population_information(population_config)
+    population_info = file_funcs.parse_population_information(args.population_config)
 
-    config = {}
     config["population_info"] = population_info
     config["distributions"] = distribution_dict 
     config["summary_files"] = {"R0_output":R0_output, "size_output":size_output, "most_recent_tip_file":most_recent_tip_file, "length_output":length_output, "run_out_summary":run_out_summary}
 
+    print("\n**** CONFIG ****")
+    no_print = ["agent_location", "hh_to_ch", "hh_to_ppl", "ch_to_hh", "ch_to_ppl", "dist_to_hh", "dist_to_ppl", "dist_to_ch", "district_distance",
+    "distributions", "population_info"]
+    for k in sorted(config):
+        if k not in no_print:
+            print(f" - {k}: {config[k]}")
+    
     #see if the multi-threading still works
     pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict
     pool.map(run_model,(config, )) #calls the run_model.py script       

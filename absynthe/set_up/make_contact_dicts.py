@@ -29,7 +29,7 @@ def make_contact_dicts(input_directory, config):
         config["ch_to_hh"] = json.load(json_file)
 
     with open(os.path.join(input_directory,"chiefdom_to_people.txt")) as json_file:
-        config["chiefdom_to_ppl"] = json.load(json_file)
+        config["ch_to_ppl"] = json.load(json_file)
 
     with open(os.path.join(input_directory,"district_to_household.txt")) as json_file:
         config["dist_to_hh"] = json.load(json_file)
