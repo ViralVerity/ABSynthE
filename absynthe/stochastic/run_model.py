@@ -95,21 +95,9 @@ def run_epidemic(start_day, config, epidemic_config):
                     #Test that this only comes up when type = Individual
                     else: #There is a successful assignation to a specific individual
 
-                        epidemic_config["onset_times"].append(day)
-
-                        #adding to relevant structures to fill in information about the new case
+                        #how it relates to other classes
                         focal_individual = epidemic_config["case_dict"][focal_case] #Individual object got by who_am_I as value
-                        focal_individual.parent = parent #Gives Individual the same parent as the Case object for recording
                         parent.children.append(focal_individual)
-
-                        #when transmission actually happened - used to make the tree
-                        epidemic_config["transmission_dict"][focal_individual.unique_id] = {"parent":focal_individual.parent.unique_id, "day_infected":day, "day_sampled":(day+focal_individual.incubation_day)} #sample day currently same as symptom onset
-                        
-                        #starting new instance for child dict - this could happen in the class definition?
-                        epidemic_config["child_dict"][focal_individual.unique_id] = []
-                        epidemic_config["child_dict"][focal_individual.parent.unique_id].append(focal_individual.unique_id)
-
-                        epidemic_config["nodes"].append(focal_individual.unique_id)
 
                         if config["write_file"]:
                             config["info_file"].write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id},{focal_individual.hh},{focal_individual.ch},{focal_individual.dist},{day},{day+focal_individual.incubation_day},{day + focal_individual.incubation_day}\n')
@@ -119,9 +107,7 @@ def run_epidemic(start_day, config, epidemic_config):
                             if focal_individual.ch != focal_individual.parent.ch: #This is going to include between district movements too remember
                                 epidemic_config["ch_mvmt"][focal_individual.ch,focal_individual.parent.ch].append(day)
                         
-                        epidemic_config["districts_present"].add(focal_individual.dist)
-                        epidemic_config["chiefdoms_present"].add(focal_individual.ch)
-
+                        ##get possible transmissions##
                         poss_case_dict = focal_individual.get_possible_cases() #Gives dict of contact_level: number of people
                         
                         for level, number in poss_case_dict.items():

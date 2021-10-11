@@ -56,9 +56,8 @@ class Case():
 
         #Is the person actually susceptible
         if poss_case not in epidemic_config["infected_individuals_set"]:
-            new_individual = Individual(poss_case, config["population_structure"]["agent_location"], config["cfr"], config["distributions"])
+            new_individual = Individual(poss_case, parent_individual, config["population_structure"]["agent_location"], config["cfr"], config["distributions"], day, epidemic_config)
             epidemic_config["case_dict"][self] = new_individual
-            epidemic_config["infected_individuals_set"].add(poss_case)
             
         elif day == 0: #So that there are actually 14 cases in the first transmission cluster
             self.who_am_I(parent_individual, day, config, epidemic_config)
