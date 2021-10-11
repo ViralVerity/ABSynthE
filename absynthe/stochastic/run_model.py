@@ -1,7 +1,8 @@
 from collections import defaultdict
 import sys
 from absynthe.set_up.index_functions import *
-import absynthe.stochastic.tree_simulator as tree_sim
+from absynthe.set_up.file_functions import *
+from absynthe.stochastic import tree_simulator as tree_sim
 
 
 def run_model(config):

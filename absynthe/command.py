@@ -16,7 +16,7 @@ import absynthe.set_up.distribution_functions as dist_funcs
 def main(sysargs = sys.argv[1:]):
 
     parser = argparse.ArgumentParser(add_help=False,
-    description=misc.preamble(__version__))
+    description="ABSynthE")
 
     parser.add_argument("--input-directory", "-indir", dest="input_directory", help="directory containing contact structure jsons")
     parser.add_argument("--output-directory", "-outdir", dest="output_directory")

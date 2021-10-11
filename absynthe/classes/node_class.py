@@ -1,5 +1,5 @@
 import numpy as np
-from tree_class import *
+from absynthe.classes.tree_class import *
 
 class node():
     
