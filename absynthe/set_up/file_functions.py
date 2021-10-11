@@ -30,9 +30,11 @@ def make_directories(config):
 
     if not os.path.exists(os.path.join(config["output_directory"], "log_files")):
         os.mkdir(os.path.join(config["output_directory"], "log_files"))
-    elif os.listdir(os.path.join(config["output_directory"], "log_files")) != []:
-        sys.stderr.write(f"Results already exist at {config['output_directory']}. Please provide a different output directory.\n")
-        sys.exit(-1)
+    elif not config["overwrite"]:
+        for f in  os.listdir(os.path.join(config["output_directory"], "log_files")):
+            if not f.startswith("."):
+                sys.stderr.write(f"Results already exist at {config['output_directory']}. Please provide a different output directory or use the --overwrite flag.\n")
+                sys.exit(-1)
 
     if not os.path.exists(os.path.join(config["output_directory"],"trees")):
         os.mkdir(os.path.join(config["output_directory"],"trees"))
@@ -82,9 +84,9 @@ def prep_runout_summary(output_directory):
 #At the start, and then also at the end if we need it if epidemic is capped
 def prep_info_file(output_directory, index_case_individual, iteration_count):
          
-    info_file = open(os.path.join(output_directory,"log_files",f"information_file_for_{iteration_count}.csv", 'w'))
+    info_file = open(os.path.join(output_directory,"log_files",f"information_file_for_{iteration_count}.csv"), 'w')
     info_file.write("Individual,Parent,Household,Chiefdom,District,Day_infected,Day_onset,Day_sampled\n") 
-    info_file.write(f"{index_case_individual.unique_id},NA,{index_case_individual.hh},{index_case_individual.comm},{index_case_individual.dist},0,{index_case_individual.incubation_day},{index_case_individual.incubation_day}\n")
+    info_file.write(f"{index_case_individual.unique_id},NA,{index_case_individual.hh},{index_case_individual.ch},{index_case_individual.dist},0,{index_case_individual.incubation_day},{index_case_individual.incubation_day}\n")
 
     return info_file
 

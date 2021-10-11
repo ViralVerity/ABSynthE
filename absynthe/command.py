@@ -37,6 +37,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--number-model-iterations",type=int, dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
     parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
     
+    parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
     parser.add_argument("-h","--help",action="store_true",dest="help")
 
     if len(sysargs)<1: 
@@ -66,6 +67,8 @@ def main(sysargs = sys.argv[1:]):
     config["output_ltt"] = args.output_ltt
     config["calculate_R0"] = args.calculate_R0
 
+    config["overwrite"] = args.overwrite
+
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
@@ -80,6 +83,7 @@ def main(sysargs = sys.argv[1:]):
         config["capped"] = True
         run_out_summary = file_funcs.prep_runout_summary(config["output_directory"])
     else:
+        config["capped"] = False
         run_out_summary = ""
     
     #where does the info file get prepped? Must be internal to the run
