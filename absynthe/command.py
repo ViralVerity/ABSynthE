@@ -89,9 +89,12 @@ def main(sysargs = sys.argv[1:]):
     config["population_info"] = population_info
     config["distributions"] = distribution_dict 
 
+    print(config["population_info"])
+    print(type(config["population_info"]))
+
     print("\n**** CONFIG ****")
     no_print = ["agent_location", "hh_to_ch", "hh_to_ppl", "ch_to_hh", "ch_to_ppl", "dist_to_hh", "dist_to_ppl", "dist_to_ch", "district_distance",
-    "distributions", "population_info"]
+    "distributions"]
     for k in sorted(config):
         if k not in no_print:
             print(f" - {k}: {config[k]}")

@@ -1,6 +1,7 @@
 from absynthe.classes.individual_class import *
 from absynthe.classes.case_class import *
 import random
+from collections import defaultdict
 
 
 def make_data_structures(config):
@@ -28,21 +29,21 @@ def make_data_structures(config):
 
     if config["day_limit"]:
         for i in range(config["day_limit"]): 
-            day_dict[i] = []
+            epidemic_config["day_dict"][i] = []
     else:
         for i in range(1000):
-            day_dict[i] = []
+            epidemic_config["day_dict"][i] = []
 
 
     for item1 in config["population_info"]["district_list"]:
         for item2 in config["population_info"]["district_list"]:
             if item1 != item2:
-                config["dist_mvmt"][item1,item2] = []
+                epidemic_config["dist_mvmt"][item1,item2] = []
                 
     for item1 in config["population_info"]["ch_list"]:
         for item2 in config["population_info"]["ch_list"]:
             if item1 != item2:
-                config["ch_mvmt"][item1, item2] = []
+                epidemic_config["ch_mvmt"][item1, item2] = []
 
     return epidemic_config
 

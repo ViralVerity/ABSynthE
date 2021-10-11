@@ -4,14 +4,18 @@ import yaml
 import datetime as dt
 
 
-def parse_population_information(configfile):
+def parse_population_information(config_file):
 
-    with open(configfile,"r") as f:
+    with open(config_file,"r") as f:
         try:
             population_config = yaml.load(f, Loader=yaml.FullLoader)
         except:
-            sys.stderr.write(cyan(f'Error: failed to read config file. Ensure your file in correct yaml format.\n'))
+            sys.stderr.write(f'Error: failed to read config file. Ensure your file in correct yaml format.\n')
             sys.exit(-1)
+    
+    if type(population_config) != dict:
+        sys.stderr.write("Config file is not correctly formatted.\n")
+        sys.exit(-1)
         
     return population_config
 
