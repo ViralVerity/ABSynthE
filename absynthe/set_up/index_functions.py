@@ -35,13 +35,13 @@ def make_data_structures(config):
             epidemic_config["day_dict"][i] = []
 
 
-    for item1 in config["population_info"]["district_list"]:
-        for item2 in config["population_info"]["district_list"]:
+    for item1 in config["population_structure"]["district_list"]:
+        for item2 in config["population_structure"]["district_list"]:
             if item1 != item2:
                 epidemic_config["dist_mvmt"][item1,item2] = []
                 
-    for item1 in config["population_info"]["ch_list"]:
-        for item2 in config["population_info"]["ch_list"]:
+    for item1 in config["population_structure"]["ch_list"]:
+        for item2 in config["population_structure"]["ch_list"]:
             if item1 != item2:
                 epidemic_config["ch_mvmt"][item1, item2] = []
 
@@ -49,7 +49,7 @@ def make_data_structures(config):
 
 def make_index_case(config, epidemic_config):
 
-    index_case_individual = Individual(random.choice(range(1169263,1214412)), config["agent_location"], config["cfr"], config["distributions"]) #These should be the IDs of the range in Kissi Teng, Kailahun
+    index_case_individual = Individual(random.choice(range(1169263,1214412)), config["population_structure"]["agent_location"], config["cfr"], config["distributions"]) #These should be the IDs of the range in Kissi Teng, Kailahun
     index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
     index_case_case = Case(0, None, None)
     
@@ -59,8 +59,8 @@ def make_index_case(config, epidemic_config):
     epidemic_config["nodes"].append(index_case_individual.unique_id)
     epidemic_config["child_dict"]["NA"] = [index_case_individual.unique_id]
     epidemic_config["infected_individuals_set"].add(index_case_individual.unique_id)
-    epidemic_config["districts_present"].append(index_case_individual.dist)
-    epidemic_config["chiefdoms_present"].add(index_case_individual.comm)
+    epidemic_config["districts_present"].add(index_case_individual.dist)
+    epidemic_config["chiefdoms_present"].add(index_case_individual.ch)
 
     #From Wauqier 2015 - specific to EBOV SLE, it's the number of secondary cases from the index case at the funeral
     index_case_dict = {}

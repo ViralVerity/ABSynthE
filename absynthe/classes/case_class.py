@@ -56,7 +56,7 @@ class Case():
 
         #Is the person actually susceptible
         if poss_case not in epidemic_config["infected_individuals_set"]:
-            new_individual = Individual(poss_case, config["population_structure"], config["agent_location"], config["cfr"], config["distributions"])
+            new_individual = Individual(poss_case, config["population_structure"]["agent_location"], config["cfr"], config["distributions"])
             epidemic_config["case_dict"][self] = new_individual
             epidemic_config["infected_individuals_set"].add(poss_case)
             

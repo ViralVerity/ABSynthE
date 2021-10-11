@@ -7,6 +7,9 @@ import absynthe.stochastic.tree_simulator as tree_sim
 
 def run_model(config):
     
+    sys.stdout.write("\nStarting epidemic runs.\n")
+
+
     iteration_count = -1
     
     for i in range(config["number_model_iterations"]):
@@ -17,7 +20,7 @@ def run_model(config):
             config["write_file"] = True
         else:
             config["write_file"] = False
-        if iteration_count%10 == 0:
+        if iteration_count%config["log_every"] == 0:
             sys.stdout.write(f'{iteration_count} runs completed')
 
         epidemic_config = index_functions.make_data_structures(config)        
@@ -25,7 +28,7 @@ def run_model(config):
         ###Making index case###
         epidemic_config = index_functions.make_index_case(config, epidemic_config)
         
-        if write_file: #check that info file gets written to in the epidemic run like I think it does
+        if config["write_file"]:
             config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
         
         ###Run the epidemic###

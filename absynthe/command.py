@@ -69,15 +69,17 @@ def main(sysargs = sys.argv[1:]):
 
     config["overwrite"] = args.overwrite
 
+    sys.stdout.write("Setting up for running epidemics\n")
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
-        
-    distribution_dict = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
-    config = make_contact_dicts(config["input_directory"], config)
-                
+    
     config = file_funcs.make_directories(config)
     config = file_funcs.make_summary_files(config)
+
+    config["distributions"] = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
+    config["population_structure"] = file_funcs.parse_population_information(args.population_config)
+    config = make_contact_dicts(config["input_directory"], config)
     
     if config["case_limit"] or config["day_limit"]:
         config["capped"] = True
@@ -86,19 +88,8 @@ def main(sysargs = sys.argv[1:]):
         config["capped"] = False
         run_out_summary = ""
     
-    #where does the info file get prepped? Must be internal to the run
-
-    population_info = file_funcs.parse_population_information(args.population_config)
-
-    config["population_info"] = population_info
-    config["distributions"] = distribution_dict 
-
-    print(config["population_info"])
-    print(type(config["population_info"]))
-
     print("\n**** CONFIG ****")
-    no_print = ["agent_location", "hh_to_ch", "hh_to_ppl", "ch_to_hh", "ch_to_ppl", "dist_to_hh", "dist_to_ppl", "dist_to_ch", "district_distance",
-    "distributions"]
+    no_print = ["population_structure", "distributions"]
     for k in sorted(config):
         if k not in no_print:
             print(f" - {k}: {config[k]}")

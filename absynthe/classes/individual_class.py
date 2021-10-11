@@ -37,7 +37,7 @@ class Individual():
             self.death_state = True
         return self.death_state
 
-    def incubation_time(self, incc_df):
+    def incubation_time(self, inc_cdf):
         random_number = random.uniform(0,1)
         self.incubation_day = np.argmax(inc_cdf > random_number)
         return self.incubation_day
