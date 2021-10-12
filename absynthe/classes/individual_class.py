@@ -2,10 +2,10 @@
 
 import numpy as np
 import random
-import absynthe.set_up.distribution_functions
+import absynthe.set_up.distribution_functions as distribution_functions
 
 class Individual(): 
-    def __init__(self, unique_id, agent_location, cfr, distributions): 
+    def __init__(self, unique_id, parent, agent_location, cfr, distributions, day, epidemic_config): 
         """Defines infection course parameters for individual"""
         
         inc_cdf = distributions["inc_cdf"]
@@ -13,21 +13,26 @@ class Individual():
         recovery_cdf = distributions["recovery_cdf"]
         
         self.unique_id = unique_id
+        self.parent = parent
         self.children = [] 
-        
+
         self.hh = agent_location[self.unique_id][0]
         self.ch = agent_location[self.unique_id][1]
         self.dist = agent_location[self.unique_id][2]
 
+        self.infection_day = day
         self.incubation_time(inc_cdf)
         self.death_prob(cfr)
 
-        if self.death_state == True: 
+        if self.death_state: 
             self.death_time(death_cdf)
             self.infectious_period = self.death_day + 7 #ebola specific
         else:
             self.recovery_time(recovery_cdf)
             self.infectious_period = self.recovery_day
+
+        self.add_self_to_dicts(epidemic_config)
+
 
     def death_prob(self, cfr):
         death_poss = np.random.uniform(0, 1.0)
@@ -37,7 +42,7 @@ class Individual():
             self.death_state = True
         return self.death_state
 
-    def incubation_time(self, incc_df):
+    def incubation_time(self, inc_cdf):
         random_number = random.uniform(0,1)
         self.incubation_day = np.argmax(inc_cdf > random_number)
         return self.incubation_day
@@ -52,6 +57,27 @@ class Individual():
         random_number = random.uniform(recovery_cdf[3],1)
         self.recovery_day = np.argmax(recovery_cdf > random_number)
         return self.recovery_day
+
+
+    def add_self_to_dicts(self, epidemic_config):
+
+        epidemic_config["child_dict"][self.unique_id] = []
+        if self.parent:
+            epidemic_config["child_dict"][self.parent.unique_id].append(self.unique_id)
+            epidemic_config["transmission_dict"][self.unique_id] = {"parent":self.parent.unique_id, "day_infected":self.infection_day, "day_sampled":(self.infection_day+self.incubation_day)} #sample day currently same as symptom onset
+        else:
+            if self.unique_id != epidemic_config["index_id"]:
+                sys.stderr.write(f'{self.unique_id} has no parent and is not the index case.\n')
+                sys.error(-1)
+            epidemic_config["child_dict"]["NA"] = [self.unique_id]
+            epidemic_config["transmission_dict"][self.unique_id] = {"parent":None, "day_infected":self.infection_day, "day_sampled":(self.infection_day+self.incubation_day)}
+
+        epidemic_config["nodes"].append(self.unique_id)
+        epidemic_config["districts_present"].add(self.dist)
+        epidemic_config["chiefdoms_present"].add(self.ch)
+
+        epidemic_config["onset_times"].append(self.infection_day)
+        epidemic_config["infected_individuals_set"].add(self.unique_id)
 
 
     ###Running epidemic functions###
@@ -80,7 +106,7 @@ class Individual():
         else:
             poss_contact_dict["Hh"] = 0
 
-        if comm_number != None:
+        if ch_number != None:
             poss_contact_dict["Ch"] = ch_number
         else:
             poss_contact_dict["Ch"] = 0
