@@ -3,7 +3,6 @@ import sys
 from absynthe.set_up.index_functions import *
 import absynthe.stochastic.tree_simulator as tree_sim
 
-
 def run_model(config):
     
     iteration_count = -1
