@@ -1,6 +1,7 @@
 # ABSynthE
 
 **A**gent **B**ased **Synth**etic **E**pidemic
+
 <img src="./logo/ABSynthE_logo.svg", width="400">
 
 
