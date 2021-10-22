@@ -1,36 +1,45 @@
 # ABSynthE
 
-Agent-based simulator for Ebola Virus.
-
-Still very much a work in progress
-
-## Simulation scripts
-
-Contains scripts for running various different versions of the simulator, and associated modules.
-
-"Simulate_epidemic" - Runs the simulator, with options for number of iterations; capping/no capping etc. Imports all of the following modules:
-- "case_class.py" - Defines the case class and associated methods
-- "distribution_functions.py" - defines cdfs for infection parameters eg likelihood of death over time
-- "epidemic_function.py" - runs one iteration of the epidemic through the defined contact structure
-- "file_functions.py" - Preps results files
-- "index_functions.py" - Makes index case for epidemic
-- "individual_class.py" - Defines individual class and associated methods
-- "make_contact_dicts.py" - makes dictionaries of various aspects of the gross contact structure 
-
-NB the contact data is currently not on this repo as the files are too large to be uploaded. It is therefore tricky to run the simulator
+**A**gent **B**ased **Synth**etic **E**pidemic
+<img src="./logo/ABSynthE_logo.svg", width="400">
 
 
+# absynthe
 
-- "Tree_simulator" - generates the coalescent tree and corresponding skyline stochastically. Contains some functions, and also runs:
-- "tree_class.py": - contains tree class definition with associated methods
-- "node_class.py" - contains node class definition and associated methods
+Installable tool to run an ebola epidemic through the population of Sierra Leone in 2014. 
+It can also simulate a coalescent tree with accompanying epidemic statistics.
+
+Detailed information about the model algorithm can be found in "ABSynthE description.docx" 
+
+To install, run: 
+
+`python setup.py install`
+
+To set up a general run:
+
+`absynthe --input-directory PATH/TO/CONTACT/STRUCTURE --population-config PATH/TO/POPULATION/CONFIG`
+
+Which will run with the defaults (currently set to Ebola in SLE defaults eg sampling percentage is 0.16, case fatality is 0.7).
+This will output log files for the epidemic (i.e. information about every case, length, number of cases).
+
+To simulate a coalescent tree, use the flag `--output-tree`
+
+To see all options available run:
+
+`absynthe --help`
 
 
-Non-stoch model - to generate the same trees each time for testing other hypotheses
+# SLE_EBOV_input_files
 
-Tree simulator nonstoch - the same but non-stochastically
+Contains population structure of Sierra Leone in 2014 based on the census that came out that year. Also contains a config file with lists of the names of different contact levels eg districts and chiefdoms
 
-Testing_notebook - fairly messy jupyter for testing individual functions and exploring package functionality
+To run ABSynthE on a different population, these files will all need to be present.
+
+# Fitting 
+
+Contains observed data from the 2013-2016 Ebola epidemic in Sierra Leone to fit the model and obtain values for transmission parameters 
+
+Also contains old scripts for fitting  TO DO: see if these are actually different in a meaningful way and combine them in to actual absynthe
 
 
 ## Results scripts
@@ -39,7 +48,7 @@ Notebooks for analysing results and producing figures from simulation runs
 
 - "Analyse single file" gives spread, persistence and some network analysis of individual runs
 - "Comparing skygrid and skyline" draws a skygrid from a BEAST log file, plots a simulated skyline on the same axis, and compares using regression and KDE.
--  "Getting tree from log file" for when a tree was not simulated but a complete log file is available
+- "Getting tree from log file" for when a tree was not simulated but a complete log file is available
 - "Summary results" gives summary results from many runs of the simulator eg distribution of epidemic lengths
 
 
