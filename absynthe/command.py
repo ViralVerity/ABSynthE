@@ -35,7 +35,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--calculate-R0", "-R0", dest="calculate_R0", action="store_true", help="Calculate R0 when outbreak is logged")
     
     parser.add_argument("--number-model-iterations",type=int, dest="number_model_iterations", help="Number of times the stochastic epidemic is run. Default is 100", default=1000)
-    parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10pc of number_model_iteration ", default=0.1)
+    parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10%% of number_model_iteration ", default=0.1)
     
     parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
     parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
