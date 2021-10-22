@@ -2,7 +2,7 @@
 
 **A**gent **B**ased **Synth**etic **E**pidemic
 
-<img src="./logo/ABSynthE_logo.png", width="400">
+<img src="./logo/ABSynthE_logo.png" width="350">
 
 
 # absynthe
