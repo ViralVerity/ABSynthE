@@ -5,7 +5,7 @@
 <img src="./logo/ABSynthE_logo.png" width="350">
 
 
-# absynthe
+## absynthe
 
 Installable tool to run an ebola epidemic through the population of Sierra Leone in 2014. 
 It can also simulate a coalescent tree with accompanying epidemic statistics.
@@ -30,13 +30,13 @@ To see all options available run:
 `absynthe --help`
 
 
-# SLE_EBOV_input_files
+## SLE_EBOV_input_files
 
 Contains population structure of Sierra Leone in 2014 based on the census that came out that year. Also contains a config file with lists of the names of different contact levels eg districts and chiefdoms
 
 To run ABSynthE on a different population, these files will all need to be present.
 
-# Fitting 
+## Fitting 
 
 Contains observed data from the 2013-2016 Ebola epidemic in Sierra Leone to fit the model and obtain values for transmission parameters 
 
