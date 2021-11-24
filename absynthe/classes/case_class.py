@@ -20,7 +20,7 @@ class Case():
             elif self.level == "Ch":
                 poss_case = random.choice([person for person in config["population_structure"]["ch_to_ppl"][parent_individual.ch] if person not in parent_individual.household_list]) 
             elif self.level == "Dist":
-                poss_case = random.choice(person for person in config["population_structure"]["ch_to_ppl"]["Kissi_Tongi"]) #because we know which chiefdom those cases are in
+                poss_case = random.choice(person for person in config["population_structure"]["ch_to_ppl"]["kissi_tongi"]) #because we know which chiefdom those cases are in
 
         else:
             if len(epidemic_config["infected_individuals_set"]) == config["population_structure"]["popn_size"]: 
@@ -35,8 +35,9 @@ class Case():
             elif self.level == "Dist": #within district                
                 poss_case = random.choice([person for person in config["population_structure"]["dist_to_ppl"][parent_individual.dist] if person != parent_individual.unique_id]) 
 
-            elif self.level == "Country":        
-                district = random.choice(config["population_structure"]["district_distance"][parent_individual.dist]) #not sure how to change this now that it's within
+            elif self.level == "Country":
+                #not sure how to change this now that it's within district not just between        
+                district = random.choice(config["population_structure"]["district_distance"][parent_individual.dist]) 
                 poss_case = random.choice(config["population_structure"]["dist_to_ppl"][district])
 
             else:

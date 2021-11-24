@@ -49,7 +49,7 @@ def make_data_structures(config):
 #put this in the individual class definition - add a index=False default
 def make_index_case(config, epidemic_config):
 
-    index_id = random.choice(config["population_structure"]["ch_to_ppl"]["Kissi_Teng"])
+    index_id = random.choice(config["population_structure"]["ch_to_ppl"]["kissi_teng"])
     epidemic_config["index_id"] = index_id
 
     index_case_individual = Individual(index_id, None, config["population_structure"]["agent_location"], config["cfr"], config["distributions"], 0, epidemic_config) 

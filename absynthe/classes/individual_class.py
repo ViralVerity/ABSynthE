@@ -16,9 +16,9 @@ class Individual():
         self.parent = parent
         self.children = [] 
 
-        self.hh = agent_location[self.unique_id][0]
-        self.ch = agent_location[self.unique_id][1]
-        self.dist = agent_location[self.unique_id][2]
+        self.hh = agent_location[self.unique_id]["household"]
+        self.ch = agent_location[self.unique_id]["chiefdom"]
+        self.dist = agent_location[self.unique_id]["district"]
 
         self.infection_day = day
         self.incubation_time(inc_cdf)
