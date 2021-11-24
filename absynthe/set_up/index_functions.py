@@ -49,21 +49,22 @@ def make_data_structures(config):
 #put this in the individual class definition - add a index=False default
 def make_index_case(config, epidemic_config):
 
-    index_id = random.choice(range(1169263,1214412)) #These are the IDs of the range in Kissi Teng, Kailahun
+    index_id = random.choice(config["population_structure"]["ch_to_ppl"]["Kissi_Teng"])
     epidemic_config["index_id"] = index_id
 
     index_case_individual = Individual(index_id, None, config["population_structure"]["agent_location"], config["cfr"], config["distributions"], 0, epidemic_config) 
+    index_case_individual.household_list = [person for person in config["population_structure"]["hh_to_ppl"][index_case_individual.hh] if person != index_case_individual.unique_id]
     index_case_individual.incubation_day = 0 #So that the first case is infectious on day one of the simulation
     index_case_case = Case(0, None, None)
     
     epidemic_config["case_dict"][index_case_case] = index_case_individual
 
-    #From Wauqier 2015 - specific to EBOV SLE, it's the number of secondary cases from the index case at the funeral
+    #From Wauquier 2015 and Goba 2016 - specific to EBOV SLE, it's the number of secondary cases from the index case at the funeral
     index_case_dict = {}
     index_case_dict["Hh"] = 2
-    index_case_dict["Ch"] = 7
+    index_case_dict["Ch"] = 9
     index_case_dict["Dist"] = 3
-    index_case_dict["Country"] = 2
+    index_case_dict["Country"] = 0
 
     for level, number in index_case_dict.items():
         for person in range(number):
