@@ -1,45 +1,47 @@
 # Observed summary statistics
 
-observed_tips = 371
+observed_tips = 214
     
-observed_district_jumps = 93
-observed_chiefdom_jumps = 30
+observed_district_jumps = XX
+observed_chiefdom_jumps = XX
 
 ## Branch lengths
-obs_max_H = 0.4272233755511325
-obs_min_H = 0.07927817007151033
+obs_max_H = 0.3859675963699254
+obs_min_H = 0.11747444568536669
 
-obs_mean_lengths = 0.024554999389390132
-obs_median_lengths = 0.01618327945212711
-obs_var_lengths = 0.0006457965315134023
+obs_mean_lengths = 0.035080050967117304
+obs_median_lengths = 0.021939933283573243
+obs_var_lengths = 0.0013770629364285776
 
-obs_mean_external = 0.030333644010762013
-obs_median_external = 0.021228056094926562
-obs_var_external = 0.0007945437958549986
+obs_mean_external = 0.051805151396388485
+obs_median_external = 0.04441308703686353
+obs_var_external = 0.001384042360694057
 
-obs_mean_internal = 0.01874503420096475
-obs_median_internal = 0.011576011003413655
-obs_var_internal = 0.00043048336004913076
+obs_mean_internal = 0.018197166571532235
+obs_median_internal = 0.0072969106972364806
+obs_var_internal = 0.0008026179459713262
 
-obs_mean_ratio = 0.6179618312364396
-obs_median_ratio = 0.5453165825287359
-obs_var_ratio = 0.5417994102966885
+obs_mean_ratio = 0.35126171975246506
+obs_median_ratio = 0.16429640865044878
+obs_var_ratio = 0.5799085120262046
 
 ## Topology set
 
-obs_colless = 56120
-obs_sackin = 8835
-obs_WD_ratio = 0.8235294117647058
-obs_delta_W = 9
-obs_max_ladder = 0.02425876010781671
-obs_IL_nodes = 0.46216216216216216
-obs_staircase_1 = 0.002702702702702703
-obs_staircase_2 = 0.11077844311377245
+obs_colless = 4528
+obs_sackin = 2990
+obs_WD_ratio = 0.75
+obs_delta_W = 12
+obs_max_ladder = 0.014018691588785047
+obs_IL_nodes = 0.4507042253521127
+obs_staircase_1 = 0.704225352112676
+obs_staircase_2 = 0.47071554226646184
 
 ## LTT set
 
-max_L = 148.97678349186248
-t_max_L = 0.06408350633266988
-slope_1 = 404.73876858572703
-slope_2 = 1394.061280232578
-slope_ratio = 0.29033068655217403
+max_L = 95
+t_max_L = 0.16645019089776691
+slope_1 = 558.7257034575601
+slope_2 = 423.6566107364787
+slope_ratio = 1.318817384877529
+mean_s_time = 0.0012605312238711675
+mean_b_time = 0.0016789798767443802
