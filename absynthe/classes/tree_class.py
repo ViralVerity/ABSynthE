@@ -52,15 +52,27 @@ class tree():
             self.final_nodes = self.nodes.copy()
             self.remove_internals(self.root)
             
+            
             transmission_node_count = 0
             coalescent_node_count = 0
             
-            for i in self.nodes:
-                if i.type == "transmission":
+            for node in self.nodes:
+                if node.type == "transmission":
                     transmission_node_count += 1
-                if i.type == "coalescent":
+                if node.type == "coalescent":
                     coalescent_node_count += 1
                     
+            for tip in self.tips:
+                self.heights[tip] = self.most_recent_date - tip.time_sampled
+                
+                #For fitting summary stats
+                self.b_len_list.append(self.branch_lengths[tip])
+                self.external_branches.append(self.branch_lengths[tip])
+                self.sample_times.append(tip.time_sampled)
+                tip.steps = tip.node_parent.steps + 1
+                self.total_steps.append(tip.steps)
+            
+            self.all_tips_nodes = self.tips.extend(self.final_nodes)
                     
             ##tests
             if len(self.final_nodes) != (len(self.tips) - 1):
@@ -111,18 +123,9 @@ class tree():
                     self.internal_branches.append(self.branch_lengths[nde])
                     
                 
-            for tip in self.tips:
-                self.heights[tip] = self.most_recent_date - tip.time_sampled
-                
-                #For fitting summary stats
-                self.b_len_list.append(self.branch_lengths[tip])
-                self.external_branches.append(self.branch_lengths[tip])
-                self.sample_times.append(tip.time_sampled)
-                tip.steps = tip.node_parent.steps + 1
-                self.total_steps.append(tip.steps)
-            
+
     
-    def sort_out_tips(self):
+    def sort_out_tips(self): #subtree
         
         self.find_transmission_tips(self.focal_node)
         self.find_sample_tips(self.focal_node)
@@ -134,7 +137,7 @@ class tree():
         for tip in self.tips:
             self.heights[tip] = self.most_recent_tip - tip.absolute_time #relative height in subtree of tip
     
-    def find_transmission_tips(self, focal_node):
+    def find_transmission_tips(self, focal_node): #subtree
 
         if len(focal_node.sampled_infections) != 0: #if any downstream children sampled
             for case_node in focal_node.infections: #case is another node object
@@ -148,7 +151,7 @@ class tree():
                     self.tips.append(transmission_tip)
     
     
-    def find_sample_tips(self, focal_node): 
+    def find_sample_tips(self, focal_node): #subtree
     #don't need to make a new node in here because it already exists when we make the full tree including unsampled tips
         if focal_node.sampled: 
 

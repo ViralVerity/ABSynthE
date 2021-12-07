@@ -30,14 +30,14 @@ def import_observed_stats():
 
     #Topology set#
 
-    colless = 4528
-    sackin = 2990
+    colless = 2168
+    sackin = 3204 #includes root
     WD_ratio = 0.75
     delta_W = 12
     max_ladder = 0.014018691588785047
     IL_nodes = 0.4507042253521127
     staircase_1 = 0.704225352112676
-    staircase_2 = 0.47071554226646184
+    staircase_2 = 0.5386550674701448
     
     topology_set = [tips, colless, sackin, WD_ratio, delta_W, max_ladder, IL_nodes, staircase_1, staircase_2]
 

@@ -1,43 +1,66 @@
 import numpy as np
 from collections import Counter
+from collections import defaultdict
 
 def calculate_topology_params(coalescent_tree):
     
     #colless and staircase measures
-    colless = 0
-    sum_ratios = []
-    uneven = 0
     
-    for nde in coalescent_tree.final_nodes:
-
-        right = np.sum(i > nde.root_to_tip for i in coalescent_tree.sample_times)
-        left = np.sum(i <= nde.root_to_tip for i in coalescent_tree.sample_times)
-
-        difference = left - right
-
-        colless += abs(difference)
+    node_to_all_children = defaultdict(list)
+    
+    for node in coalescent_tree.all_tips_nodes:
         
-        if right != left:
-            uneven += 1
+        if type(node) == "coalescent":
+            node_to_all_children[node].extend(node.children)
+            for i in node.children:
+                node_to_all_children[node].extend(node_to_all_children[i])
+        else: #other one is an individual node and only included if the subtree contains a sample
+            node_to_all_children[node] = []
 
-        if left<right:
-            ratio = left/right
-        elif right<left:
-            ratio = right/left
-        else:
-            ratio = 1
-        
-    sum_ratios.append(ratio)
-        
+    differences = []
+    ratio_list = []
+    uneven = 0
+    for node in coalescent_tree.all_tips_nodes:
+        if type(node) == "coalescent":
+            direct_children = node.children
+            left = direct_children[0]
+            right = direct_children[1]
+            left_count = 0
+            right_count = 0
+            if type(left) == "coalescent":
+                for query in node_to_all_children[left]:
+                    if query.taxon:
+                        left_count += 1
+            else:
+                left_count += 1
+                
+            if type(right) == "coalescent":
+                for query in node_to_all_children[right]:
+                    if query.taxon:
+                        right_count += 1
+            else:
+                right_count += 1
+
+            differences.append(abs(left_count - right_count))
+            
+            if left_count != right_count:
+                uneven += 1
+            
+            if left_count < right_count:
+                ratio = left_count/right_count
+            else:
+                ratio = right_count/left_count
+
+            ratio_list.append(ratio)
+            
+    colless = sum(differences)
     staircase_1 = uneven/len(coalescent_tree.final_nodes)
+    staircase_2 = np.mean(ratio_list)
 
-    staircase_2 = np.mean(sum_ratios)
-
-    #At the moment, this includes the root in each step calculation, which is correct as it should include the first branching
+    #Includes the root in each step calculation, which is correct as it should include the first branching
     sackin = np.sum(coalescent_tree.total_steps)
     
     #WD_ratio
-    
     depths = Counter(coalescent_tree.total_steps)
     
     max_depth = max(depths)
@@ -47,71 +70,72 @@ def calculate_topology_params(coalescent_tree):
     
     #delta_w
     
-    tup_list = []
-
-    for k,v in depths.items():
-        tup = (k,v)
-        tup_list.append(tup)
-
-    sorted_depths = sorted(tup_list, key=lambda tup:tup[0])
-    
-    difference = 0
-
-    for index, tup in enumerate(sorted_depths):
+    index = 0
+    diffs = []
+    for depth, count in depths.items():
         if index > 0:
-            new_difference =  abs(tup[1] - sorted_depths[index-1][1])
-            if new_difference > difference:
-                difference = new_difference
+            width_diff = abs(count - depths[index-1])
+            diffs.append(width_diff)
+        index += 1
                 
-    delta_w = difference
-    
+    delta_w = max(diffs)
     
     ##max_ladder and IL_nodes
     count_list = []
     node_set = set()
 
-    for nde in coalescent_tree.final_nodes:
+    node_set = set()
+    ladder_list = []
+    for leaf in coalescent_tree.tips:
+        go_up_ladder(leaf, node_set, [], ladder_list)
 
-        ladder_length = 0
-
-        if nde not in node_set:
-            go_up_ladder(nde, ladder_length, count_list)
-
-    max_ladder = max(count_list)/len(coalescent_tree.tips)
+    max_ladder = max([len(i) for i in ladder_list])/len(coalescent_tree.tips)
     
-    
-    nodes_in_ladders = 0
-
-    for i in count_list:
-        if i != 0:
-            
-            nodes_in_ladders += 1
+    in_ladders = []
+    for lst in ladder_list:
+        for node in lst:
+            if type(node) == "coalescent":
+                in_ladders.append(node)
 
     IL_nodes = nodes_in_ladders/len(coalescent_tree.final_nodes)
-    
     tip_number = len(coalescent_tree.tips)
     
     return tip_number, colless, sackin, WD_ratio, delta_w, max_ladder, IL_nodes, staircase_1, staircase_2
 
 
+def go_up_ladder(node, node_set, ladder, ladder_list):
     
+    if node == root:
+        return
     
+    sibling_nodes = [i for i in node.parent_node.children() if i != node]
     
-def go_up_ladder(nde, ladder_count, count_list):
-
+    if len(sibling_nodes) != 1:
+        print(f'wrong len sibling nodes: {len(sibling_nodes)}')
     
-    if (nde.new_children[0].type == "Ind" and nde.new_children[1].type == "Coal") or (nde.new_children[0].type == "Coal" and nde.new_children[1].type == "Ind"):
-        
-        ladder_count += 1
-        
-        for i in nde.new_children:
-            if i.type == "Coal":
-                go_up_ladder(i, ladder_count, count_list)
-                
+    if type(node) == "individual":
+        if type(sibling_nodes[0]) != "individual":
+            if node.parent_node not in node_set:
+                ladder.append(node.parent_node)
+                node_set.add(node.parent_node)
+                go_up_ladder(node.parent_node, node_set, ladder, ladder_list)
+            else:
+                ladder_list.append(ladder)
+                return
+        else:
+            ladder_list.append(ladder)
+            return
     else:
-        
-        count_list.append(ladder_count)
-        
-    return
-        
+       if type(sibling_nodes[0]) != "individual":
+            if node.parent_node not in node_set:
+                ladder.append(node.parent_node)
+                go_up_ladder(node.parent_node,node_set, ladder, ladder_list)
+                node_set.add(node.parent_node)
+            else:
+                ladder_list.append(ladder)
+                return
+        else:
+            ladder_list.append(ladder)
+            return
+    
 

@@ -50,7 +50,7 @@ class node():
         if self.type == "coalescent":
             self.relative_height = height
             self.subtree = subtree
-            self.root_to_tip = 0.0 #not sure about this
+            self.root_to_tip = 0.0 #because it's the root of the subtree I think
 
             if children:
                 self.node_children = children
@@ -89,9 +89,9 @@ class node():
         self.absolute_time = self.time_sampled #For use in the tree
     
     
-    def find_children(self, trans_dict, child_dict, those_sampled, node_dict):
+    def find_children(self, transmission_dict, child_dict, those_sampled, node_dict):
         
-        secondary_infections = child_dict[self.id] #immediate transmission
+        self.secondary_infections = child_dict[self.id] #immediate transmission
         
         for child in secondary_infections:
 
