@@ -1,49 +1,49 @@
 #take whole tree as input
 
-import statistics
+import numpy as np
 
 def calculate_branch_statistics(coalescent_tree):
     
     max_H = coalescent_tree.most_recent_date
     min_H = coalescent_tree.oldest_sample_date
 
-    mean = statistics.mean(coalescent_tree.b_len_list)
-    median = statistics.median(coalescent_tree.b_len_list)
+    mean_lengths = np.mean(coalescent_tree.b_len_list)
+    median_lengths = np.median(coalescent_tree.b_len_list)
     
     if len(coalescent_tree.b_len_list) >= 2:
-        var = statistics.variance(coalescent_tree.b_len_list)
+        var = np.variance(coalescent_tree.b_len_list)
     else:
         var = None
         
     
     #These are done piecewise in the original over different time points
-    int_mean = statistics.mean(coalescent_tree.internal_branches)
-    int_median = statistics.median(coalescent_tree.internal_branches)
+    mean_internal = np.mean(coalescent_tree.internal_branches)
+    median_internal = np.median(coalescent_tree.internal_branches)
     
     if len(coalescent_tree.internal_branches) >= 2:
-        int_var = statistics.variance(coalescent_tree.internal_branches)
+        var_internal = np.variance(coalescent_tree.internal_branches)
     else:
-        int_var = None
+        var_internal = None
         
-        
-    
-    ext_mean = statistics.mean(coalescent_tree.external_branches)
-    ext_median = statistics.median(coalescent_tree.external_branches)
+    mean_external = np.mean(coalescent_tree.external_branches)
+    median_external = np.median(coalescent_tree.external_branches)
     
     if len(coalescent_tree.external_branches) >= 2:
-        ext_var = statistics.variance(coalescent_tree.external_branches)
+        var_external = np.variance(coalescent_tree.external_branches)
     else:
-        ext_var = None
+        var_external = None
         
     
-    mean_ratio = int_mean/ext_mean
-    median_ratio = int_median/ext_median
+    mean_ratio = mean_internal/mean_external
+    median_ratio = median_internal/median_external
     
-    if int_var and ext_var:
-        var_ratio = int_var/ext_var
+    if var_internal and var_external:
+        var_ratio = var_internal/var_external
     else:
         var_ratio = None
     
-    tip_number = len(coalescent_tree.tips)
+    tip_number = len(coalescent_tree.tips) 
     
-    return tip_number, max_H, min_H, mean, median, var, ext_mean, ext_median, ext_var, int_mean, int_median, int_var, mean_ratio, median_ratio, var_ratio
+    branch_stats = [tip_number, mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
+    
+    return branch_stats

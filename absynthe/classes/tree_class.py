@@ -8,7 +8,7 @@ from absynthe.classes.node_class import *
 
 class tree():   
     
-    def __init__(self, tree_type=None, focal_person=None, subtree_dict=None, node_dict=None, epidemic_len=None):
+    def __init__(self, tree_type=None, focal_node=None, subtree_dict=None, node_dict=None, epidemic_len=None):
         
         #print("Making subtree for " + person_tree.id)
         
@@ -19,7 +19,7 @@ class tree():
         
         if tree_type == "subtree":
             self.subtree = True 
-            self.focal_person = focal_person #will be the person as a node object it corresponds to if it's a subtree
+            self.focal_node = focal_node #The node corresponding to the person whose subtree it is 
             self.contains_sample = False      
             self.transmits = False
             
@@ -92,7 +92,7 @@ class tree():
                         print("No parent")
                     print("Children = " + str(nde.node_children))
                 
-                elif nde.type == "Trans":
+                elif nde.type == "transmission":
                     print("Trans node still in ")
                     print("Node: " + str(nde))
                     print("Type: " + str(nde.type))
@@ -124,33 +124,33 @@ class tree():
     
     def sort_out_tips(self):
         
-        self.find_transmission_tips(self.focal_person)
-        self.find_sample_tips(self.focal_person)
+        self.find_transmission_tips(self.focal_node)
+        self.find_sample_tips(self.focal_node)
         
         if len(self.tips) != 0: 
             self.most_recent_tip = sorted([float(i) for i in self.absolute_tip_times])[::-1][0]
-            self.root_time = self.most_recent_tip - float(focal_individual.time_infected)
+            self.root_time = self.most_recent_tip - float(self.focal_node.time_infected)
         
         for tip in self.tips:
-            self.heights[tip] = self.most_recent_tip - tip.absolute_time #relative height of tip
+            self.heights[tip] = self.most_recent_tip - tip.absolute_time #relative height in subtree of tip
     
-    def find_transmission_tips(self, focal_individual):
+    def find_transmission_tips(self, focal_node):
 
-        if len(focal_individual.sampled_infections) != 0: #if any downstream children sampled
-            for case in focal_individual.infections:
-                if len(case.sampled_infections) != 0 or case.sampled: 
+        if len(focal_node.sampled_infections) != 0: #if any downstream children sampled
+            for case_node in focal_node.infections: #case is another node object
+                if len(case_node.sampled_infections) != 0 or case.sampled: 
                 
-                    transmission_tip = node(case, "transmission", infector=focal_individual, infectee=case) 
-                    transmission_tip.absolute_time = case.time_infected
+                    transmission_tip = node(case_node, "transmission", infector=focal_individual, infectee=case) 
+                    transmission_tip.absolute_time = case_node.time_infected
                     
                     self.transmits = True
                     self.absolute_tip_times.append(transmission_tip.absolute_time)
                     self.tips.append(transmission_tip)
     
     
-    def find_sample_tips(self, focal_individual):
-        
-        if focal_individual.sampled: 
+    def find_sample_tips(self, focal_node): 
+    #don't need to make a new node in here because it already exists when we make the full tree including unsampled tips
+        if focal_node.sampled: 
 
             self.absolute_tip_times.append(focal_individual.time_sampled)
             self.tips.append(focal_individual)

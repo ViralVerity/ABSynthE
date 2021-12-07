@@ -2,8 +2,8 @@
 
 observed_tips = 214
     
-observed_district_jumps = XX
-observed_chiefdom_jumps = XX
+observed_district_jumps = 100
+observed_chiefdom_jumps = 123
 
 ## Branch lengths
 obs_max_H = 0.3859675963699254

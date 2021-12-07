@@ -12,9 +12,12 @@ from Simulate_epidemic_fitting import *
 from vector_comparisons import *
 from movement_fitting import *
 
-
 import tempfile
 import pyabc
+
+import argparse
+
+
 
 dropbox_path = "/disk2/home/s1732989/ABM/Fitting/"
 
@@ -83,7 +86,7 @@ def distance(x,y): #inputs are the dictionaries
     if new_a_x.size == new_a_y.size: 
         dist_a = np.linalg.norm(new_a_x - new_a_y)
     else:
-        print("error - not the same len for a" + str(len(new_a_x) + " " + str(len(new_a_y))
+        print("error - not the same len for a" + str(len(new_a_x) + " " + str(len(new_a_y))))
         return
     
     dist_b = np.linalg.norm(sim_b - obs_b)
@@ -110,14 +113,13 @@ prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) 
 pool = ThreadPoolExecutor(max_workers=48)
 sampler = ConcurrentFutureSampler(pool)
 
-abc = pyabc.ABCSMC(simulate_pyabc, prior, distance, sampler=sampler)
+abc = pyabc.ABCSMC(simulate_pyabc, prior, distance, sampler=sampler) #this could be just call command?
 
 #db_path = ("sqlite:///ltt.db")
 db_path = ("sqlite:///topology.db")
 #db_path = ("sqlite:///branch_lens.db")
 
 abc_id = abc.new(db_path, observed)
-
 
 history = abc.run(max_nr_populations=10, minimum_epsilon=0.3)
 

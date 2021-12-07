@@ -68,8 +68,8 @@ class node():
         
     def find_time_of_day_infected_sampled(self, transmission_dict, those_sampled, node_dict):
         #this is to get the time of day someone was infected/sampled
-        #it's in terms of years, but I'm not totally sure why - probably to do with fitting
-
+        #it's in terms of years
+        
         day_infected = transmission_dict[self.id]["day_infected"] 
         day_sampled = transmission_dict[self.id]["day_sampled"]
 

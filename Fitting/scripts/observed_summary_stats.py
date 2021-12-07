@@ -26,7 +26,7 @@ def import_observed_stats():
     median_ratio = 0.16429640865044878
     var_ratio = 0.5799085120262046
     
-    branch_set = [mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
+    branch_set = [tips, mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
 
     #Topology set#
 
@@ -39,7 +39,7 @@ def import_observed_stats():
     staircase_1 = 0.704225352112676
     staircase_2 = 0.47071554226646184
     
-    topology_set = [colless, sackin, WD_ratio, delta_W, max_ladder, IL_nodes, staircase_1, staircase_2]
+    topology_set = [tips, colless, sackin, WD_ratio, delta_W, max_ladder, IL_nodes, staircase_1, staircase_2]
 
     #LTT set#
 
@@ -53,10 +53,8 @@ def import_observed_stats():
     
 
     # LTT points # x first and then y
-    ltt_points = [0, 0.019298379818496268, 0.038596759636992536, 0.057895139455488805, 0.07719351927398507, 0.09649189909248135, 0.11579027891097762, 0.1350886587294739, 0.15438703854797017, 0.17368541836646645, 0.19298379818496272, 0.212282178003459, 0.23158055782195527, 0.25087893764045155, 0.2701773174589478, 0.28947569727744404, 0.3087740770959403, 0.32807245691443654, 0.3473708367329328, 0.36666921655142903, 2, 2, 2, 3, 6, 14, 34, 74, 84, 90, 56, 55, 62, 54, 40, 41, 50, 54, 34, 25] 
+    ltt_points = [tips, 0, 0.019298379818496268, 0.038596759636992536, 0.057895139455488805, 0.07719351927398507, 0.09649189909248135, 0.11579027891097762, 0.1350886587294739, 0.15438703854797017, 0.17368541836646645, 0.19298379818496272, 0.212282178003459, 0.23158055782195527, 0.25087893764045155, 0.2701773174589478, 0.28947569727744404, 0.3087740770959403, 0.32807245691443654, 0.3473708367329328, 0.36666921655142903, 2, 2, 2, 3, 6, 14, 34, 74, 84, 90, 56, 55, 62, 54, 40, 41, 50, 54, 34, 25] 
     
+    ltt_set = [tips, max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
     
-                
-    ltt_set = [max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
-    
-    return branch_set, topology_set, ltt_set, ltt_points, tips, dist, ch
+    return branch_set, topology_set, ltt_set, ltt_points, dist, ch

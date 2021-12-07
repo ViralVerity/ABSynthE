@@ -28,7 +28,7 @@ def get_observed_SS():
 def compare_BL(obs_vectors, coalescent_tree):
     
     sim_bl_pre = bl.calculate_branch_statistics(coalescent_tree)
-    sim_bl = normalise(sim_BL_pre)
+    sim_bl = normalise(sim_bl_pre)
         
     obs_bl = obs_vectors[0]
     
@@ -62,7 +62,7 @@ def compare_LTT_stats(obs_vectors, coalescent_tree):
 
 def compare_LTT_points(obs_vectors, coalescent_tree):
     
-    sim_LTT_points_pre = LTT.bin_sim(coalescent_tree.lineages_through_time, LTT_bins)
+    sim_LTT_points_pre = ltt.bin_sim(coalescent_tree.lineages_through_time, LTT_bins)
         
     obs_LTT_points = obs_vectors[3]
     
