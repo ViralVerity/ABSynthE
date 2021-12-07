@@ -119,7 +119,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         if config["output_tree"]:
             newick_string = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
         if config["output_ltt"] or config["output_skyline"]:
-            skyline, lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
+            skyline, lineages_through_time, coalescent_times = coalescent_tree.calculate_ne(those_sampled)
        
         return coalescent_tree, newick_string, skyline, R0, those_sampled, ltt
         

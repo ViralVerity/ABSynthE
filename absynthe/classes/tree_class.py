@@ -361,80 +361,60 @@ class tree():
         return string
     
     
-    def get_active_population(self): #check the logic in this - I'm not convinced it's bug free.
+    def get_active_population(self): 
         
         coalescent_times = set()
         waiting_times = {}
-        coal_tups = []
+        bins = []
         active_population = {}
 
-        sorted_dict = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
+        sorted_heights = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
         
-        for nde, height in sorted_dict.items():
-            if nde.type == "coalescent":
-                coalescent_times.add(height)
-
-        coalescent_times = sorted(coalescent_times)
+        for nde, height in sorted_heights.items():
+            coalescent_times.add(height)
 
         current_time = 0
         non_parent_set = set() 
         for time in coalescent_times:
             
             tup = (float(current_time),float(time))
-            coal_tups.append(tup)
+            bins.append(tup)
             
             waiting_times[tup] = time - current_time
             active_population[tup] = 0
             
-            urrent_time = time
+            current_time = time
+                        
+        active_population = {}
 
-        previous_index = 1
-        for nde, height in sorted_dict.items():
-            first_hit = 0
-            index = previous_index - 1
-
-            if not nde.node_parent:
-                non_parent_set.add(nde)
-                pass
-
-            else:
-                parent_height = self.heights[nde.node_parent]
-                for time1, time2 in coal_tups[index:]:
-                    index += 1
-                    if ((height <= time1 or (height <= time2 and height >=time1)) and parent_height >= time2) and height != parent_height:
-                        first_hit += 1
-                        active_population[time1, time2] += 1
-                        if first_hit == 1:
-                            previous_index = index
-                        if parent_height == time2:
-                            break 
+        for bin_pair in bins:
+            bin_dict[bin_pair] = 0
+            for node, height in sorted_heights.items():
+                start = height
+                end = self.heights[nde.node_parent] 
+                if start <= bin_pair[0] and end > bin_pair[0]:
+                    active_population[bin_pair] += 1
         
         if len(non_parent_set) > 1:
             print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
 
         
-        return active_population, waiting_times
+        return active_population, waiting_times, coalescent_times
     
     
     def calculate_ne(self, those_sampled):
         """Get effective population sizes in each coalescent interval for skyline"""
 
-        lineages_through_time = {}
-        waiting_times = {}
-
-        active_population, waiting_times = self.get_active_population()
+        active_population, waiting_times, coalescent_times = self.get_active_population() #active_population is also lineages through time
         
         Ne_dict = {}
 
-        for key, value in waiting_times.items():
-            tau = value 
+        for times, tau in waiting_times.items():
             if tau == 0:
                 print("tau is zero here")
                 print(key, value)
 
             lineages = active_population[key]
-            count_weird_trees = 0
-
             if lineages > 1:
                 a = np.log(special.binom(lineages,2))
                 b = np.log(tau)
@@ -451,9 +431,11 @@ class tree():
         #     Ne = 0.000000001
         #     tree_file = open("error_trees" + str(count_weird_trees) + ".csv", 'w')
         #     to_newick(whole_tree.root, whole_tree, those_sampled)
+        
+        self.lineages_through_time = active_population
+        self.coalescent_times = coalescent_times
                 
-                
-        return Ne_dict, active_population
+        return Ne_dict, active_population, coalescent_times
     
     
 

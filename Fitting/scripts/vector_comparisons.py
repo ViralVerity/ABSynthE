@@ -62,23 +62,15 @@ def compare_LTT_stats(obs_vectors, coalescent_tree):
 
 def compare_LTT_points(obs_vectors, coalescent_tree):
     
-    sim_LTT_points_pre = ltt.bin_sim(coalescent_tree.lineages_through_time, LTT_bins)
-        
-    obs_LTT_points = obs_vectors[3]
+    sim_ltt_points_pre = ltt.average_ltt_bins(coalescent_tree.lineages_through_time, coalescent_tree.coalescent_times)
+    sim_ltt = normalise(sim_ltt_points_pre)
     
-    LTT_point_difference = np.linalg.norm(obs_LTT_points - sim_LTT_points)
+    obs_ltt_points = obs_vectors[3]
     
-    return LTT_point_difference
+    ltt_point_difference = np.linalg.norm(obs_LTT_points - sim_LTT_points)
+    
+    return ltt_point_difference
   
-    
-def get_tip_difference(obs_vectors, coalescent_tree): #not sure at the moment that this should be separate - I think t shoul dbe included in the normalised vector
-    
-    obs_tips = obs_vectors[5]
-    sim_tips = len(coalescent_tree.tips)
-    
-    tip_difference = abs(obs_tips - sim_tips)
-    
-    return tip_difference
     
 
 
