@@ -67,7 +67,9 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times):
     
     slope_ratio = slope_1/slope_2
     
-    return max_L, t_max_L, slope_1, slope_2, slope_ratio  
+    ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio ]
+    
+    return ltt_metrics
     
     
     

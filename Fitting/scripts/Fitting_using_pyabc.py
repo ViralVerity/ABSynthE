@@ -7,9 +7,7 @@ import os
 from pyabc.sampler import ConcurrentFutureSampler
 from concurrent.futures import ThreadPoolExecutor
 
-import Tree_simulator_fitting as cts
-from Simulate_epidemic_fitting import *
-from movement_fitting import *
+from command_fitting import *
 
 import observed_summary_stats
 
@@ -23,7 +21,6 @@ def main(sysargs = sys.argv[1:]):
     parser = argparse.ArgumentParser(add_help=False,
     description=preamble(__version__))
     
-    parser.add_argument("--results-path", dest="results_path")
     parser.add_argument("--summary-stats-set", dest="summary_stats_set") #one of four
     
     args.parser.parse_args(sysargs)
@@ -41,16 +38,21 @@ def main(sysargs = sys.argv[1:]):
     
     if summary_stats_set == "all":
         summary_stats = observed_SS[0]
+        function = simulate_pyabc_all
     elif summmary_stats_set == "branch":
         summary_stats = list(observed_ss[0][0])
+        function = simulate_pyabc_bl
     elif summmary_stats_set == "topology":
         summmary_stats = list(observed_ss[0][1])
+        function = simulate_pyabc_top
     elif summmary_stats_set == "ltt":
         summmary_stats = list(observed_ss[0][2])
+        function = simulate_pyabc_ltt
     elif summmary_stats_set == "ltt_points":
         summary_stats = list(observed_ss[0][3])
+        function = simulate_pyabc_ltt_points
 
-    observed = {"a":summary_stats, "b":observed_SS[6], "c":observed_SS[7]}
+    observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
     
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
@@ -58,7 +60,7 @@ def main(sysargs = sys.argv[1:]):
     pool = ThreadPoolExecutor(max_workers=48)
     sampler = ConcurrentFutureSampler(pool)
 
-    abc = pyabc.ABCSMC(simulate_pyabc, prior, distance, sampler=sampler) 
+    abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
 
@@ -66,13 +68,21 @@ def main(sysargs = sys.argv[1:]):
 
     history = abc.run(max_nr_populations=10, minimum_epsilon=0.3)
     
-def simulate_pyabc(parameter):
-    result = simulate_epidemic(**parameter) #this could be just call command? I dont' think so, 
-    #but I think if I just have a script that then makes the config etc so we don't need to call it with args
-    #I think it just runs the epidemic once and records the result. 
-    return {"a":result[0], "b":result[1], "c":result[2]} #so this returns the sample as a dictionary
-
-
+def simulate_pyabc_all(parameter):
+    result = simulate_epidemic_all(**parameter) 
+    return {"a":result[0], "b":result[1], "c":result[2]} 
+def simulate_pyabc_ltt(parameter):
+    result = simulate_epidemic_ltt(**parameter) 
+    return {"a":result[0], "b":result[1], "c":result[2]} 
+def simulate_pyabc_ltt_points(parameter):
+    result = simulate_epidemic_ltt_points(**parameter) 
+    return {"a":result[0], "b":result[1], "c":result[2]} 
+def simulate_pyabc_bl(parameter):
+    result = simulate_epidemic_bl(**parameter) 
+    return {"a":result[0], "b":result[1], "c":result[2]} 
+def simulate_pyabc_top(parameter):
+    result = simulate_epidemic_top(**parameter) 
+    return {"a":result[0], "b":result[1], "c":result[2]} 
 
 def normalise(vector):
     norm=np.linalg.norm(vector, ord=1)
@@ -119,7 +129,7 @@ def distance(x,y): #inputs are the dictionaries
     dist_b = np.linalg.norm(sim_b - obs_b)
     dist_c = np.linalg.norm(sim_c - obs_c)
     
-    final_b = dist_b/obs_b #not sure this is totally right - need to think about this more
+    final_b = dist_b/obs_b 
     final_c = dist_c/obs_c
 
     dist = dist_a + final_b + final_c

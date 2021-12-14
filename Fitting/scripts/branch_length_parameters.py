@@ -42,8 +42,6 @@ def calculate_branch_statistics(coalescent_tree):
     else:
         var_ratio = None
     
-    tip_number = len(coalescent_tree.tips) 
-    
-    branch_stats = [tip_number, mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
+    branch_stats = [mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
     
     return branch_stats

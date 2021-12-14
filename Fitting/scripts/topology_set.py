@@ -98,9 +98,10 @@ def calculate_topology_params(coalescent_tree):
                 in_ladders.append(node)
 
     IL_nodes = nodes_in_ladders/len(coalescent_tree.final_nodes)
-    tip_number = len(coalescent_tree.tips)
     
-    return tip_number, colless, sackin, WD_ratio, delta_w, max_ladder, IL_nodes, staircase_1, staircase_2
+    topology = [colless, sackin, WD_ratio, delta_w, max_ladder, IL_nodes, staircase_1, staircase_2]
+    
+    return topology
 
 
 def go_up_ladder(node, node_set, ladder, ladder_list):
