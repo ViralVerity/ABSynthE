@@ -9,22 +9,7 @@ import json
 import numpy as np
 
 
-def normalise(vector):
-    norm=np.linalg.norm(vector, ord=1)
-    return vector/norm
-
-def get_observed_SS():
-    
-    branch_set, topology_set, ltt_set, ltt_points, dist, ch = import_observed_stats()
-    
-    obs_bl = normalise(branch_set)
-    obs_top = normalise(topology_set)
-    obs_ltt = normalise(ltt_set)
-    obs_ltt_points = normalise(ltt_points)
-    
-    return obs_bl, obs_top, obs_ltt, obs_ltt_points, obs_tips, observed_dist, observed_ch
-
-
+##don't think any of these ever get called - where does the simulated get calculated?
 def compare_BL(obs_vectors, coalescent_tree):
     
     sim_bl_pre = bl.calculate_branch_statistics(coalescent_tree)

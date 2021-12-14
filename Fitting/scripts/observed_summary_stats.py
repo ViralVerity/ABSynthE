@@ -1,4 +1,6 @@
     
+import numpy as np
+    
 def import_observed_stats():
     
     tips = 214
@@ -58,3 +60,19 @@ def import_observed_stats():
     ltt_set = [tips, max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
     
     return branch_set, topology_set, ltt_set, ltt_points, dist, ch
+
+def get_observed_SS():
+    
+    branch_set, topology_set, ltt_set, ltt_points, dist, ch = import_observed_stats()
+    
+    obs_bl = normalise(branch_set)
+    obs_top = normalise(topology_set)
+    obs_ltt = normalise(ltt_set)
+    obs_ltt_points = normalise(ltt_points)
+    
+    return obs_bl, obs_top, obs_ltt, obs_ltt_points, obs_tips, observed_dist, observed_ch
+
+
+def normalise(vector):
+    norm=np.linalg.norm(vector, ord=1)
+    return vector/norm
