@@ -40,6 +40,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
     parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
     parser.add_argument("-h","--help",action="store_true",dest="help")
+    
+    parser.add_argument("--fitting", action="store_true")
 
     if len(sysargs)<1: 
         parser.print_help()
@@ -61,7 +63,7 @@ def main(sysargs = sys.argv[1:]):
     config["input_directory"] = args.input_directory
     config["output_directory"] = args.output_directory
     config["case_limit"] = args.case_limit
-    config["day_limit"] = args.day_limit #default is 148 for ebola in SLE for fitting (ie the exponential start)
+    config["day_limit"] = args.day_limit #default is 148 for ebola in SLE for fitting (ie the exponential start) - not this any more, need to change
 
     config["output_tree"] = args.output_tree
     config["output_skyline"] = args.output_skyline
@@ -100,10 +102,10 @@ def main(sysargs = sys.argv[1:]):
     pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict
     pool.map(run_model,(config, )) #calls the run_model.py script       
             
-    R0_output.close()
-    size_output.close()
-    length_output.close()
-    most_recent_tip_file.close()
+    config["files"]["R0_output"].close()
+    config["files"]["size_output"].close()
+    config["files"]["length_output"].close()
+    config["files"]["most_recent_tip_file"].close()
                                     
     if case_limit or day_limit:
         run_out_summary.close()
