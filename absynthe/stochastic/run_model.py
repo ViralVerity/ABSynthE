@@ -112,7 +112,7 @@ def run_epidemic(start_day, config, epidemic_config):
                                 epidemic_config["ch_mvmt"][focal_individual.ch,focal_individual.parent.ch].append(day)
                         
                         ##get possible transmissions##
-                        poss_case_dict = focal_individual.get_possible_cases() #Gives dict of contact_level: number of people
+                        poss_case_dict = focal_individual.get_possible_cases(config) #Gives dict of contact_level: number of people
                         
                         for level, number in poss_case_dict.items():
                             for person in range(number):

@@ -81,7 +81,7 @@ class Individual():
 
 
     ###Running epidemic functions###
-    def get_possible_cases(self):
+    def get_possible_cases(self, config):
         """Get the number of exposed secondary cases at each contact level"""
         #Not storing each individuals possible case dict due to memory concerns
         #If you want to get this, add self. in front of each poss_contact_dict mention
@@ -91,9 +91,12 @@ class Individual():
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65 - that is from a paper somewhere, should be in the docs
 
         #######FROM ABCSMC FITTING PROCESS######
-        a = 0.65
-        b = 0.11
-        c = 0.32
+        # a = 0.65
+        # b = 0.11
+        # c = 0.32
+        a = config['a']
+        b = config['b']
+        c = config['c']
         ###############
         
         Hh_number = function(lamb)

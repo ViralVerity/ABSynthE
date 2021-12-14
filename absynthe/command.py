@@ -72,6 +72,11 @@ def main(sysargs = sys.argv[1:]):
 
     config["overwrite"] = args.overwrite
     config["verbose"] = args.verbose
+    
+    #from ABC-SMC fitting - will hard code in here, it's for ebov SLE exponential process
+    config["a"] = #??
+    config["b"] = #??
+    config["c"] = #??
 
     sys.stdout.write("Setting up for running epidemics\n")
     
