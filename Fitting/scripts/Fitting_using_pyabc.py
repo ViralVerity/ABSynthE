@@ -37,20 +37,20 @@ def main(sysargs = sys.argv[1:]):
     except FileExistsError:
         pass
 
-    observed_SS = get_observed_SS()
+    observed_SS = get_observed_SS(summary_stats_set)
     
     if summary_stats_set == "all":
-        summary_stats = observed_SS[0:4]
+        summary_stats = observed_SS[0]
     elif summmary_stats_set == "branch":
-        summary_stats = list(observed_ss[0])
+        summary_stats = list(observed_ss[0][0])
     elif summmary_stats_set == "topology":
-        summmary_stats = list(observed_ss[1])
+        summmary_stats = list(observed_ss[0][1])
     elif summmary_stats_set == "ltt":
-        summmary_stats = list(observed_ss[2])
+        summmary_stats = list(observed_ss[0][2])
     elif summmary_stats_set == "ltt_points":
-        summary_stats = list(observed_ss[3])
+        summary_stats = list(observed_ss[0][3])
 
-    observed = {"a":summary_stats, "b":observed_SS[7], "c":observed_SS[6]}
+    observed = {"a":summary_stats, "b":observed_SS[6], "c":observed_SS[7]}
     
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
