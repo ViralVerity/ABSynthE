@@ -63,7 +63,7 @@ def main(sysargs = sys.argv[1:]):
     config["input_directory"] = args.input_directory
     config["output_directory"] = args.output_directory
     config["case_limit"] = args.case_limit
-    config["day_limit"] = args.day_limit #default is 148 for ebola in SLE for fitting (ie the exponential start) - not this any more, need to change
+    config["day_limit"] = args.day_limit #default is 124 for ebola in SLE for fitting (ie the exponential start)
 
     config["output_tree"] = args.output_tree
     config["output_skyline"] = args.output_skyline
@@ -74,6 +74,9 @@ def main(sysargs = sys.argv[1:]):
     config["verbose"] = args.verbose
     
     #from ABC-SMC fitting - will hard code in here, it's for ebov SLE exponential process
+        # a = 0.65
+        # b = 0.11
+        # c = 0.32
     config["a"] = #??
     config["b"] = #??
     config["c"] = #??

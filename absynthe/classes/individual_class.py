@@ -90,14 +90,9 @@ class Individual():
         function = np.random.poisson
         lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65 - that is from a paper somewhere, should be in the docs
 
-        #######FROM ABCSMC FITTING PROCESS######
-        # a = 0.65
-        # b = 0.11
-        # c = 0.32
         a = config['a']
         b = config['b']
         c = config['c']
-        ###############
         
         Hh_number = function(lamb)
         ch_number = function(a*lamb)

@@ -46,7 +46,6 @@ def make_data_structures(config):
 
     return epidemic_config
 
-#put this in the individual class definition - add a index=False default
 def make_index_case(config, epidemic_config):
 
     index_id = random.choice(config["population_structure"]["ch_to_ppl"]["kissi_teng"])

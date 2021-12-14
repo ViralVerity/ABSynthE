@@ -8,7 +8,6 @@ from pyabc.sampler import ConcurrentFutureSampler
 from concurrent.futures import ThreadPoolExecutor
 
 from command_fitting import *
-
 import observed_summary_stats
 
 import tempfile

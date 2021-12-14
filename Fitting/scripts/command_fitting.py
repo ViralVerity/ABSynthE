@@ -27,8 +27,7 @@ def common_part(a,b,c):
     config["input_directory"] = "../SLE_EBOV_input_files/"
 
     config["case_limit"] = 10000
-    config["day_limit"] = 148 #not this any more, need to change - the day of the funeral is different? Plus need to match th enew tree
-
+    config["day_limit"] = 124 
     config["output_tree"] = True
     config["output_skyline"] = False
     
