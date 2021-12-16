@@ -27,8 +27,8 @@ def make_contact_dicts(input_directory, config):
     with open(os.path.join(input_directory,"district_to_people.txt")) as json_file:
         config["population_structure"]["dist_to_ppl"] = json.load(json_file)
 
-    with open(os.path.join(input_directory,"district_neighbouring.txt")) as json_file:
-        config["population_structure"]["neighbouring_districts"] = json.load(json_file)
+    # with open(os.path.join(input_directory,"district_neighbouring.txt")) as json_file:
+    #     config["population_structure"]["neighbouring_districts"] = json.load(json_file)
             
             
     return config
