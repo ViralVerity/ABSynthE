@@ -33,16 +33,16 @@ def main(sysargs = sys.argv[1:]):
     if summary_stats_set == "all":
         summary_stats = observed_SS[0]
         function = simulate_pyabc_all
-    elif summmary_stats_set == "branch":
+    elif summary_stats_set == "branch":
         summary_stats = list(observed_ss[0][0])
         function = simulate_pyabc_bl
-    elif summmary_stats_set == "topology":
+    elif summary_stats_set == "topology":
         summmary_stats = list(observed_ss[0][1])
         function = simulate_pyabc_top
-    elif summmary_stats_set == "ltt":
+    elif summary_stats_set == "ltt":
         summmary_stats = list(observed_ss[0][2])
         function = simulate_pyabc_ltt
-    elif summmary_stats_set == "ltt_points":
+    elif summary_stats_set == "ltt_points":
         summary_stats = list(observed_ss[0][3])
         function = simulate_pyabc_ltt_points
 
