@@ -52,6 +52,7 @@ def main(sysargs = sys.argv[1:]):
         function = simulate_pyabc_ltt_points
 
     observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
+    # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
     
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
@@ -67,6 +68,22 @@ def main(sysargs = sys.argv[1:]):
 
     history = abc.run(max_nr_populations=10, minimum_epsilon=0.3)
     
+# def simulate_pyabc_all(parameter):
+#     result = simulate_epidemic_all(**parameter) 
+#     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
+# def simulate_pyabc_ltt(parameter):
+#     result = simulate_epidemic_ltt(**parameter) 
+#     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
+# def simulate_pyabc_ltt_points(parameter):
+#     result = simulate_epidemic_ltt_points(**parameter) 
+#     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
+# def simulate_pyabc_bl(parameter):
+#     result = simulate_epidemic_bl(**parameter) 
+#     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
+# def simulate_pyabc_top(parameter):
+#     result = simulate_epidemic_top(**parameter) 
+#     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
+
 def simulate_pyabc_all(parameter):
     result = simulate_epidemic_all(**parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
@@ -97,6 +114,9 @@ def distance(x,y): #inputs are the dictionaries
     
     sim_c = x['c']
     obs_c = y['c']
+
+    # sim_d = x['d']
+    # obs_d = y['d']
     
     if None not in sim_a_vector:
         mid_a_x = normalise(sim_a_vector)
@@ -127,11 +147,14 @@ def distance(x,y): #inputs are the dictionaries
     
     dist_b = np.linalg.norm(sim_b - obs_b)
     dist_c = np.linalg.norm(sim_c - obs_c)
+    # dist_d = np.linalg.norm(sim_d - obs_d)
     
     final_b = dist_b/obs_b 
     final_c = dist_c/obs_c
+    # final_d = dist_d/obs_d
 
     dist = dist_a + final_b + final_c
+    # dist = dist_a + final_b + final_cs + final_d
     
     return dist
     

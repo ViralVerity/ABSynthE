@@ -83,8 +83,6 @@ class Individual():
     ###Running epidemic functions###
     def get_possible_cases(self, config):
         """Get the number of exposed secondary cases at each contact level"""
-        #Not storing each individuals possible case dict due to memory concerns
-        #If you want to get this, add self. in front of each poss_contact_dict mention
 
         poss_contact_dict = {}
         function = np.random.poisson
@@ -93,11 +91,13 @@ class Individual():
         a = config['a']
         b = config['b']
         c = config['c']
+        # d = config['d'] #for neighbouring districts
         
         Hh_number = function(lamb)
         ch_number = function(a*lamb)
         dist_number = function(b*lamb)
         country_number = function(c*lamb)
+        # neighbouring_dist_number = function(d*lamb)
 
         if Hh_number != None:
             poss_contact_dict["Hh"] = Hh_number
@@ -118,6 +118,11 @@ class Individual():
             poss_contact_dict["Country"] = country_number
         else:
             poss_contact_dict["Country"] = 0
+
+        # if neighbouring_dist_number != None:
+        #     poss_contact_dict["neighbouring_dist"] = neighbouring_dist_number
+        # else:
+        #     poss_contact_dict["neighbouring_dist"] = 0
 
         return poss_contact_dict  
 

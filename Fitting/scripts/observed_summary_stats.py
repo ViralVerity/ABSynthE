@@ -7,6 +7,7 @@ def import_observed_stats(summary_stats_set):
     
     dist = 100
     ch = 123
+    # neighbouring = XX
     
     #Branch lengths#
     max_H = 0.3859675963699254
@@ -71,10 +72,14 @@ def import_observed_stats(summary_stats_set):
     
     return branch_set, topology_set, ltt_set, ltt_points, dist, ch, tips
 
+    # return branch_set, topology_set, ltt_set, ltt_points, dist, ch, neighbouring, tips
+
 def get_observed_SS(summary_stats_set):
     
-    branch_set, topology_set, ltt_set, ltt_points, dist, ch, tips = import_observed_stats(summary_stats_set)
-    
+    branch_set, topology_set, ltt_set, ltt_points, observed_dist, observed_ch, tips = import_observed_stats(summary_stats_set)
+    # branch_set, topology_set, ltt_set, ltt_points, observed_dist, observed_ch, neighbouring, tips = import_observed_stats(summary_stats_set)
+
+
     if summary_stats_set != "all":
         obs_bl = normalise(branch_set)
         obs_top = normalise(topology_set)
@@ -89,7 +94,7 @@ def get_observed_SS(summary_stats_set):
         output = sum_stats
     
     return output, observed_ch, observed_dist
-
+    # return output, observed_ch, observed_dist, neighbouring
 
 def normalise(vector):
     norm=np.linalg.norm(vector, ord=1)

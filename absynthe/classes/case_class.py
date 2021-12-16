@@ -35,10 +35,14 @@ class Case():
             elif self.level == "Dist": #within district                
                 poss_case = random.choice([person for person in config["population_structure"]["dist_to_ppl"][parent_individual.dist] if person != parent_individual.unique_id]) 
 
+            # elif self.level == "neighbouring_dist":
+            #     district = random.choice(config["population_structure"]["neighbouring_districts"][parent_individual.dist])        
+            #     poss_case = random.choice([person for person in config["population_structure"]["dist_to_ppl"][district] if person != parent_individual.unique_id])
+            
             elif self.level == "Country":
-                #not sure how to change this now that it's within district not just between        
-                district = random.choice(config["population_structure"]["district_distance"][parent_individual.dist]) 
-                poss_case = random.choice(config["population_structure"]["dist_to_ppl"][district])
+                # district = random.choice(config["population_structure"]["non_neighbouring_districts"])    
+                district = random.choice(config["population_structure"]["district_list"])    
+                poss_case = random.choice([person for person in config["population_structure"]["dist_to_ppl"][district] if person != parent_individual.unique_id])
 
             else:
                 sys.stderr.write("ERROR no level assigned")

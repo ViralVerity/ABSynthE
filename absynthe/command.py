@@ -77,9 +77,9 @@ def main(sysargs = sys.argv[1:]):
         # a = 0.65
         # b = 0.11
         # c = 0.32
-    config["a"] = #??
-    config["b"] = #??
-    config["c"] = #??
+    # config["a"] = #??
+    # config["b"] = #??
+    # config["c"] = #??
 
     sys.stdout.write("Setting up for running epidemics\n")
     

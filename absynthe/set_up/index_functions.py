@@ -64,6 +64,7 @@ def make_index_case(config, epidemic_config):
     index_case_dict["Ch"] = 9
     index_case_dict["Dist"] = 3
     index_case_dict["Country"] = 0
+    # index_case_dict["neighbouring_dist"] = 0
 
     for level, number in index_case_dict.items():
         for person in range(number):
