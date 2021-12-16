@@ -38,8 +38,8 @@ def common_part(config, a,b,c):
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
     
-    config = file_funcs.make_directories(config)
-    config = file_funcs.make_summary_files(config)
+    # config = file_funcs.make_directories(config)
+    # config = file_funcs.make_summary_files(config)
 
     config["distributions"] = dist_funcs.define_distributions() 
     config["population_structure"] = file_funcs.parse_population_information(os.path.join(config["input_directory"], "population_config.yaml"))
