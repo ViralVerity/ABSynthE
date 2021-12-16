@@ -14,9 +14,8 @@ import absynthe.set_up.index_functions as index_funcs
 import absynthe.set_up.distribution_functions as dist_funcs
 
 
-def common_part(a,b,c):
+def common_part(config, a,b,c):
     
-    config = {}
     config["number_model_iterations"] = 1
     config["log_every"] =  1
     config["cfr"] = 0.7
@@ -24,7 +23,7 @@ def common_part(a,b,c):
     config["sampling_percentage"] = 0.16
     config["sampling_scheme"] = "uniform"
         
-    config["input_directory"] = "../SLE_EBOV_input_files/"
+    config["input_directory"] = "../../SLE_EBOV_input_files/"
 
     config["case_limit"] = 10000
     config["day_limit"] = 124 
@@ -34,7 +33,7 @@ def common_part(a,b,c):
     config["overwrite"] = False
     config["verbose"] = True
 
-    sys.stdout.write("Setting up for running epidemics\n")
+    config["calculate_R0"] = False
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
@@ -54,13 +53,16 @@ def common_part(a,b,c):
     
     config["calculate_R0"] = False
     
+    return config
 
 def simulate_epidemic_all(a,b,c):
     
-    config = common_part(a,b,c)
-    
+    config = {}
+
     config["output_directory"] = "./fitting/all/"
     config["output_ltt"] = True
+
+    config = common_part(config, a,b,c)
     
     a_sim, dist_mvmt, ch_mvmt = run_model(config, "all", 47) #calls the run_model_fitting.py script
     
@@ -71,10 +73,12 @@ def simulate_epidemic_all(a,b,c):
 
 def simulate_epidemic_ltt(a,b,c):
     
-    config = common_part(a,b,c)
-    
+    config = {}
+
     config["output_directory"] = "./fitting/ltt_metrics/"
     config["output_ltt"] = True
+
+    config = common_part(config,a,b,c)
     
     a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt", 7) #calls the run_model_fitting.py script
     
@@ -86,10 +90,12 @@ def simulate_epidemic_ltt(a,b,c):
     
 def simulate_epidemic_ltt_points(a,b,c):
     
-    config = common_part(a,b,c)
-    
+    config = {}
+
     config["output_directory"] = "./fitting/ltt_points/"
     config["output_ltt"] = True
+
+    config = common_part(config, a,b,c)
     
     a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt_points", 22) #calls the run_model_fitting.py script 
     
@@ -101,10 +107,12 @@ def simulate_epidemic_ltt_points(a,b,c):
  
 def simulate_epidemic_bl(a,b,c):
     
-    config = common_part(a,b,c)
-    
+    config = {}
+
     config["output_directory"] = "./fitting/branch_lens/"
     config["output_ltt"] = False
+
+    config = common_part(config,a,b,c)
     
     a_sim, dist_mvmt, ch_mvmt = run_model(config, "branch", 13) #calls the run_model_fitting.py script 
     
@@ -115,10 +123,12 @@ def simulate_epidemic_bl(a,b,c):
     
 def simulate_epidemic_top(a,b,c):
     
-    config = common_part(a,b,c)
-    
+    config = {}
+
     config["output_directory"] = "./fitting/topology/"
     config["output_ltt"] = False
+
+    config = common_part(config, a,b,c)
     
     a_sim, dist_mvmt, ch_mvmt = run_model(config, "topology", 9) #calls the run_model_fitting.py script 
     

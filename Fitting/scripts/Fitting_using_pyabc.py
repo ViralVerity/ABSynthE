@@ -18,22 +18,17 @@ import argparse
 def main(sysargs = sys.argv[1:]):
 
     parser = argparse.ArgumentParser(add_help=False,
-    description=preamble(__version__))
+    description="fitting")
     
     parser.add_argument("--summary-stats-set", dest="summary_stats_set") #one of four
     
-    args.parser.parse_args(sysargs)
+    args = parser.parse_args(sysargs)
 
-    results_path = args.results_path
     summary_stats_set = args.summary_stats_set
 
     run_number = 1
-    try:
-        os.mkdir(os.path.join(results_path, str(run_number)))
-    except FileExistsError:
-        pass
 
-    observed_SS = get_observed_SS(summary_stats_set)
+    observed_SS = observed_summary_stats.get_observed_SS(summary_stats_set)
     
     if summary_stats_set == "all":
         summary_stats = observed_SS[0]
@@ -53,13 +48,14 @@ def main(sysargs = sys.argv[1:]):
 
     observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
     # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
-    
+
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
 
     pool = ThreadPoolExecutor(max_workers=48)
     sampler = ConcurrentFutureSampler(pool)
 
+    print('starting to fit')
     abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
@@ -159,7 +155,8 @@ def distance(x,y): #inputs are the dictionaries
     return dist
     
 
-
+if __name__ == '__main__':
+    main()
 
 
 

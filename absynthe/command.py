@@ -81,7 +81,7 @@ def main(sysargs = sys.argv[1:]):
     # config["b"] = #??
     # config["c"] = #??
 
-    sys.stdout.write("Setting up for running epidemics\n")
+    # sys.stdout.write("Setting up for running epidemics\n")
     
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
