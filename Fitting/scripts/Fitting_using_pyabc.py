@@ -37,10 +37,10 @@ def main(sysargs = sys.argv[1:]):
         summary_stats = list(observed_SS[0][0])
         function = simulate_pyabc_bl
     elif summary_stats_set == "topology":
-        summmary_stats = list(observed_SS[0][1])
+        summary_stats = list(observed_SS[0][1])
         function = simulate_pyabc_top
     elif summary_stats_set == "ltt":
-        summmary_stats = list(observed_SS[0][2])
+        summary_stats = list(observed_SS[0][2])
         function = simulate_pyabc_ltt
     elif summary_stats_set == "ltt_points":
         summary_stats = list(observed_SS[0][3])
