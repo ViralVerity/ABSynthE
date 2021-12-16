@@ -2,11 +2,12 @@ from collections import defaultdict
 import sys
 import absynthe.set_up.index_functions as index_functions
 import absynthe.set_up.file_functions as file_functions
-import absynthe.stochastic.tree_simulator as tree_sim
 import time
 
 from absynthe.classes.case_class import Case
 from absynthe.classes.individual_class import Individual
+import absynthe.stochastic.tree_simulator as tree_sim
+
 
 import branch_length_parameters as bl
 import topology_set as top 
@@ -176,13 +177,13 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
                 a_sim = []
                 a_sim.extend(bl).extend(topology).extend(ltt_metrics).extend(ltt_points)
 
-            elif summary_stats_set = "branch":
+            elif summary_stats_set == "branch":
                 a_sim = branch_lens.calculate_branch_statistics(coalescent_tree)
-            elif summary_stats_set = "topology":
+            elif summary_stats_set == "topology":
                 a_sim = top.calculate_topology_params(coalescent_tree)
-            elif summary_stats_set = "ltt":
+            elif summary_stats_set == "ltt":
                 a_sim = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, LTT_bins)
-            elif summary_stats_set = "ltt_points":
+            elif summary_stats_set == "ltt_points":
                 a_sim = ltt.average_ltt_bins(coalescent_tree.lineages_through_time, LTT_bins)
             
             tip_number = len(coalescent_tree.tips) 

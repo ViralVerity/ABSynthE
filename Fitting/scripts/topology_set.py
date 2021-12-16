@@ -127,7 +127,7 @@ def go_up_ladder(node, node_set, ladder, ladder_list):
             ladder_list.append(ladder)
             return
     else:
-       if type(sibling_nodes[0]) != "individual":
+        if type(sibling_nodes[0]) != "individual":
             if node.parent_node not in node_set:
                 ladder.append(node.parent_node)
                 go_up_ladder(node.parent_node,node_set, ladder, ladder_list)
