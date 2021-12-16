@@ -59,7 +59,7 @@ def simulate_epidemic_all(a,b,c):
     
     config = {}
 
-    config["output_directory"] = "./fitting/all/"
+    config["output_directory"] = "../test_results/all/"
     config["output_ltt"] = True
 
     config = common_part(config, a,b,c)
@@ -75,7 +75,7 @@ def simulate_epidemic_ltt(a,b,c):
     
     config = {}
 
-    config["output_directory"] = "./fitting/ltt_metrics/"
+    config["output_directory"] = " ../test_results/ltt_metrics/"
     config["output_ltt"] = True
 
     config = common_part(config,a,b,c)
@@ -92,7 +92,7 @@ def simulate_epidemic_ltt_points(a,b,c):
     
     config = {}
 
-    config["output_directory"] = "./fitting/ltt_points/"
+    config["output_directory"] = " ../test_results/ltt_points/"
     config["output_ltt"] = True
 
     config = common_part(config, a,b,c)
@@ -109,7 +109,7 @@ def simulate_epidemic_bl(a,b,c):
     
     config = {}
 
-    config["output_directory"] = "./fitting/branch_lens/"
+    config["output_directory"] = " ../test_results/branch_lens/"
     config["output_ltt"] = False
 
     config = common_part(config,a,b,c)
@@ -125,7 +125,7 @@ def simulate_epidemic_top(a,b,c):
     
     config = {}
 
-    config["output_directory"] = "./fitting/topology/"
+    config["output_directory"] =  "../test_results/topology/"
     config["output_ltt"] = False
 
     config = common_part(config, a,b,c)
