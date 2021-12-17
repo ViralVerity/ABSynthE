@@ -4,7 +4,7 @@ import numpy as np
 from collections import defaultdict
 from collections import OrderedDict
 
-from absynthe.classes.node_class import *
+import absynthe.classes.node_class as node_class
 
 class tree():   
     
@@ -141,9 +141,9 @@ class tree():
 
         if len(focal_node.sampled_infections) != 0: #if any downstream children sampled
             for case_node in focal_node.infections: #case is another node object
-                if len(case_node.sampled_infections) != 0 or case.sampled: 
+                if len(case_node.sampled_infections) != 0 or case_node.sampled: 
                 
-                    transmission_tip = node(case_node, "transmission", infector=focal_individual, infectee=case) 
+                    transmission_tip = node_class.node(case_node, "transmission", infector=focal_node, infectee=case_node) 
                     transmission_tip.absolute_time = case_node.time_infected
                     
                     self.transmits = True
@@ -155,16 +155,16 @@ class tree():
     #don't need to make a new node in here because it already exists when we make the full tree including unsampled tips
         if focal_node.sampled: 
 
-            self.absolute_tip_times.append(focal_individual.time_sampled)
-            self.tips.append(focal_individual)
+            self.absolute_tip_times.append(focal_node.time_sampled)
+            self.tips.append(focal_node)
             
             self.contains_sample = True
-            self.sample_time = focal_individual.time_sampled
+            self.sample_time = focal_node.time_sampled
           
             
     def define_root(self):
         
-        self.root = node(uuid.uuid1(), "coalescent", height=self.root_time, children=[self.penultimate], subtree=self)
+        self.root = node_class.node(uuid.uuid1(), "coalescent", height=self.root_time, children=[self.penultimate], subtree=self)
         self.heights[self.root] = self.root_time      
         self.nodes.add(self.root)
         self.penultimate.node_parent = (self.root)
@@ -179,6 +179,8 @@ class tree():
             return
         
         else:
+            for i in lineage_list:
+                print(i.type)
             active_pop = [i for i in lineage_list if i.relative_height <= current_height]
             to_be_sampled = [i for i in lineage_list if i.relative_height > current_height]
         
@@ -219,7 +221,7 @@ class tree():
                     current_height += tau
                                             
                     #ie the coalescent event of the pair selected above
-                    parent_node = node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
+                    parent_node = node_class.node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
                     
                     lucky_pair[0].node_parent = parent_node
                     lucky_pair[1].node_parent = parent_node

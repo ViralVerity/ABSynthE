@@ -32,7 +32,7 @@ def sampling(transmission_dict, config, epidemic_len):
     
         for person,person_dict in transmission_dict.items():
             week_number = int(person_dict["day_sampled"]/7)
-            weeks_cases[week_number].append(key)
+            weeks_cases[week_number].append(person)
                     
             
         #Leaving this out because it's a specific conditioning on long epidemics - ie it has to have cases up until the very end. This is for fitting
@@ -119,11 +119,11 @@ def simulate_tree(epidemic_config, config, epidemic_len):
    
         #Intialise as type individual nodes, make transmission tree and make subtrees
         
-        index_case = child_dict["NA"][0]
+        index_case = epidemic_config["child_dict"]["NA"][0]
         node_dict = {}
         
         #this is recursive, so calling it once generates the whole node dictionary
-        node_dict = node(index_case, "individual", trans_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
+        node(index_case, "individual", transmission_dict=epidemic_config["transmission_dict"], child_dict=epidemic_config["child_dict"], those_sampled=those_sampled, node_dict=node_dict)
         coalescent_tree = tree(tree_type="whole_tree",node_dict=node_dict, epidemic_len=epidemic_len)
         
         if config["calculate_R0"]:
@@ -136,6 +136,6 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         return coalescent_tree, newick_string, skyline, R0, those_sampled, ltt
         
     else:
-        sys.stderr.write("No-one assigned for sampling in tree simulation\n")
+        # sys.stderr.write("No-one assigned for sampling in tree simulation\n")
         return
 

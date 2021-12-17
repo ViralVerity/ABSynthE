@@ -39,12 +39,12 @@ class node():
             #If the lineage is sampled or it's child is
             if self.sampled or len(self.sampled_infections) != 0:
                 self.root_to_tip = self.time_sampled
-                self.subtree = tree(tree_type = "subtree", focal_person=self)
+                self.subtree = tree(tree_type = "subtree", focal_node=self)
 
         
         if self.type == "transmission":
             self.infector = infector
-            self.infectee = infectee
+            self.infectee = infectee 
         
 
         if self.type == "coalescent":
@@ -63,14 +63,12 @@ class node():
         self.branch_len_calculated = False
         self.remove_func_called = False
         
-        return node_dict #?
-        
         
     def find_time_of_day_infected_sampled(self, transmission_dict, those_sampled, node_dict):
         #this is to get the time of day someone was infected/sampled
         #it's in terms of years
         
-        day_infected = transmission_dict[self.id]["day_infected"] 
+        day_infected = transmission_dict[self.id]["day_infected"]
         day_sampled = transmission_dict[self.id]["day_sampled"]
 
         uniform1 = np.random.uniform(0,1)
@@ -81,7 +79,7 @@ class node():
             self.time_infected = (day_infected + uniform1)/365
 
         if day_infected == day_sampled:
-            rnge = time_infected - (day_sampled/365)
+            rnge = self.time_infected - (day_sampled/365)
             self.time_sampled = (self.time_infected + np.random.uniform(0,rnge))
         else:
             self.time_sampled = (day_sampled + uniform1)/365
@@ -93,7 +91,7 @@ class node():
         
         self.secondary_infections = child_dict[self.id] #immediate transmission
         
-        for child in secondary_infections:
+        for child in self.secondary_infections:
 
             new_child = node(child, "individual", transmission_dict, child_dict, those_sampled, node_dict)
 
