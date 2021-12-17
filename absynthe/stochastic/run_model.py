@@ -54,7 +54,7 @@ def run_model(config):
         write_to_summary_files(config, epidemic_config, iteration_count, last_day)
 
         if epidemic_config["epidemic_stopped"] and not config["write_file"]:
-            write_runout_file(config, epidemic_config)
+            write_runout_file(config, epidemic_config, iteration_count)
 
         if epidemic_config["epidemic_stopped"] or config["write_file"]:
             record_individual_epidemic(iteration_count, config, epidemic_config)        
@@ -75,11 +75,17 @@ def run_epidemic(start_day, config, epidemic_config):
                         print(f'{int(day/diff)} days per minute on day {day} and {int(len(epidemic_config["case_dict"])/diff)} cases per minute.')
 
             if config["capped"]:
-                if day > config["day_limit"] or len(epidemic_config["case_dict"]) > config["case_limit"]: 
-                    sys.stdout.write("Epidemic has reached day limit or case limit\n")
-                    epidemic_config["epidemic_stopped"]  = True
-                    return epidemic_config
-            
+                if config["day_limit"]:
+                    if day > config["day_limit"]: 
+                        sys.stdout.write("Epidemic has reached day limit\n")
+                        epidemic_config["epidemic_stopped"]  = True
+                        return epidemic_config
+                elif config["case_limit"]:
+                    if len(epidemic_config["case_dict"]) > config["case_limit"]:
+                        sys.stdout.write("Epidemic has reached case limit\n")
+                        epidemic_config["epidemic_stopped"]  = True
+                        return epidemic_config
+                    
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
                     
@@ -120,9 +126,13 @@ def run_epidemic(start_day, config, epidemic_config):
                                 
                                 if not day_inf_output:
                                     #print("Finished infection first")
-                                    pass
+                                    continue
 
-                                else: 
+                                else:
+                                    if config["day_limit"]:
+                                        if day_inf_output > config["day_limit"]:
+                                            continue 
+                                    
                                     new_case = Case(len(epidemic_config["case_dict"]), level, focal_case)
                                     epidemic_config["case_dict"][new_case] = None
                                     epidemic_config["day_dict"][day_inf_output].append(new_case)
@@ -155,11 +165,11 @@ def write_to_summary_files(config, epidemic_config, iteration_count, last_day):
     
     if epidemic_config["epidemic_stopped"]:
         if config["run_out_summary"] == "":
-            run_out_summary = file_funcs.prep_runout_summary(config["output_directory"])
-            run_out_summary.write(f"{iteration_count},{size}\n")
+            config["run_out_summary"] = file_funcs.prep_runout_summary(config["output_directory"])
+            config["run_out_summary"].write(f"{iteration_count},{size}\n")
 
 
-def write_runout_file(config, epidemic_config):
+def write_runout_file(config, epidemic_config, iteration_count):
 
     runout_file = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"],iteration_count)
         
@@ -181,13 +191,13 @@ def record_individual_epidemic(iteration_count, config, epidemic_config):
             
     for district_pair, count_list in epidemic_config["dist_mvmt"].items(): #what is the value here - is it counts or days that they're happening on?
         if len(count_list) != 0:
-            counts = ",".join([str(i) for i in value])
+            counts = ",".join([str(i) for i in count_list])
             district_mvmt_file.write(f'{district_pair[0]},{district_pair[1]},{counts}"\n"')
     district_mvmt_file.close()
     
     for ch_pair, count_list in epidemic_config["ch_mvmt"].items():
         if len(count_list) != 0:
-            counts = ",".join([str(i) for i in value])
+            counts = ",".join([str(i) for i in count_list])
             ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
     ch_mvmt_file.close()
     
@@ -196,7 +206,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config):
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, ltt = result
 
-            config["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+            config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
 
             if config["output_tree"]:
                 tree_file = open(os.path.join(config["output_directory"],"trees",f"tree_for_{iteration_count}.txt", 'w'))

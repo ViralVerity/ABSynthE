@@ -55,11 +55,13 @@ def make_summary_files(config):
     config["R0_output"] = R0_output
         
     config["size_output"] = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
-    config["most_recent_tip_file"] = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
     config["length_output"] = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
     
-    config["most_recent_tip_file"].write("number,most_recently_sampled_tip\n")
-    config["size_output"].write("number,size,districts_involved,communities_involved\n")
+    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        config["most_recent_tip_file"] = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
+        config["most_recent_tip_file"].write("number,most_recently_sampled_tip\n")
+    
+    config["size_output"].write("number,size,districts_involved,chiefdoms_involved\n")
     config["length_output"].write("number,length_of_epidemic\n")
     
     return config
