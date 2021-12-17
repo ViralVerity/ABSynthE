@@ -54,7 +54,8 @@ def run_model(config, summary_stats_set, len_stat):
 
         epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
         last_day = max(epidemic_config["onset_times"])
-
+        print(len(epidemic_config["case_dict"]))
+        print(last_day)
         ###Getting results and writing to file###
         
         # write_to_summary_files(config, epidemic_config, iteration_count, last_day)
