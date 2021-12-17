@@ -19,7 +19,6 @@ def run_model(config, summary_stats_set, len_stat):
     sys.stdout.write("\nStarting epidemic runs.\n")
     
     for iteration_count in range(config["number_model_iterations"]): #I think this isn't happening in the fitting
-        print("Starting to do the epidemic")
         ##writing to file and screen
         if iteration_count%config["log_every"] == 0:
             config["write_file"] = True
@@ -44,6 +43,7 @@ def run_model(config, summary_stats_set, len_stat):
         for case, assignment in epidemic_config["case_dict"].items():
             if not assignment: 
                 remove_set.add(case)
+                        
         for case in remove_set:
             del epidemic_config["case_dict"][case]
 
@@ -54,15 +54,17 @@ def run_model(config, summary_stats_set, len_stat):
 
         epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
         last_day = max(epidemic_config["onset_times"])
+        
+        if config["day_limit"]:
+            if config["day_limit"] < last_day:
+                last_day = config["day_limit"]
 
-        print(len(epidemic_config["case_dict"]))
-        print(last_day)
 
         ###Getting results and writing to file###
         
         # write_to_summary_files(config, epidemic_config, iteration_count, last_day)
 
-        a_sim = record_individual_epidemic(iteration_count, config, epidemic_config, summary_stats_set, len_stat)        
+        a_sim = record_individual_epidemic(iteration_count, config, epidemic_config, summary_stats_set, len_stat, last_day)        
 
         if config["write_file"]: #is there a way to check if a file is open?
             config["info_file"].close()
@@ -159,7 +161,7 @@ def run_epidemic(start_day, config, epidemic_config):
     return epidemic_config
 
 
-def record_individual_epidemic(iteration_count, config, epidemic_config, summary_stats_set, len_stat):
+def record_individual_epidemic(iteration_count, config, epidemic_config, summary_stats_set, len_stat, last_day):
 
     # district_mvmt_file, ch_mvmt_file = file_functions.prep_movement_files(config["output_directory"], iteration_count)
             
@@ -176,11 +178,12 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
     # ch_mvmt_file.close()
     
     if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        print("simulating tree")
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, ltt = result
 
-            config["files"]["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+            config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
             if summary_stats_set == "all":
                 ltt_metrics = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, LTT_bins)

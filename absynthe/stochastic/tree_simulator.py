@@ -14,10 +14,10 @@ def sampling(transmission_dict, config, epidemic_len):
     those_sampled = set()
     
     total = len(transmission_dict) #Doesn't have NA in it because that can't be sampled
-    number_of_people = round(total*sampled_percentage)
+    number_of_people = round(total*config["sampling_percentage"])
     weeks = round(epidemic_len/7)
     
-    if sampling_scheme == "uniform":
+    if config["sampling_scheme"] == "uniform":
         if weeks > 0:
             samples_per_week = round(number_of_people/weeks)
         else:
@@ -97,11 +97,23 @@ def simulate_tree(epidemic_config, config, epidemic_len):
     ltt = None
     skyline = None
 
-    those_sampled, not_enough_cases = sampling(epidemic_config["transmission_dict"], config["sampling_percentage"], config["sampling_scheme"], epidemic_len)
+    transmission_dict = epidemic_config["transmission_dict"]
+    if config["day_limit"]:
+        if epidemic_len < config["day_limit"]:
+            pass
+        else:
+            transmission_dict = defaultdict(dict)
+            for person, person_dict in epidemic_config["transmission_dict"].items():
+                if person_dict["day_sampled"] <= config["day_limit"]:
+                    transmission_dict[person] = person_dict
+
+    sampling_output = sampling(transmission_dict, config, epidemic_len)
     
     if not sampling_output:
         sys.stdout.write("Not enough cases to make a tree")
         return
+    else:
+        those_sampled, not_enough_cases = sampling_output
     
     if len(those_sampled) != 0:
    
@@ -119,11 +131,11 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         if config["output_tree"]:
             newick_string = coalescent_tree.to_newick(coalescent_tree.root, those_sampled)
         if config["output_ltt"] or config["output_skyline"]:
-            skyline, lineages_through_time, coalescent_times = coalescent_tree.calculate_ne(those_sampled)
+            skyline, lineages_through_time = coalescent_tree.calculate_ne(those_sampled)
        
         return coalescent_tree, newick_string, skyline, R0, those_sampled, ltt
         
     else:
-        sys.stderr.write("No-one assigned for sampling in tree simulation")
+        sys.stderr.write("No-one assigned for sampling in tree simulation\n")
         return
 

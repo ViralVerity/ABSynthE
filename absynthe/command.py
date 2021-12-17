@@ -41,8 +41,6 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
     parser.add_argument("-h","--help",action="store_true",dest="help")
     
-    parser.add_argument("--fitting", action="store_true")
-
     if len(sysargs)<1: 
         parser.print_help()
         sys.exit(0)
@@ -54,7 +52,10 @@ def main(sysargs = sys.argv[1:]):
 
     config = {}
     config["number_model_iterations"] = args.number_model_iterations
-    config["log_every"] =  args.log_every*args.number_model_iterations
+    if args.log_every < 1:
+        config["log_every"] =  args.log_every*args.number_model_iterations
+    else:
+        config["log_every"] = args.log_every
     config["cfr"] = args.cfr
     
     config["sampling_percentage"] = args.sampling_percentage
@@ -77,9 +78,10 @@ def main(sysargs = sys.argv[1:]):
         # a = 0.65
         # b = 0.11
         # c = 0.32
-    # config["a"] = #??
-    # config["b"] = #??
-    # config["c"] = #??
+    #old ones for testing
+    config["a"] = 0.65
+    config["b"] = 0.11
+    config["c"] = 0.32
 
     # sys.stdout.write("Setting up for running epidemics\n")
     
@@ -95,10 +97,10 @@ def main(sysargs = sys.argv[1:]):
     
     if config["case_limit"] or config["day_limit"]:
         config["capped"] = True
-        run_out_summary = file_funcs.prep_runout_summary(config["output_directory"])
+        config["run_out_summary"] = file_funcs.prep_runout_summary(config["output_directory"])
     else:
         config["capped"] = False
-        run_out_summary = ""
+        config["run_out_summary"] = ""
     
     print("\n**** CONFIG ****")
     no_print = ["population_structure", "distributions"]
@@ -110,13 +112,16 @@ def main(sysargs = sys.argv[1:]):
     pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict
     pool.map(run_model,(config, )) #calls the run_model.py script       
             
-    config["files"]["R0_output"].close()
-    config["files"]["size_output"].close()
-    config["files"]["length_output"].close()
-    config["files"]["most_recent_tip_file"].close()
+    if config["R0_output"]:
+        config["R0_output"].close()
+    config["size_output"].close()
+    config["length_output"].close()
+    
+    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        config["most_recent_tip_file"].close()
                                     
-    if case_limit or day_limit:
-        run_out_summary.close()
+    if config["case_limit"] or config["day_limit"]:
+        config["run_out_summary"].close()
 
 
 if __name__ == '__main__':
