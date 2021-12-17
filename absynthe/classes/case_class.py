@@ -20,7 +20,7 @@ class Case():
             elif self.level == "Ch":
                 poss_case = random.choice([person for person in config["population_structure"]["ch_to_ppl"][parent_individual.ch] if person not in parent_individual.household_list]) 
             elif self.level == "Dist":
-                poss_case = random.choice(person for person in config["population_structure"]["ch_to_ppl"]["kissi_tongi"]) #because we know which chiefdom those cases are in
+                poss_case = random.choice([person for person in config["population_structure"]["ch_to_ppl"]["kissi_tongi"]]) #because we know which chiefdom those cases are in
 
         else:
             if len(epidemic_config["infected_individuals_set"]) == config["population_structure"]["popn_size"]: 
@@ -52,7 +52,7 @@ class Case():
             return poss_case, config, epidemic_config
             
         elif day == 0: #So that there are actually 14 cases in the first transmission cluster
-            self.who_am_I(parent_individual, day, config, epidemic_config)
+            self.who_am_I(parent_individual, day, config, epidemic_config) #concerned that this isn't working
 
         else:
             return 0
