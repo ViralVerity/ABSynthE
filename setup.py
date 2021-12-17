@@ -6,14 +6,15 @@ import pkg_resources
 
 from absynthe import __version__, _program
 
-setup(name='ABSynthE',
+setup(name='absynthe',
       version=__version__,
       packages=find_packages(),
-      scripts=[
-            ],
-      install_requires=[
-        ],
       description='Agent based synthetic epidemic',
+      install_requires=[
+            "numpy>=1.19.4",
+            "scipy>=1.4.1"
+            
+      ],
       url='https://github.com/ViralVerity/ABSynthE',
       author='Verity Hill',
       author_email='verity.hill@ed.ac.uk',

@@ -27,10 +27,10 @@ def make_data_structures(config):
 
 
     if config["day_limit"]:
-        for i in range(config["day_limit"]): 
+        for i in range(config["day_limit"]+1): 
             epidemic_config["day_dict"][i] = []
     else:
-        for i in range(1000):
+        for i in range(1001):
             epidemic_config["day_dict"][i] = []
 
 

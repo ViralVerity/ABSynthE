@@ -18,8 +18,8 @@ def run_model(config, summary_stats_set, len_stat):
     
     sys.stdout.write("\nStarting epidemic runs.\n")
     
-    for iteration_count in range(config["number_model_iterations"]):
-    
+    for iteration_count in range(config["number_model_iterations"]): #I think this isn't happening in the fitting
+        print("Starting to do the epidemic")
         ##writing to file and screen
         if iteration_count%config["log_every"] == 0:
             config["write_file"] = True
@@ -82,10 +82,16 @@ def run_epidemic(start_day, config, epidemic_config):
                         print(f'{int(day/diff)} days per minute on day {day} and {int(len(epidemic_config["case_dict"])/diff)} cases per minute.')
 
             if config["capped"]:
-                if day > config["day_limit"] or len(epidemic_config["case_dict"]) > config["case_limit"]: 
-                    sys.stdout.write("Epidemic has reached day limit or case limit\n")
-                    epidemic_config["epidemic_stopped"]  = True
-                    return epidemic_config
+                if config["day_limit"]:
+                    if day > config["day_limit"]: 
+                        sys.stdout.write("Epidemic has reached day limit\n")
+                        epidemic_config["epidemic_stopped"]  = True
+                        return epidemic_config
+                elif config["case_limit"]:
+                    if len(epidemic_config["case_dict"]) > config["case_limit"]:
+                        sys.stdout.write("Epidemic has reached case limit\n")
+                        epidemic_config["epidemic_stopped"]  = True
+                        return epidemic_config
             
             if len(case_list) != 0 and day >= start_day: #If there are new cases on this day
                 for focal_case in case_list:
@@ -126,9 +132,13 @@ def run_epidemic(start_day, config, epidemic_config):
                                 
                                 if not day_inf_output:
                                     #print("Finished infection first")
-                                    pass
+                                    #so never gets added to the case dict in the first place
+                                    continue
 
                                 else: 
+                                    if config["day_limit"]:
+                                        if day_inf_output > config["day_limit"]:
+                                            continue 
                                     new_case = Case(len(epidemic_config["case_dict"]), level, focal_case)
                                     epidemic_config["case_dict"][new_case] = None
                                     epidemic_config["day_dict"][day_inf_output].append(new_case)
