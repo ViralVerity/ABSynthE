@@ -24,7 +24,7 @@ class Case():
 
         else:
             if len(epidemic_config["infected_individuals_set"]) == config["population_structure"]["popn_size"]: 
-                return False
+                return None
 
             if self.level == "Hh": #within household
                 poss_case = random.choice([person for person in config["population_structure"]["hh_to_ppl"][parent_individual.hh] if person != parent_individual.unique_id]) 
