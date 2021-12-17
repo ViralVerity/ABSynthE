@@ -36,6 +36,8 @@ def common_part(config, a,b,c):
     config["calculate_R0"] = False
     config["verbose"] = True
     
+    config["write_file"] = False
+    
     cwd = os.getcwd()
     thisdir = os.path.abspath(os.path.dirname(__file__))
     
