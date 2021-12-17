@@ -59,6 +59,7 @@ def run_model(config, summary_stats_set, len_stat):
             if config["day_limit"] < last_day:
                 last_day = config["day_limit"]
 
+
         ###Getting results and writing to file###
         
         # write_to_summary_files(config, epidemic_config, iteration_count, last_day)
