@@ -31,6 +31,7 @@ class Individual():
             self.recovery_time(recovery_cdf)
             self.infectious_period = self.recovery_day
 
+        
         self.add_self_to_dicts(epidemic_config)
 
 

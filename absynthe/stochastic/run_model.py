@@ -49,6 +49,10 @@ def run_model(config):
 
         epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
         last_day = max(epidemic_config["onset_times"])
+        
+        if config["day_limit"]:
+            if config["day_limit"] < last_day:
+                last_day = config["day_limit"]
 
         ###Getting results and writing to file###
         write_to_summary_files(config, epidemic_config, iteration_count, last_day)
@@ -57,7 +61,7 @@ def run_model(config):
             write_runout_file(config, epidemic_config, iteration_count)
 
         if epidemic_config["epidemic_stopped"] or config["write_file"]:
-            record_individual_epidemic(iteration_count, config, epidemic_config)        
+            record_individual_epidemic(iteration_count, config, epidemic_config, last_day)        
 
         if config["write_file"]: #is there a way to check if a file is open?
             config["info_file"].close()
@@ -97,6 +101,8 @@ def run_epidemic(start_day, config, epidemic_config):
                             pass
                         else: #If there is no-one left
                             print(result)
+                            print(len(epidemic_config["infected_individuals_set"]))
+                            print(config["population_structure"]["popn_size"])
                             sys.stdout.write("All members of the population infected\n")
                             epidemic_config["epidemic_stopped"] = True
                             return epidemic_config
@@ -185,7 +191,7 @@ def write_runout_file(config, epidemic_config, iteration_count):
     runout_file.close()
 
 
-def record_individual_epidemic(iteration_count, config, epidemic_config):
+def record_individual_epidemic(iteration_count, config, epidemic_config, last_day):
 
     district_mvmt_file, ch_mvmt_file = file_functions.prep_movement_files(config["output_directory"], iteration_count)
             
