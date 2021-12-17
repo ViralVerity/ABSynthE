@@ -37,7 +37,7 @@ def run_model(config, summary_stats_set, len_stat):
         
         ###Run the epidemic###
         epidemic_config = run_epidemic(0, config, epidemic_config)
-    
+            
         ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
         #NB if a case limit is set, it's possible this removal process will put the case count below the case limit.
         remove_set = set()   
@@ -54,6 +54,9 @@ def run_model(config, summary_stats_set, len_stat):
 
         epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
         last_day = max(epidemic_config["onset_times"])
+        
+        print(len(epidemic_config["case_dict"]))
+        print(last_day)
 
         ###Getting results and writing to file###
         
