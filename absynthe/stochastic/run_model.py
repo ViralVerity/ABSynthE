@@ -1,5 +1,6 @@
 from collections import defaultdict
 import sys
+import os
 import absynthe.set_up.index_functions as index_functions
 import absynthe.set_up.file_functions as file_functions
 import absynthe.stochastic.tree_simulator as tree_sim
@@ -212,15 +213,15 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, ltt = result
 
-            config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+            config["most_recent_tip_file"].write(f'{iteration_count},{coalescent_tree.most_recent_date}\n')
 
             if config["output_tree"]:
-                tree_file = open(os.path.join(config["output_directory"],"trees",f"tree_for_{iteration_count}.txt", 'w'))
+                tree_file = open(os.path.join(config["output_directory"],"trees",f"tree_for_{iteration_count}.txt"), 'w')
                 tree_file.write(newick_string)
                 tree_file.close()
 
-            if config["make_skyline"]: 
-                skyline_file = open(os.path.join(output_directory,"skylines", f"skyline_for_{iteration_count}.csv", 'w'))
+            if config["output_skyline"]: 
+                skyline_file = open(os.path.join(output_directory,"skylines", f"skyline_for_{iteration_count}.csv"), 'w')
                 skyline_file.write("number,start_interval,end_interval,logpopsize\n")
 
                 logpop_count = 0
@@ -229,8 +230,8 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
                     skyline_file.write(f"{logpop_count},{key[0]},{key[1]},{value}\n")
                 skyline_file.close()
             
-            if config["make_ltt"]: 
-                ltt_file = open(os.path.join(output_directory,"lineages",f"ltt_for_{iteration_count}.csv", 'w')) 
+            if config["output_ltt"]: 
+                ltt_file = open(os.path.join(output_directory,"lineages",f"ltt_for_{iteration_count}.csv"), 'w') 
                 ltt_file.write("number,start,end,lineages\n")
 
                 lineage_count = 0

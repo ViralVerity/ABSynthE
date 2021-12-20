@@ -52,10 +52,10 @@ class node():
             self.subtree = subtree
             self.root_to_tip = 0.0 #because it's the root of the subtree I think
 
-            if children:
-                self.node_children = children
-            elif not children:
-                self.node_children = []
+        if children:
+            self.node_children = children
+        elif not children:
+            self.node_children = []
         
         #Test functions#
         self.remove_func_called = False
@@ -65,8 +65,7 @@ class node():
         
         
     def find_time_of_day_infected_sampled(self, transmission_dict, those_sampled, node_dict):
-        #this is to get the time of day someone was infected/sampled
-        #it's in terms of years
+        #this is to get the time of day someone was infected/sampled in terms of years
         
         day_infected = transmission_dict[self.id]["day_infected"]
         day_sampled = transmission_dict[self.id]["day_sampled"]

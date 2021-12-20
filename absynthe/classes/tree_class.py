@@ -62,6 +62,14 @@ class tree():
                 if node.type == "coalescent":
                     coalescent_node_count += 1
                     
+            for nde in self.final_nodes:
+                self.get_tip_to_root(nde)
+                self.heights[nde] = self.most_recent_date - nde.root_to_tip
+                
+                #For fitting summary stats
+                self.b_len_list.append(self.branch_lengths[nde])
+                self.internal_branches.append(self.branch_lengths[nde])
+            
             for tip in self.tips:
                 self.heights[tip] = self.most_recent_date - tip.time_sampled
                 
@@ -75,56 +83,13 @@ class tree():
             self.all_tips_nodes = self.tips.extend(self.final_nodes)
                     
             ##tests
-            if len(self.final_nodes) != (len(self.tips) - 1):
-                print("error in final node number")
-            if len(self.nodes) != (trans_count + coal_count):
-                print("error in pre-removal number")
+            # if len(self.final_nodes) != (len(self.tips) - 1):
+            #     print("error in final node number")
+            # if len(self.nodes) != (trans_count + coal_count):
+            #     print("error in pre-removal number")
              
-            for nde in self.final_nodes:
-                if not nde.remove_func_called:
-                    print("function not called on")
-                    print("Node: " + str(nde))
-                    print("Type: " + str(nde.type))
-                    if nde.type == "Coal":
-                        print("From subtree: " + str(nde.subtree.person.id))
-                        print("Sampled? " + str(nde.subtree.contains_sample))
-                    try:
-                        print("Parent = " + str(nde.node_parent))
-                    except AttributeError:
-                        print("No parent")
-                    print("Children = " + str(nde.node_children))
-                
-                elif nde.removed:
-                    print("error in removing")
-                    print("Node: " + str(nde))
-                    print("Type: " + str(nde.type))
-                    try:
-                        print("Parent = " + str(nde.node_parent))
-                    except AttributeError:
-                        print("No parent")
-                    print("Children = " + str(nde.node_children))
-                
-                elif nde.type == "transmission":
-                    print("Trans node still in ")
-                    print("Node: " + str(nde))
-                    print("Type: " + str(nde.type))
-                    try:
-                        print("Parent = " + str(nde.node_parent))
-                    except AttributeError:
-                        print("No parent")
-                    print("Children = " + str(nde.node_children))
-                
-                else:
-                    self.get_tip_to_root(nde)
-                    self.heights[nde] = self.most_recent_date - nde.root_to_tip
                     
-                    #For fitting summary stats
-                    self.b_len_list.append(self.branch_lengths[nde])
-                    self.internal_branches.append(self.branch_lengths[nde])
-                    
-                
 
-    
     def sort_out_tips(self): #subtree
         
         self.find_transmission_tips(self.focal_node)
@@ -135,6 +100,7 @@ class tree():
             self.root_time = self.most_recent_tip - float(self.focal_node.time_infected)
         
         for tip in self.tips:
+            tip.relative_height = self.most_recent_tip - tip.absolute_time
             self.heights[tip] = self.most_recent_tip - tip.absolute_time #relative height in subtree of tip
     
     def find_transmission_tips(self, focal_node): #subtree
@@ -179,8 +145,6 @@ class tree():
             return
         
         else:
-            for i in lineage_list:
-                print(i.type)
             active_pop = [i for i in lineage_list if i.relative_height <= current_height]
             to_be_sampled = [i for i in lineage_list if i.relative_height > current_height]
         
@@ -266,7 +230,7 @@ class tree():
         for nde in node_dict.values():
             if nde.sampled or len(nde.sampled_infections) != 0:
                 subtree = nde.subtree
-                if subtree.person.index_case: 
+                if subtree.focal_node.index_case: 
                     self.root = subtree.root #If I want the subtree with the root in as well I can do it here
 
                 if subtree.contains_sample: #it will only ever contain one sample
