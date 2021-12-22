@@ -211,7 +211,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
     if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
-            coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time = result
+            coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time, LTT_bins = result
 
             config["most_recent_tip_file"].write(f'{iteration_count},{coalescent_tree.most_recent_date}\n')
 
