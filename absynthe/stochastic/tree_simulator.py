@@ -94,7 +94,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
             
     R0 = None
     newick_tree = None
-    ltt = None
+    lineages_through_time = None
     skyline = None
 
     transmission_dict = epidemic_config["transmission_dict"]
@@ -133,7 +133,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
         if config["output_ltt"] or config["output_skyline"]:
             skyline, lineages_through_time, coalescent_times = coalescent_tree.calculate_ne(those_sampled)
         
-        return coalescent_tree, newick_string, skyline, R0, those_sampled, ltt
+        return coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time
         
     else:
         # sys.stderr.write("No-one assigned for sampling in tree simulation\n")
