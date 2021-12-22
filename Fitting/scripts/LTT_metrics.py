@@ -35,7 +35,7 @@ def average_ltt_bins(ltt_dict, coalescent_times):
             else:
                 continue
             
-            new_lins[new_bin].append(frac*bin_dict[old_bin])
+            new_lins[new_bin].append(frac*ltt_dict[old_bin])
                     
     for new_bin, totals in new_lins.items():
         average_lins[new_bin] = np.mean(totals)
