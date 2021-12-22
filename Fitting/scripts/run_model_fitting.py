@@ -184,7 +184,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, ltt = result
 
-            config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
+            #config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
             if summary_stats_set == "all":
                 ltt_metrics = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, LTT_bins)
