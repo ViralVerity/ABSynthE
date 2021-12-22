@@ -4,6 +4,9 @@ from multiprocessing.pool import ThreadPool
 import time
 import os
 
+import absynthe.set_up.file_functions as file_funcs
+import absynthe.set_up.distribution_functions as dist_funcs
+
 from pyabc.sampler import ConcurrentFutureSampler
 from concurrent.futures import ThreadPoolExecutor
 
@@ -49,14 +52,21 @@ def main(sysargs = sys.argv[1:]):
     observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
     # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
 
-    parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
-    prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
+    #not sure this will work
+    parameters = make_config()
+    
+    priors = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
+    prior = pyabc.Distribution(**{key: pyabc.RV("uniform", x, y - x) for key, (x,y) in priors.items()})
 
-    pool = ThreadPoolExecutor(max_workers=12)
+    parameters.update(prior) 
+
+    pool = ThreadPoolExecutor(max_workers=24)
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')
-    abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
+
+    #get this to take an argument into the function and then have the config only read in once
+    abc = pyabc.ABCSMC(function, parameters, distance, sampler=sampler) 
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
 
@@ -154,6 +164,49 @@ def distance(x,y): #inputs are the dictionaries
     
     return dist
     
+
+def make_config():
+
+    config = {}
+    
+    config["number_model_iterations"] = 1
+    config["log_every"] =  1
+    config["cfr"] = 0.7
+    
+    config["sampling_percentage"] = 0.16
+    config["sampling_scheme"] = "uniform"
+        
+    config["input_directory"] = "../../SLE_EBOV_input_files/"
+
+    config["case_limit"] = 3000
+    config["day_limit"] = 124 
+    config["output_tree"] = True
+    config["output_skyline"] = False
+    
+    config["overwrite"] = False
+    config["verbose"] = True
+
+    config["calculate_R0"] = False
+    config["verbose"] = True
+    
+    config["write_file"] = False
+    
+    cwd = os.getcwd()
+    thisdir = os.path.abspath(os.path.dirname(__file__))
+    
+    # config = file_funcs.make_directories(config)
+    # config = file_funcs.make_summary_files(config)
+
+    config["distributions"] = dist_funcs.define_distributions() 
+    config["population_structure"] = file_funcs.parse_population_information(os.path.join(config["input_directory"], "population_config.yaml"))
+    config = make_contact_dicts(config["input_directory"], config)
+    
+    config["capped"] = True
+    
+    config["calculate_R0"] = False
+    
+    return config
+
 
 if __name__ == '__main__':
     main()
