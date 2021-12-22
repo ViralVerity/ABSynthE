@@ -20,7 +20,7 @@ def average_ltt_bins(ltt_dict, coalescent_times):
     average_lins = {}
 
     for new_bin in new_tup_list:
-        for old_bin in bins:
+        for old_bin in ltt_dict.keys():
             start1 = old_bin[0]
             start2 = new_bin[0]
             end1 = old_bin[1]
@@ -67,7 +67,7 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times):
     
     slope_ratio = slope_1/slope_2
     
-    ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio ]
+    ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio]
     
     return ltt_metrics
     
