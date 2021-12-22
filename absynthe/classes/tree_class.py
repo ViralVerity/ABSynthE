@@ -3,6 +3,7 @@ import uuid
 import numpy as np
 from collections import defaultdict
 from collections import OrderedDict
+from scipy import special
 
 import absynthe.classes.node_class as node_class
 
@@ -329,16 +330,25 @@ class tree():
     
     def get_active_population(self): 
         
-        coalescent_times = set()
+        coalescent_times = []
         waiting_times = {}
         bins = []
         active_population = {}
 
-        sorted_heights = OrderedDict(sorted(self.heights.items(), key=lambda x:x[1]))
-        
-        for nde, height in sorted_heights.items():
-            coalescent_times.add(height)
+        height_set = set()
+        for i in self.heights.values():
+            height_set.add(i)
 
+        height_list = list(height_set)
+        sorted_height_list = sorted(height_list)
+        sorted_height_dict = {k: v for k, v in sorted(self.heights.items(), key=lambda item: item[1])}
+        # prep = set(sorted_heights.values())
+        # coalescent_times = set(prep)
+
+        for height in sorted_height_list:
+            if height != 0:
+                coalescent_times.append(height)
+                        
         current_time = 0
         non_parent_set = set() 
         for time in coalescent_times:
@@ -355,9 +365,9 @@ class tree():
 
         for bin_pair in bins:
             active_population[bin_pair] = 0
-            for node, height in sorted_heights.items():
+            for node, height in sorted_height_dict.items():
                 if not node.node_parent: #then it's the root
-                    non_parent_set.add(nde)
+                    non_parent_set.add(node)
                     continue
                 else:
                     start = height
@@ -376,15 +386,14 @@ class tree():
         """Get effective population sizes in each coalescent interval for skyline"""
 
         active_population, waiting_times, coalescent_times = self.get_active_population() #active_population is also lineages through time
-        
         Ne_dict = {}
-
+        Ne = 0
         for times, tau in waiting_times.items():
-            if tau == 0:
-                print("tau is zero here")
-                print(key, value)
+            if tau <= 0:
+                print("tau is not right here")
+                print(times, tau)
 
-            lineages = active_population[key]
+            lineages = active_population[times]
             if lineages > 1:
                 a = np.log(special.binom(lineages,2))
                 b = np.log(tau)
@@ -392,7 +401,7 @@ class tree():
             else:
                 Ne = Ne #ie from last time around - is that right?
             
-            Ne_dict[key] = Ne
+            Ne_dict[times] = Ne
 
 
         #so this was if the tree starts with one lineage. Commenting out because that should never happen and it should break if it does

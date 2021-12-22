@@ -221,7 +221,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
                 tree_file.close()
 
             if config["output_skyline"]: 
-                skyline_file = open(os.path.join(output_directory,"skylines", f"skyline_for_{iteration_count}.csv"), 'w')
+                skyline_file = open(os.path.join(config["output_directory"],"skylines", f"skyline_for_{iteration_count}.csv"), 'w')
                 skyline_file.write("number,start_interval,end_interval,logpopsize\n")
 
                 logpop_count = 0
@@ -231,7 +231,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
                 skyline_file.close()
             
             if config["output_ltt"]: 
-                ltt_file = open(os.path.join(output_directory,"lineages",f"ltt_for_{iteration_count}.csv"), 'w') 
+                ltt_file = open(os.path.join(config["output_directory"],"lineages",f"ltt_for_{iteration_count}.csv"), 'w') 
                 ltt_file.write("number,start,end,lineages\n")
 
                 lineage_count = 0
@@ -241,7 +241,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
                 ltt_file.close()
             
             if config["calculate_R0"]:
-                config["files"]["R0_output"].write(f"{iteration_count},{R0}\n")
+                config["R0_output"].write(f"{iteration_count},{R0}\n")
 
 
 
