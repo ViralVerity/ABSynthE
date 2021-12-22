@@ -13,12 +13,13 @@ import branch_length_parameters as bl
 import topology_set as top 
 import LTT_metrics as ltt
 
+@profile
 def run_model(config, summary_stats_set, len_stat):
     #may need to remove epidemic_config - see if it speeds it up at all
     
     sys.stdout.write("\nStarting epidemic runs.\n")
     
-    for iteration_count in range(config["number_model_iterations"]): #I think this isn't happening in the fitting
+    for iteration_count in range(config["number_model_iterations"]): 
         ##writing to file and screen
         if iteration_count%config["log_every"] == 0:
             config["write_file"] = True
@@ -70,7 +71,8 @@ def run_model(config, summary_stats_set, len_stat):
             config["info_file"].close()
             
         return a_sim, epidemic_config["dist_mvmt"], epidemic_config["ch_mvmt"]
-            
+
+@profile
 def run_epidemic(start_day, config, epidemic_config):
     
     epidemic_config["epidemic_stopped"] = False
@@ -160,7 +162,7 @@ def run_epidemic(start_day, config, epidemic_config):
 
     return epidemic_config
 
-
+@profile
 def record_individual_epidemic(iteration_count, config, epidemic_config, summary_stats_set, len_stat, last_day):
 
     # district_mvmt_file, ch_mvmt_file = file_functions.prep_movement_files(config["output_directory"], iteration_count)

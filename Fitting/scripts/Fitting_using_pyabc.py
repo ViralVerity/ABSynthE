@@ -52,7 +52,7 @@ def main(sysargs = sys.argv[1:]):
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
 
-    pool = ThreadPoolExecutor(max_workers=12)
+    pool = ThreadPoolExecutor(max_workers=1)
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')
@@ -62,7 +62,7 @@ def main(sysargs = sys.argv[1:]):
 
     abc_id = abc.new(db_path, observed)
 
-    history = abc.run(max_nr_populations=10, minimum_epsilon=0.3)
+    history = abc.run(max_nr_populations=1, minimum_epsilon=0.3) #was 10
     
 # def simulate_pyabc_all(parameter):
 #     result = simulate_epidemic_all(**parameter) 
@@ -157,11 +157,3 @@ def distance(x,y): #inputs are the dictionaries
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
