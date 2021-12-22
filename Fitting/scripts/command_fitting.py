@@ -14,7 +14,6 @@ import absynthe.set_up.index_functions as index_funcs
 import absynthe.set_up.distribution_functions as dist_funcs
 
 
-@profile
 def simulate_epidemic_all(parameters):
     
     parameters["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/all/"
