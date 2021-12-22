@@ -108,6 +108,7 @@ def normalise(vector):
     norm=np.linalg.norm(vector, ord=1)
     return vector/norm
 
+@profile
 def distance(x,y): #inputs are the dictionaries
     
     sim_a = x['a']
