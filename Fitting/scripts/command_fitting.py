@@ -14,7 +14,7 @@ import absynthe.set_up.index_functions as index_funcs
 import absynthe.set_up.distribution_functions as dist_funcs
 
 
-
+@profile
 def simulate_epidemic_all(parameters):
     
     parameters["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/all/"
@@ -40,12 +40,12 @@ def simulate_epidemic_ltt(parameters):
     return a_sim, ch_jumps, dist_jumps 
     
     
-def simulate_epidemic_ltt_points(a,b,c):
+def simulate_epidemic_ltt_points(parameters):
     
-    config["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/ltt_points/"
-    config["output_ltt"] = True
+    parameters["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/ltt_points/"
+    parameters["output_ltt"] = True
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt_points", 22) #calls the run_model_fitting.py script 
+    a_sim, dist_mvmt, ch_mvmt = run_model(parameters, "ltt_points", 22) #calls the run_model_fitting.py script 
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)
@@ -53,24 +53,24 @@ def simulate_epidemic_ltt_points(a,b,c):
     return a_sim, ch_jumps, dist_jumps
     
  
-def simulate_epidemic_bl(a,b,c):
+def simulate_epidemic_bl(parameters):
     
-    config["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/branch/"
-    config["output_ltt"] = False
+    parameters["output_directory"] = "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/branch/"
+    parameters["output_ltt"] = False
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "branch", 13) #calls the run_model_fitting.py script 
+    a_sim, dist_mvmt, ch_mvmt = run_model(parameters, "branch", 13) #calls the run_model_fitting.py script 
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)
     
     return a_sim, ch_jumps, dist_jumps
     
-def simulate_epidemic_top(a,b,c):
+def simulate_epidemic_top(parameters):
     
-    config["output_directory"] =  "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/topology/"
-    config["output_ltt"] = False
+    parameters["output_directory"] =  "/localdisk/home/s1732989/ABSynthE/Fitting/test_results/topology/"
+    parameters["output_ltt"] = False
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "topology", 9) #calls the run_model_fitting.py script 
+    a_sim, dist_mvmt, ch_mvmt = run_model(parameters, "topology", 9) #calls the run_model_fitting.py script 
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)

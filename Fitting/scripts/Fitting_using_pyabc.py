@@ -52,7 +52,6 @@ def main(sysargs = sys.argv[1:]):
     observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
     # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
 
-    #not sure this will work
     parameters = make_config()
     
     priors = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
@@ -65,7 +64,6 @@ def main(sysargs = sys.argv[1:]):
 
     print('starting to fit')
 
-    #get this to take an argument into the function and then have the config only read in once
     abc = pyabc.ABCSMC(function, parameters, distance, sampler=sampler) 
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
@@ -91,19 +89,19 @@ def main(sysargs = sys.argv[1:]):
 #     return {"a":result[0], "b":result[1], "c":result[2], "d":result[3]} 
 
 def simulate_pyabc_all(parameter):
-    result = simulate_epidemic_all(**parameter) 
+    result = simulate_epidemic_all(parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
 def simulate_pyabc_ltt(parameter):
-    result = simulate_epidemic_ltt(**parameter) 
+    result = simulate_epidemic_ltt(parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
 def simulate_pyabc_ltt_points(parameter):
-    result = simulate_epidemic_ltt_points(**parameter) 
+    result = simulate_epidemic_ltt_points(parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
 def simulate_pyabc_bl(parameter):
-    result = simulate_epidemic_bl(**parameter) 
+    result = simulate_epidemic_bl(parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
 def simulate_pyabc_top(parameter):
-    result = simulate_epidemic_top(**parameter) 
+    result = simulate_epidemic_top(parameter) 
     return {"a":result[0], "b":result[1], "c":result[2]} 
 
 def normalise(vector):
