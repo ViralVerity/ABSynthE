@@ -356,10 +356,18 @@ class tree():
         for bin_pair in bins:
             active_population[bin_pair] = 0
             for node, height in sorted_heights.items():
-                start = height
-                end = self.heights[node.node_parent] 
-                if start <= bin_pair[0] and end > bin_pair[0]:
-                    active_population[bin_pair] += 1
+                if not node.node_parent: #then it's the root
+                    non_parent_set.add(nde)
+                    continue
+                else:
+                    start = height
+                    end = self.heights[node.node_parent] 
+                    if start <= bin_pair[0] and end > bin_pair[0]:
+                        active_population[bin_pair] += 1
+
+        if len(non_parent_set) > 1:
+            print("NODES WITHOUT PARENTS" + str(len(non_parent_set)))
+
         
         return active_population, waiting_times, coalescent_times
     
