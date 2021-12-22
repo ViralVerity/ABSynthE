@@ -31,8 +31,8 @@ def run_model(config, summary_stats_set, len_stat):
         ###Making index case###
         epidemic_config = index_functions.make_index_case(config, epidemic_config)
         
-        if config["write_file"]:
-            config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
+        # if config["write_file"]:
+        #     config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
         
         ###Run the epidemic###
         epidemic_config = run_epidemic(0, config, epidemic_config)
