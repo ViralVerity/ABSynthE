@@ -59,10 +59,20 @@ def main(sysargs = sys.argv[1:]):
 
     parameters.update(prior) 
 
-    pool = ThreadPoolExecutor(max_workers=24)
+    pool = ThreadPoolExecutor(max_workers=1) #down to test
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')
+
+    ##just for testing
+    # a = 0.7
+    # b = 0.2
+    # c = 0.2
+    # parameters['a'] = a
+    # parameters['b'] = b
+    # parameters['c'] = c
+
+    # function(parameters)
 
     abc = pyabc.ABCSMC(function, parameters, distance, sampler=sampler) 
 
@@ -70,7 +80,7 @@ def main(sysargs = sys.argv[1:]):
 
     abc_id = abc.new(db_path, observed)
 
-    history = abc.run(max_nr_populations=10, minimum_epsilon=0.3)
+    history = abc.run(max_nr_populations=1, minimum_epsilon=0.3) #was 10
     
 # def simulate_pyabc_all(parameter):
 #     result = simulate_epidemic_all(**parameter) 
