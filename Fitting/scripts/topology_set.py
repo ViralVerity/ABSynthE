@@ -87,7 +87,7 @@ def calculate_topology_params(coalescent_tree):
     node_set = set()
     ladder_list = []
     for leaf in coalescent_tree.tips:
-        go_up_ladder(leaf, node_set, [], ladder_list)
+        go_up_ladder(coalescent_tree.root, leaf, node_set, [], ladder_list)
 
     max_ladder = max([len(i) for i in ladder_list])/len(coalescent_tree.tips)
     
@@ -104,7 +104,7 @@ def calculate_topology_params(coalescent_tree):
     return topology
 
 
-def go_up_ladder(node, node_set, ladder, ladder_list):
+def go_up_ladder(root, node, node_set, ladder, ladder_list):
     
     if node == root:
         return
@@ -119,7 +119,7 @@ def go_up_ladder(node, node_set, ladder, ladder_list):
             if node.parent_node not in node_set:
                 ladder.append(node.parent_node)
                 node_set.add(node.parent_node)
-                go_up_ladder(node.parent_node, node_set, ladder, ladder_list)
+                go_up_ladder(root, node.parent_node, node_set, ladder, ladder_list)
             else:
                 ladder_list.append(ladder)
                 return
@@ -130,7 +130,7 @@ def go_up_ladder(node, node_set, ladder, ladder_list):
         if type(sibling_nodes[0]) != "individual":
             if node.parent_node not in node_set:
                 ladder.append(node.parent_node)
-                go_up_ladder(node.parent_node,node_set, ladder, ladder_list)
+                go_up_ladder(root, node.parent_node,node_set, ladder, ladder_list)
                 node_set.add(node.parent_node)
             else:
                 ladder_list.append(ladder)
