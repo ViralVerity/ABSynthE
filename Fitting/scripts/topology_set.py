@@ -109,17 +109,17 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
     if node == root:
         return
     
-    sibling_nodes = [i for i in node.parent_node.children() if i != node]
+    sibling_nodes = [i for i in node.node_parent.children() if i != node]
     
     if len(sibling_nodes) != 1:
         print(f'wrong len sibling nodes: {len(sibling_nodes)}')
     
     if type(node) == "individual":
         if type(sibling_nodes[0]) != "individual":
-            if node.parent_node not in node_set:
-                ladder.append(node.parent_node)
-                node_set.add(node.parent_node)
-                go_up_ladder(root, node.parent_node, node_set, ladder, ladder_list)
+            if node.node_parent not in node_set:
+                ladder.append(node.node_parent)
+                node_set.add(node.node_parent)
+                go_up_ladder(root, node.node_parent, node_set, ladder, ladder_list)
             else:
                 ladder_list.append(ladder)
                 return
@@ -128,10 +128,10 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
             return
     else:
         if type(sibling_nodes[0]) != "individual":
-            if node.parent_node not in node_set:
-                ladder.append(node.parent_node)
-                go_up_ladder(root, node.parent_node,node_set, ladder, ladder_list)
-                node_set.add(node.parent_node)
+            if node.node_parent not in node_set:
+                ladder.append(node.node_parent)
+                go_up_ladder(root, node.node_parent,node_set, ladder, ladder_list)
+                node_set.add(node.node_parent)
             else:
                 ladder_list.append(ladder)
                 return
