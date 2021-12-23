@@ -11,7 +11,7 @@ def calculate_branch_statistics(coalescent_tree):
     median_lengths = np.median(coalescent_tree.b_len_list)
     
     if len(coalescent_tree.b_len_list) >= 2:
-        var = np.variance(coalescent_tree.b_len_list)
+        var = np.var(coalescent_tree.b_len_list)
     else:
         var = None
         
@@ -21,7 +21,7 @@ def calculate_branch_statistics(coalescent_tree):
     median_internal = np.median(coalescent_tree.internal_branches)
     
     if len(coalescent_tree.internal_branches) >= 2:
-        var_internal = np.variance(coalescent_tree.internal_branches)
+        var_internal = np.var(coalescent_tree.internal_branches)
     else:
         var_internal = None
         
@@ -29,7 +29,7 @@ def calculate_branch_statistics(coalescent_tree):
     median_external = np.median(coalescent_tree.external_branches)
     
     if len(coalescent_tree.external_branches) >= 2:
-        var_external = np.variance(coalescent_tree.external_branches)
+        var_external = np.var(coalescent_tree.external_branches)
     else:
         var_external = None
         
