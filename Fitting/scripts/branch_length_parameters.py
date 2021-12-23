@@ -11,9 +11,9 @@ def calculate_branch_statistics(coalescent_tree):
     median_lengths = np.median(coalescent_tree.b_len_list)
     
     if len(coalescent_tree.b_len_list) >= 2:
-        var = np.var(coalescent_tree.b_len_list)
+        var_lengths = np.var(coalescent_tree.b_len_list)
     else:
-        var = None
+        var_lengths = None
         
     
     #These are done piecewise in the original over different time points
