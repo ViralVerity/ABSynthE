@@ -97,7 +97,7 @@ def calculate_topology_params(coalescent_tree):
             if type(node) == "coalescent":
                 in_ladders.append(node)
 
-    IL_nodes = in_ladders/len(coalescent_tree.final_nodes)
+    IL_nodes = len(in_ladders)/len(coalescent_tree.final_nodes)
     
     topology = [colless, sackin, WD_ratio, delta_w, max_ladder, IL_nodes, staircase_1, staircase_2]
     
