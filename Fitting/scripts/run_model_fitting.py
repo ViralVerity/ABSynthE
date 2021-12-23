@@ -9,7 +9,7 @@ from absynthe.classes.individual_class import Individual
 import absynthe.stochastic.tree_simulator as tree_sim
 
 
-import branch_length_parameters as bl
+import branch_length_parameters as branch_lens
 import topology_set as top 
 import LTT_metrics as ltt
 
