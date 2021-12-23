@@ -190,7 +190,10 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
                 topology = top.calculate_topology_params(coalescent_tree)
                 bl = branch_lens.calculate_branch_statistics(coalescent_tree)
                 a_sim = []
-                a_sim.extend(bl).extend(topology).extend(ltt_metrics).extend(ltt_points)
+                a_sim.extend(bl)
+                a_sim.extend(topology)
+                a_sim.extend(ltt_metrics)
+                a_sim.extend(ltt_points)
 
             elif summary_stats_set == "branch":
                 a_sim = branch_lens.calculate_branch_statistics(coalescent_tree)

@@ -1,5 +1,6 @@
 from collections import defaultdict
 from collections import OrderedDict
+import numpy as np
 
 def average_ltt_bins(ltt_dict, coalescent_times):
     
