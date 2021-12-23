@@ -209,7 +209,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
         
         else:
             a_sim = []
-            for i in len(len_stat):
+            for i in range(len_stat):
                 a_sim.append(0)
 
     return a_sim
