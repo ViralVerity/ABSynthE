@@ -81,7 +81,8 @@ class tree():
                 tip.steps = tip.node_parent.steps + 1
                 self.total_steps.append(tip.steps)
             
-            self.all_tips_nodes = self.tips.extend(self.final_nodes)
+            self.all_tips_nodes = self.tips.copy()
+            self.all_tips_nodes.extend(self.final_nodes)
                     
             ##tests
             # if len(self.final_nodes) != (len(self.tips) - 1):
@@ -348,7 +349,7 @@ class tree():
         for height in sorted_height_list:
             if height != 0:
                 coalescent_times.append(height)
-                        
+
         current_time = 0
         non_parent_set = set() 
         for time in coalescent_times:
