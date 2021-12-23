@@ -11,8 +11,8 @@ def calculate_topology_params(coalescent_tree):
     for node in coalescent_tree.all_tips_nodes:
         
         if type(node) == "coalescent":
-            node_to_all_children[node].extend(node.children)
-            for i in node.children:
+            node_to_all_children[node].extend(node.node_children)
+            for i in node.node_children:
                 node_to_all_children[node].extend(node_to_all_children[i])
         else: #other one is an individual node and only included if the subtree contains a sample
             node_to_all_children[node] = []
@@ -22,7 +22,7 @@ def calculate_topology_params(coalescent_tree):
     uneven = 0
     for node in coalescent_tree.all_tips_nodes:
         if type(node) == "coalescent":
-            direct_children = node.children
+            direct_children = node.node_children
             left = direct_children[0]
             right = direct_children[1]
             left_count = 0
@@ -109,7 +109,7 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
     if node == root:
         return
     
-    sibling_nodes = [i for i in node.node_parent.children() if i != node]
+    sibling_nodes = [i for i in node.node_parent.node_children() if i != node]
     
     if len(sibling_nodes) != 1:
         print(f'wrong len sibling nodes: {len(sibling_nodes)}')
