@@ -77,8 +77,11 @@ def calculate_topology_params(coalescent_tree):
             width_diff = abs(count - depths[index-1])
             diffs.append(width_diff)
         index += 1
-                
-    delta_w = max(diffs)
+    
+    if len(diffs) > 0:
+        delta_w = max(diffs)
+    else:
+        delta_w = None
     
     ##max_ladder and IL_nodes
     count_list = []

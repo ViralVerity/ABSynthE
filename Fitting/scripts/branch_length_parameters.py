@@ -15,8 +15,6 @@ def calculate_branch_statistics(coalescent_tree):
     else:
         var_lengths = None
         
-    
-    #These are done piecewise in the original over different time points
     mean_internal = np.mean(coalescent_tree.internal_branches)
     median_internal = np.median(coalescent_tree.internal_branches)
     
@@ -33,7 +31,6 @@ def calculate_branch_statistics(coalescent_tree):
     else:
         var_external = None
         
-    
     mean_ratio = mean_internal/mean_external
     median_ratio = median_internal/median_external
     
