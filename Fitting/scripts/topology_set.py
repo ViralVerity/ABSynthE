@@ -109,7 +109,7 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
     if node == root:
         return
     
-    sibling_nodes = [i for i in node.node_parent.node_children() if i != node]
+    sibling_nodes = [i for i in node.node_parent.node_children if i != node]
     
     if len(sibling_nodes) != 1:
         print(f'wrong len sibling nodes: {len(sibling_nodes)}')
