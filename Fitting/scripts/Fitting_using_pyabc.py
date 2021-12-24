@@ -3,6 +3,7 @@ import random
 from multiprocessing.pool import ThreadPool
 import time
 import os
+import numpy as np
 
 from pyabc.sampler import ConcurrentFutureSampler
 from concurrent.futures import ThreadPoolExecutor
