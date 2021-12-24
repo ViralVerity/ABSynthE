@@ -114,21 +114,21 @@ def distance(x,y): #inputs are the dictionaries
     # sim_d = x['d']
     # obs_d = y['d']
     
-    if None not in sim_a_vector:
-        mid_a_x = normalise(sim_a_vector)
+    if None not in sim_a:
+        mid_a_x = normalise(sim_a)
         new_a_x = np.array(mid_a_x)
-        new_a_y = np.array(obs_a_vector)
+        new_a_y = np.array(obs_a)
     else:
-        indices = [i for i,x in enumerate(sim_a_vector) if x == None]
+        indices = [i for i,x in enumerate(sim_a) if x == None]
         
-        processing = list(sim_a_vector)
+        processing = list(sim_a)
         processing[:] = [x for x in processing if x != None]
        
         mid_a_x = normalise(processing)
         new_a_x = np.array(mid_a_x)
         
         count = 0
-        processing_y = list(obs_a_vector)
+        processing_y = list(obs_a)
         for i in indices:
             processing_y.pop(i-count)
             count += 1
