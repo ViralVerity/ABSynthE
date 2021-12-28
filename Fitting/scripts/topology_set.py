@@ -116,6 +116,7 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
     
     if len(sibling_nodes) != 1:
         print(f'wrong len sibling nodes: {len(sibling_nodes)}')
+        print(node, node.node_parent.node_children, sibling_nodes)
     
     if type(node) == "individual":
         if type(sibling_nodes[0]) != "individual":
