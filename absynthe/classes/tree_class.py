@@ -188,8 +188,6 @@ class tree():
                                             
                     #ie the coalescent event of the pair selected above
                     parent_node = node_class.node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
-                    print(f"new parent node being assigned is: {parent_node}")
-                    print(f"To: {lucky_pair[0]} and {lucky_pair[1]}")
                     lucky_pair[0].node_parent = parent_node 
                     lucky_pair[1].node_parent = parent_node
                     
