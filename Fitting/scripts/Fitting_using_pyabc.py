@@ -53,7 +53,7 @@ def main(sysargs = sys.argv[1:]):
     parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
 
-    pool = ThreadPoolExecutor(max_workers=1)
+    pool = ThreadPoolExecutor(max_workers=28)
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')

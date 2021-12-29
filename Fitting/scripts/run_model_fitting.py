@@ -182,9 +182,9 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time, coalescent_times = result
-            now = dt.datetime.now()
-            with open(f"test_newick_{now}.txt", 'w') as fw:
-                fw.write(newick_string)
+            # now = dt.datetime.now()
+            # with open(f"test_newick_{now}.txt", 'w') as fw:
+            #     fw.write(newick_string)
             #config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
             if summary_stats_set == "all":
