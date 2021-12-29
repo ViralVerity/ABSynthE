@@ -313,9 +313,9 @@ class tree():
     ###From here on we'll call in the main script not in the init function
     def to_newick(self, nde, those_sampled): #call on root of tree 
         
-        string = ",".join([self.to_newick(i, those_sampled) for i in nde.new_children if not i.removed])
+        string = ",".join([self.to_newick(i, those_sampled) for i in nde.node_children if not i.removed])
 
-        if len(nde.new_children) != 0:
+        if len(nde.node_children) != 0:
             string = "(" + string
         if nde.type == "individual":
             string += str(nde.id)

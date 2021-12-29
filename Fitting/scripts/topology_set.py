@@ -5,6 +5,8 @@ from collections import defaultdict
 def calculate_topology_params(coalescent_tree):
     
     #colless and staircase measures
+
+    print(coalescent_tree.root.unique_id)
     
     node_to_all_children = defaultdict(list)
     
