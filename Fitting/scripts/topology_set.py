@@ -4,10 +4,7 @@ from collections import defaultdict
 
 def calculate_topology_params(coalescent_tree):
     
-    #colless and staircase measures
-
-    print(coalescent_tree.root.id)
-    
+    #colless and staircase measures    
     node_to_all_children = defaultdict(list)
     
     for node in coalescent_tree.all_tips_nodes:
@@ -123,8 +120,6 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
         for i in sibling_nodes:
             print(i, i.id)
             print(i.id)
-    else:
-        print("right number of nodes")
     
     if type(node) == "individual":
         if type(sibling_nodes[0]) != "individual":
