@@ -8,6 +8,7 @@ from absynthe.classes.case_class import Case
 from absynthe.classes.individual_class import Individual
 import absynthe.stochastic.tree_simulator as tree_sim
 
+import datetime as dt
 
 import branch_length_parameters as branch_lens
 import topology_set as top 
@@ -181,7 +182,8 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time, coalescent_times = result
-            with open("test_newick.txt") as fw:
+            now = dt.now()
+            with open(f"test_newick_{now}.txt", 'w') as fw:
                 fw.write(newick_string)
             #config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
