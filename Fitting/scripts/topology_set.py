@@ -6,7 +6,7 @@ def calculate_topology_params(coalescent_tree):
     
     #colless and staircase measures
 
-    print(coalescent_tree.root.unique_id)
+    print(coalescent_tree.root.id)
     
     node_to_all_children = defaultdict(list)
     
