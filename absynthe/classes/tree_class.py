@@ -188,8 +188,9 @@ class tree():
                                             
                     #ie the coalescent event of the pair selected above
                     parent_node = node_class.node(uuid.uuid1(), "coalescent", height=current_height, children=lucky_pair, subtree=self)
-                    
-                    lucky_pair[0].node_parent = parent_node
+                    print(f"new parent node being assigned is: {parent_node}")
+                    print(f"To: {lucky_pair[0]} and {lucky_pair[1]}")
+                    lucky_pair[0].node_parent = parent_node 
                     lucky_pair[1].node_parent = parent_node
                     
                     self.nodes.add(parent_node)
@@ -257,20 +258,20 @@ class tree():
     def remove_internals(self, nde): 
         
         nde.remove_func_called = True
-        nde.new_children = nde.node_children.copy()
+        nde.old_children = nde.node_children.copy()
 
-        if len(nde.node_children) == 1: 
+        if len(nde.old_children) == 1: 
             if nde != self.root:
                 parent = nde.node_parent 
                 nde.removed = True
-                parent.new_children.remove(nde)
+                parent.node_children.remove(nde)
                 
                 self.final_nodes.remove(nde)
 
                 #Reassign parents and children to remove internal nodes
-                for child in nde.node_children:     
+                for child in nde.old_children:     
                     child.node_parent = parent
-                    parent.new_children.append(child)
+                    parent.node_children.append(child)
                     self.branch_lengths[child] = self.branch_lengths[child] + self.branch_lengths[nde]
 
             else:
@@ -283,7 +284,7 @@ class tree():
                 self.final_nodes.remove(nde)
 
         
-        for i in nde.node_children:
+        for i in nde.old_children: #it has to go through all of them 
             self.remove_internals(i)
         
     

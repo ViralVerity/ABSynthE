@@ -121,6 +121,8 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
         for i in sibling_nodes:
             print(i, i.id)
             print(i.id)
+    else:
+        print("right number of nodes")
     
     if type(node) == "individual":
         if type(sibling_nodes[0]) != "individual":

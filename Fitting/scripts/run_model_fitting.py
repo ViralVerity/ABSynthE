@@ -178,7 +178,6 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
     # ch_mvmt_file.close()
     
     if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
-        print(epidemic_config["index_case_individual"], epidemic_config["index_case_individual"].unique_id)
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time, coalescent_times = result
