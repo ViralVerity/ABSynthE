@@ -112,8 +112,6 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
         return
     
     sibling_nodes = [i for i in node.node_parent.node_children if i != node]
-    #error in here because everything has the same node.parent and the same siblings
-    #also the ID is the same node object rather than an ID, so there's an argument order issue somewhere
     if len(sibling_nodes) != 1:
         print(f'wrong len sibling nodes: {len(sibling_nodes)}')
         print(node.id, node.node_parent.id)

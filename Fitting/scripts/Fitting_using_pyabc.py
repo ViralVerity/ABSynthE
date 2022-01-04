@@ -50,7 +50,7 @@ def main(sysargs = sys.argv[1:]):
     observed = {"a":summary_stats, "b":observed_SS[1], "c":observed_SS[2]}
     # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
 
-    parameters = dict(a=(0.5,1), b=(0,0.3), c=(0,0.5))
+    parameters = dict(a=(0.5,1), b=(0,0.5), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
 
     pool = ThreadPoolExecutor(max_workers=28)
@@ -63,7 +63,7 @@ def main(sysargs = sys.argv[1:]):
 
     abc_id = abc.new(db_path, observed)
 
-    history = abc.run(max_nr_populations=1, minimum_epsilon=0.3) #was 10
+    history = abc.run(max_nr_populations=10, minimum_epsilon=0.1)
     
 # def simulate_pyabc_all(parameter):
 #     result = simulate_epidemic_all(**parameter) 
