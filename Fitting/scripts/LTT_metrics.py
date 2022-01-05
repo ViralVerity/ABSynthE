@@ -51,7 +51,7 @@ def average_ltt_bins(ltt_dict, coalescent_times):
     return ltt_points
 
     
-def calculate_ltt_metrics(ltt_dict, coalescent_times):
+def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
     
     t_max_L = max(ltt_dict.items(), key = lambda k : k[1])[0][0]
     max_L = max(ltt_dict.items(), key = lambda k : k[1])[1]
@@ -72,8 +72,40 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times):
         slope_ratio = slope_1/slope_2
     else:
         slope_ratio = None
-    
-    ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio]
+
+    sampling_times = []
+    branching_times = []
+    for node in coalescent_tree.final_nodes:
+        if node.type == "individual":
+            sampling_times.append(node.root_to_tip)
+        elif node.type == "coalescent":
+            branching_times.append(node.root_to_tip)
+        else:
+            print("Error: transmission node type still in the final nodes.\n")
+
+    sampling_times = sorted(sampling_times)
+    branching_times = sorted(branching_times)
+
+    sampling_diffs = []
+    for count,i in enumerate(sampling_times):
+        try:
+            next_one = sampling_times[count + 1]
+            sampling_diffs.append(next_one - i)
+        except IndexError:
+            pass
+
+    branching_diffs = []
+    for count,i in enumerate(branching_times):
+        try:
+            next_one = branching_times[count + 1]
+            branching_diffs.append(next_one - i)
+        except IndexError:
+            pass
+        
+    mean_s_time = np.mean(sampling_diffs)
+    mean_b_time = np.mean(branching_diffs)
+        
+    ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
     
     return ltt_metrics
     

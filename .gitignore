@@ -127,3 +127,4 @@ dmypy.json
 # non-commit directories
 
 Testing/
+*.db

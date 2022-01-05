@@ -50,7 +50,7 @@ class node():
         if self.type == "coalescent":
             self.relative_height = height
             self.subtree = subtree
-            self.root_to_tip = 0.0 #because it's the root of the subtree I think
+            self.root_to_tip = 0.0 #because it's the root of the subtree
 
         if children:
             self.node_children = children

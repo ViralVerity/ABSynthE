@@ -188,7 +188,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
             #config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
             if summary_stats_set == "all":
-                ltt_metrics = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, coalescent_times)
+                ltt_metrics = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, coalescent_times, coalescent_tree)
                 ltt_points = ltt.average_ltt_bins(coalescent_tree.lineages_through_time, coalescent_times)
                 topology = top.calculate_topology_params(coalescent_tree)
                 bl = branch_lens.calculate_branch_statistics(coalescent_tree)
@@ -203,7 +203,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
             elif summary_stats_set == "topology":
                 a_sim = top.calculate_topology_params(coalescent_tree)
             elif summary_stats_set == "ltt":
-                a_sim = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, coalescent_times)
+                a_sim = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, coalescent_times, coalescent_tree)
             elif summary_stats_set == "ltt_points":
                 a_sim = ltt.average_ltt_bins(coalescent_tree.lineages_through_time, coalescent_times)
             

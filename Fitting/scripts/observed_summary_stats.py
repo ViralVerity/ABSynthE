@@ -95,7 +95,7 @@ def get_observed_SS(summary_stats_set):
         sum_stats.extend(ltt_points)
         sum_stats.append(tips)
 
-        print(sum_stats)
+        # print(sum_stats)
 
         sum_stats = normalise(sum_stats)
         output = sum_stats
