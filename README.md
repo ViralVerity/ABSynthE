@@ -40,8 +40,7 @@ To run ABSynthE on a different population, these files will all need to be prese
 
 Contains observed data from the 2013-2016 Ebola epidemic in Sierra Leone to fit the model and obtain values for transmission parameters 
 
-Also contains old scripts for fitting  TO DO: see if these are actually different in a meaningful way and combine them in to actual absynthe
-
+Also contains scripts for running fitting using pyabc (https://pyabc.readthedocs.io/en/latest/index.html) and therefore calculating summary stats for simulated data
 
 ## Results scripts
 
