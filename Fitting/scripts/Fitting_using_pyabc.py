@@ -51,7 +51,7 @@ def main(sysargs = sys.argv[1:]):
     # observed = {"a":summary_stats, "b": observed_SS[1], "c":observed_SS[2], "d":observed_SS[3]}
 
     parameters = dict(a=(0.5,1), b=(0,0.5), c=(0,0.5))
-    prior = pyabc.Distribution(**{key: pyabc.RV("uniform", a, b - a) for key, (a,b) in parameters.items()})
+    prior = pyabc.Distribution(**{key: pyabc.RV("uniform", x, y - x) for key, (x,y) in parameters.items()})
 
     pool = ThreadPoolExecutor(max_workers=28)
     sampler = ConcurrentFutureSampler(pool)
@@ -139,7 +139,9 @@ def distance(x,y): #inputs are the dictionaries
     if new_a_x.size == new_a_y.size: 
         dist_a = np.linalg.norm(new_a_x - new_a_y)
     else:
-        print("error - not the same len for a" + str(len(new_a_x) + " " + str(len(new_a_y))))
+        print(f"error - not the same len for a {(len(new_a_x))} against {len(new_a_y)}\n")
+        print(new_a_x)
+        print(new_a_y)
         return
     
     dist_b = np.linalg.norm(sim_b - obs_b)
