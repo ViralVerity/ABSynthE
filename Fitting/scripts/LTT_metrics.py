@@ -42,7 +42,7 @@ def average_ltt_bins(ltt_dict, coalescent_times):
         average_lins[new_bin] = np.mean(totals)
         
     ltt_points = []
-    for tup in ltt_points.keys():
+    for tup in average_lins.keys():
         ltt_points.append(tup[0])
     y_vals = list(average_lins.values())
     
