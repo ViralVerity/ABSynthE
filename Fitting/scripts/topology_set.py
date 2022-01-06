@@ -10,7 +10,7 @@ def calculate_topology_params(coalescent_tree, newick_string):
     
     for node in coalescent_tree.all_tips_nodes:
         
-        if type(node) == "coalescent":
+        if node.type == "coalescent":
             node_to_all_children[node].extend(node.node_children)
             for i in node.node_children:
                 node_to_all_children[node].extend(node_to_all_children[i])
@@ -115,7 +115,7 @@ def calculate_topology_params(coalescent_tree, newick_string):
     in_ladders = []
     for lst in ladder_list:
         for node in lst:
-            if type(node) == "coalescent":
+            if node.type == "coalescent":
                 in_ladders.append(node)
 
     IL_nodes = len(in_ladders)/len(coalescent_tree.final_nodes)
@@ -138,8 +138,8 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
             print(i, i.id)
             print(i.id)
     
-    if type(node) == "individual":
-        if type(sibling_nodes[0]) != "individual":
+    if node.type == "individual":
+        if sibling_nodes[0].type != "individual":
             if node.node_parent not in node_set:
                 ladder.append(node.node_parent)
                 node_set.add(node.node_parent)
@@ -151,7 +151,7 @@ def go_up_ladder(root, node, node_set, ladder, ladder_list):
             ladder_list.append(ladder)
             return
     else:
-        if type(sibling_nodes[0]) != "individual":
+        if sibling_nodes[0].type != "individual":
             if node.node_parent not in node_set:
                 ladder.append(node.node_parent)
                 go_up_ladder(root, node.node_parent,node_set, ladder, ladder_list)
