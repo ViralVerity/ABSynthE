@@ -272,7 +272,7 @@ class tree():
                     parent.node_children.append(child)
                     self.branch_lengths[child] = self.branch_lengths[child] + self.branch_lengths[nde]
 
-            else:
+            else: #so brings the root forwards in time until there are two children
                 for child in nde.node_children:
                     child.node_parent = None
                     self.branch_lengths[child] = 0.0

@@ -116,7 +116,7 @@ def simulate_tree(epidemic_config, config, epidemic_len):
     else:
         those_sampled, not_enough_cases = sampling_output
     
-    if len(those_sampled) != 0:
+    if len(those_sampled) >= 2:
    
         #Intialise as type individual nodes, make transmission tree and make subtrees
         

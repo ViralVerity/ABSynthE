@@ -119,7 +119,7 @@ def distance(x,y): #inputs are the dictionaries
         mid_a_x = normalise(sim_a)
         new_a_x = np.array(mid_a_x)
         new_a_y = np.array(obs_a)
-    else:
+    else: #only compare values for which there are values 
         indices = [i for i,x in enumerate(sim_a) if x == None]
         
         processing = list(sim_a)

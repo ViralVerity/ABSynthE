@@ -39,7 +39,10 @@ def average_ltt_bins(ltt_dict, coalescent_times):
             new_lins[new_bin].append(frac*ltt_dict[old_bin])
                     
     for new_bin, totals in new_lins.items():
-        average_lins[new_bin] = np.mean(totals)
+        if len(totals) > 0:
+            average_lins[new_bin] = np.mean(totals)
+        else:
+            average_lins[new_bin] = 0
         
     ltt_points = []
     for tup in average_lins.keys():
@@ -102,8 +105,14 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
         except IndexError:
             pass
         
-    mean_s_time = np.mean(sampling_diffs)
-    mean_b_time = np.mean(branching_diffs)
+    if len(sampling_diffs) > 0:
+        mean_s_time = np.mean(sampling_diffs)
+    else:
+        mean_s_time = None 
+    if len(branching_diffs) > 0:
+        mean_b_time = np.mean(branching_diffs)
+    else:
+        mean_b_time = None
         
     ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
     
