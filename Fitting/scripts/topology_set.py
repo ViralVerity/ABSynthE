@@ -3,7 +3,7 @@ from collections import Counter
 from collections import defaultdict
 import datetime as dt
 
-def calculate_topology_params(coalescent_tree):
+def calculate_topology_params(coalescent_tree, newick_string):
     
     #colless and staircase measures    
     node_to_all_children = defaultdict(list)

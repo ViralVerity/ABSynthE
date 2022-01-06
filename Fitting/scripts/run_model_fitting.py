@@ -202,7 +202,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
             elif summary_stats_set == "branch":
                 a_sim = branch_lens.calculate_branch_statistics(coalescent_tree)
             elif summary_stats_set == "topology":
-                a_sim = top.calculate_topology_params(coalescent_tree)
+                a_sim = top.calculate_topology_params(coalescent_tree, newick_string)
             elif summary_stats_set == "ltt":
                 a_sim = ltt.calculate_ltt_metrics(coalescent_tree.lineages_through_time, coalescent_times, coalescent_tree)
             elif summary_stats_set == "ltt_points":
