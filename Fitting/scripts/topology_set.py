@@ -21,20 +21,20 @@ def calculate_topology_params(coalescent_tree, newick_string):
     ratio_list = []
     uneven = 0
     for node in coalescent_tree.all_tips_nodes:
-        if type(node) == "coalescent":
+        if node.type == "coalescent":
             direct_children = node.node_children
             left = direct_children[0]
             right = direct_children[1]
             left_count = 0
             right_count = 0
-            if type(left) == "coalescent":
+            if node.type == "coalescent":
                 for query in node_to_all_children[left]:
                     if query.taxon:
                         left_count += 1
             else:
                 left_count += 1
                 
-            if type(right) == "coalescent":
+            if node.type == "coalescent":
                 for query in node_to_all_children[right]:
                     if query.taxon:
                         right_count += 1
@@ -63,6 +63,7 @@ def calculate_topology_params(coalescent_tree, newick_string):
             if i.type == 'individual':
                 ind_count += 1
         now = dt.datetime.now()
+        
         with open(f"weird_run_{now}.txt", 'w') as fw:
             fw.write(f'{differences}\n')
             fw.write(f'len coalescent nodes: {len(coalescent_tree.final_nodes)}\n')
@@ -70,6 +71,7 @@ def calculate_topology_params(coalescent_tree, newick_string):
             fw.write(f'total in all_tips_nodes: {len(coalescent_tree.all_tips_nodes)}\n')
             for i in coalescent_tree.all_tips_nodes:
                 fw.write(f'{i.type}, children: {i.node_children}\n')
+        
         with open(f"test_newick_{now}.txt", 'w') as fw:
             fw.write(newick_string)
 
