@@ -58,7 +58,18 @@ def calculate_topology_params(coalescent_tree, newick_string):
     staircase_2 = np.mean(ratio_list)
 
     if len(ratio_list) == 0:
+        ind_count = 0
+        for i in coalescent_tree.all_tips_nodes:
+            if i.type == 'individual':
+                ind_count += 1
         now = dt.datetime.now()
+        with open(f"weird_run_{now}.txt", 'w') as fw:
+            fw.write(f'{differences}\n')
+            fw.write(f'len coalescent nodes: {len(coalescent_tree.final_nodes)}\n')
+            fw.write(f'number of tips: {ind_count}\n')
+            fw.write(f'total in all_tips_nodes: {len(coalescent_tree.all_tips_nodes)}\n')
+            for i in coalescent_tree.all_tips_nodes:
+                fw.write(f'{i.type}, children: {i.node_children}\n')
         with open(f"test_newick_{now}.txt", 'w') as fw:
             fw.write(newick_string)
 
