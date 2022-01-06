@@ -1,6 +1,7 @@
 import numpy as np
 from collections import Counter
 from collections import defaultdict
+import datetime as dt
 
 def calculate_topology_params(coalescent_tree):
     
@@ -55,6 +56,11 @@ def calculate_topology_params(coalescent_tree):
     colless = sum(differences)
     staircase_1 = uneven/len(coalescent_tree.final_nodes)
     staircase_2 = np.mean(ratio_list)
+
+    if len(ratio_list) == 0:
+        now = dt.datetime.now()
+        with open(f"test_newick_{now}.txt", 'w') as fw:
+            fw.write(newick_string)
 
     #Includes the root in each step calculation, which is correct as it should include the first branching
     sackin = np.sum(coalescent_tree.total_steps)

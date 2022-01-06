@@ -185,6 +185,7 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, summary
             # now = dt.datetime.now()
             # with open(f"test_newick_{now}.txt", 'w') as fw:
             #     fw.write(newick_string)
+            
             #config["most_recent_tip_file"].write(f'{iteration_count},{tree.most_recent_date}\n')
             
             if summary_stats_set == "all":
