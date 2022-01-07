@@ -22,10 +22,12 @@ def main(sysargs = sys.argv[1:]):
     description="fitting")
     
     parser.add_argument("--summary-stats-set", dest="summary_stats_set") #one of four
+    parser.add_argument("--threads", dest="threads", default=28)
     
     args = parser.parse_args(sysargs)
 
     summary_stats_set = args.summary_stats_set
+    threads = args.threads
 
     run_number = 1
 
@@ -53,7 +55,7 @@ def main(sysargs = sys.argv[1:]):
     parameters = dict(a=(0.5,1), b=(0,0.5), c=(0,0.5))
     prior = pyabc.Distribution(**{key: pyabc.RV("uniform", x, y - x) for key, (x,y) in parameters.items()})
 
-    pool = ThreadPoolExecutor(max_workers=28)
+    pool = ThreadPoolExecutor(max_workers=threads)
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')
