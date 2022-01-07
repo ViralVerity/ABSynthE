@@ -27,7 +27,7 @@ def main(sysargs = sys.argv[1:]):
     args = parser.parse_args(sysargs)
 
     summary_stats_set = args.summary_stats_set
-    threads = args.threads
+    threads = int(args.threads)
 
     run_number = 1
 
