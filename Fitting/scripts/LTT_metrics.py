@@ -68,10 +68,16 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
     end_x = max(coalescent_times)
     end_y = list(ltt_dict.values())[-1]
     
-    slope_1 = (peak_y-start_y)/(peak_x-start_x)
-    slope_2 = (peak_y-end_y)/(end_x-peak_x)
+    #peak and end could be the same
+    if peak_x != end_x:
+        slope_1 = (peak_y-start_y)/(peak_x-start_x)
+        slope_2 = (peak_y-end_y)/(end_x-peak_x)
+    else:
+        slope_1 = (peak_y-start_y)/(peak_x-start_x)
+        slope_2 = (peak_y-end_y)/1
     
-    if slope_2 > 0:
+    
+    if slope_2 and slope_2 > 0:
         slope_ratio = slope_1/slope_2
     else:
         slope_ratio = None

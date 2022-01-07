@@ -29,14 +29,14 @@ def calculate_topology_params(coalescent_tree, newick_string):
             right_count = 0
             if node.type == "coalescent":
                 for query in node_to_all_children[left]:
-                    if query.taxon:
+                    if query.type == "individual":
                         left_count += 1
             else:
                 left_count += 1
                 
             if node.type == "coalescent":
                 for query in node_to_all_children[right]:
-                    if query.taxon:
+                    if query.type == "individual":
                         right_count += 1
             else:
                 right_count += 1

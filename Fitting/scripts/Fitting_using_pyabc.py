@@ -144,6 +144,9 @@ def distance(x,y): #inputs are the dictionaries
         print(new_a_y)
         return
     
+    if any([np.isnan(x) for x in new_a_x]):
+        print(f"NaN in vector: {sim_a}, {new_a_x}")
+
     dist_b = np.linalg.norm(sim_b - obs_b)
     dist_c = np.linalg.norm(sim_c - obs_c)
     # dist_d = np.linalg.norm(sim_d - obs_d)
