@@ -3,19 +3,35 @@ from collections import Counter
 from collections import defaultdict
 import datetime as dt
 
+
+def find_node_to_all_children(node, node_to_all_children):
+
+    if node.type == "individual":
+        node_to_all_children[node] = []
+    else:
+        node_to_all_children[node].extend(node.node_children)
+        for i in node.node_children:
+            node_to_all_children[node].extend(node_to_all_children[i])
+        
+    if node.node_parent:
+        find_node_to_all_children(node.node_parent, node_to_all_children)
+    else:
+        return node_to_all_children
+
+    return node_to_all_children
+
 def calculate_topology_params(coalescent_tree, newick_string):
     
     #colless and staircase measures    
-    node_to_all_children = defaultdict(list)
+    node_to_all_children_prep = defaultdict(list)
     
-    for node in coalescent_tree.all_tips_nodes:
+    for node in coalescent_tree.tips:
+
+        node_to_all_children_prep = find_node_to_all_children(node, node_to_all_children_prep)
         
-        if node.type == "coalescent":
-            node_to_all_children[node].extend(node.node_children)
-            for i in node.node_children:
-                node_to_all_children[node].extend(node_to_all_children[i])
-        else: #other one is an individual node and only included if the subtree contains a sample
-            node_to_all_children[node] = []
+    node_to_all_children = defaultdict(set)
+    for k,v in node_to_all_children_prep.items():
+        node_to_all_children[k] = set(v)
 
     differences = []
     ratio_list = []
@@ -48,6 +64,10 @@ def calculate_topology_params(coalescent_tree, newick_string):
             
             if left_count == 0 and right_count == 0:
                 print("zero on left and right count")
+                for i in node_to_all_children[left]:
+                    print(i.type)
+                for i in node_to_all_children[right]:
+                    print(i.type)
                 print(node_to_all_children[left], node_to_all_children[right])
                 print(left, right)
                 print(len(coalescent_tree.all_tips_nodes))
