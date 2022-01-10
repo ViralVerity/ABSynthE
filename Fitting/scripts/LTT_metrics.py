@@ -17,6 +17,12 @@ def average_ltt_bins(ltt_dict, coalescent_times):
         new_tup_list.append((new_bin, new_bin+bin_size))
         new_bin += bin_size
     
+    #makes sure there's no rounding nonsense and the last bin ends with the end of the tree
+    last_tup = new_tup_list[-1]
+    start_final = last_tup[0]
+    new_tup_list.pop()
+    new_tup_list.append((start_final,full_len))
+
     new_lins = defaultdict(list)
     average_lins = {}
 
@@ -29,6 +35,8 @@ def average_ltt_bins(ltt_dict, coalescent_times):
             
             if start1 >= start2 and end1 <= end2:
                 frac = (end1-start1)/bin_size
+            elif start1 <= start2 and end1 < end2:
+                frac = (end2-start2)/bin_size
             elif start1 >= start2 and end1 > end2 and start1 < end2:
                 frac = (end2-start1)/bin_size
             elif start1 < start2 and end1 <= end2 and end1 > start2:
