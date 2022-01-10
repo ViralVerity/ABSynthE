@@ -48,7 +48,9 @@ def calculate_topology_params(coalescent_tree, newick_string):
             
             if left_count == 0 and right_count == 0:
                 print("zero on left and right count")
-                print(node_to_all_children)
+                # print(node_to_all_children)
+                print(left, right)
+                print(direct_children)
                 print(len(coalescent_tree.all_tips_nodes))
             if left_count < right_count:
                 ratio = left_count/right_count
