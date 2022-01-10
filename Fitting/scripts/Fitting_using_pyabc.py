@@ -118,7 +118,10 @@ def distance(x,y): #inputs are the dictionaries
     # obs_d = y['d']
     
     if None not in sim_a:
-        mid_a_x = normalise(sim_a)
+        if not all(v == 0 for v in sim_a):
+            mid_a_x = normalise(sim_a)
+        else:
+            mid_a_x = sim_a
         new_a_x = np.array(mid_a_x)
         new_a_y = np.array(obs_a)
     else: #only compare values for which there are values 
