@@ -103,7 +103,7 @@ def calculate_topology_params(coalescent_tree, newick_string):
     if len(diffs) > 0:
         delta_w = max(diffs)
     else:
-        delta_w = None
+        delta_w = np.nan
     
     ##max_ladder and IL_nodes
     count_list = []

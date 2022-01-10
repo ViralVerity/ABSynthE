@@ -80,7 +80,7 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
     if slope_2 and slope_2 > 0:
         slope_ratio = slope_1/slope_2
     else:
-        slope_ratio = None
+        slope_ratio = np.nan
 
     sampling_times = []
     branching_times = []
@@ -114,11 +114,11 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
     if len(sampling_diffs) > 0:
         mean_s_time = np.mean(sampling_diffs)
     else:
-        mean_s_time = None 
+        mean_s_time = np.nan 
     if len(branching_diffs) > 0:
         mean_b_time = np.mean(branching_diffs)
     else:
-        mean_b_time = None
+        mean_b_time = np.nan
         
     ltt_metrics = [max_L, t_max_L, slope_1, slope_2, slope_ratio, mean_s_time, mean_b_time]
     

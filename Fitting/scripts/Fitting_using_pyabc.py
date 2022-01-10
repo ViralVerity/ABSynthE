@@ -117,7 +117,8 @@ def distance(x,y): #inputs are the dictionaries
     # sim_d = x['d']
     # obs_d = y['d']
     
-    if None not in sim_a:
+    check = True if True in np.isnan(np.array(sim_a)) else False
+    if not check:
         if not all(v == 0 for v in sim_a):
             mid_a_x = normalise(sim_a)
         else:
@@ -125,13 +126,12 @@ def distance(x,y): #inputs are the dictionaries
         new_a_x = np.array(mid_a_x)
         new_a_y = np.array(obs_a)
     else: #only compare values for which there are values 
-        indices = [i for i,x in enumerate(sim_a) if x == None]
-        
-        processing = list(sim_a)
-        processing[:] = [x for x in processing if x != None]
+        indices = np.argwhere(np.isnan(sim_a))[0]
+        processing = np.array(sim_a)
+        processing = processing[~np.isnan((processing))]        
        
-        mid_a_x = normalise(processing)
-        new_a_x = np.array(mid_a_x)
+        new_a_x = normalise(processing)
+        # new_a_x = np.array(mid_a_x)
         
         count = 0
         processing_y = list(obs_a)
@@ -149,7 +149,7 @@ def distance(x,y): #inputs are the dictionaries
         print(new_a_y)
         return
     
-    if any([np.isnan(x) for x in new_a_x]):
+    if any([np.isnan(x) for x in new_a_x]): #keep this - still should be now nan in final part
         print(f"NaN in vector: {sim_a}, {new_a_x}")
 
     dist_b = np.linalg.norm(sim_b - obs_b)

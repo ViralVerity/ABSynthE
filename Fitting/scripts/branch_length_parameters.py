@@ -14,7 +14,7 @@ def calculate_branch_statistics(coalescent_tree):
     if len(coalescent_tree.b_len_list) >= 2:
         var_lengths = np.var(coalescent_tree.b_len_list)
     else:
-        var_lengths = None
+        var_lengths = np.nan
         
     mean_internal = np.mean(coalescent_tree.internal_branches)
     median_internal = np.median(coalescent_tree.internal_branches)
@@ -22,7 +22,7 @@ def calculate_branch_statistics(coalescent_tree):
     if len(coalescent_tree.internal_branches) >= 2:
         var_internal = np.var(coalescent_tree.internal_branches)
     else:
-        var_internal = None
+        var_internal = np.nan
         
     mean_external = np.mean(coalescent_tree.external_branches)
     median_external = np.median(coalescent_tree.external_branches)
@@ -30,7 +30,7 @@ def calculate_branch_statistics(coalescent_tree):
     if len(coalescent_tree.external_branches) >= 2:
         var_external = np.var(coalescent_tree.external_branches)
     else:
-        var_external = None
+        var_external = np.nan
         
     mean_ratio = mean_internal/mean_external
     median_ratio = median_internal/median_external
@@ -38,7 +38,7 @@ def calculate_branch_statistics(coalescent_tree):
     if var_internal and var_external:
         var_ratio = var_internal/var_external
     else:
-        var_ratio = None
+        var_ratio = np.nan
     
     branch_stats = [mean_lengths, median_lengths, var_lengths, mean_external, median_external, var_external, mean_internal, median_internal, var_internal, mean_ratio, median_ratio, var_ratio]
     
