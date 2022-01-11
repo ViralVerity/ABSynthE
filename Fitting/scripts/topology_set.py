@@ -120,7 +120,7 @@ def calculate_topology_params(coalescent_tree):
         delta_w = np.nan
     
     ##max_ladder and IL_nodes
-   ladder_dict = defaultdict(list)
+    ladder_dict = defaultdict(list)
     go_down_ladder(coalescent_tree.root, None, ladder_dict)
 
     max_ladder = max([len(i) for i in ladder_dict.values()])/len(coalescent_tree.tips)
