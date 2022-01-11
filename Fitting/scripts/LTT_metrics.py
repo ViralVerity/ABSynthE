@@ -59,6 +59,12 @@ def average_ltt_bins(ltt_dict, coalescent_times):
     
     ltt_points.extend(y_vals)
 
+    if len(ltt_points) != 40:
+        print(average_lins)
+        print(ltt_dict)
+        print(full_len)
+        print(new_tup_list)
+
     return ltt_points
 
     
@@ -123,6 +129,7 @@ def calculate_ltt_metrics(ltt_dict, coalescent_times, coalescent_tree):
         mean_s_time = np.mean(sampling_diffs)
     else:
         mean_s_time = np.nan 
+
     if len(branching_diffs) > 0:
         mean_b_time = np.mean(branching_diffs)
     else:

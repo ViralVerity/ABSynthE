@@ -145,6 +145,7 @@ def distance(x,y): #inputs are the dictionaries
         dist_a = np.linalg.norm(new_a_x - new_a_y)
     else:
         print(f"error - not the same len for a {(len(new_a_x))} against {len(new_a_y)}\n")
+        print(sim_a)
         print(new_a_x)
         print(new_a_y)
         return
