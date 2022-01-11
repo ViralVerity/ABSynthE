@@ -126,7 +126,7 @@ def distance(x,y): #inputs are the dictionaries
         new_a_x = np.array(mid_a_x)
         new_a_y = np.array(obs_a)
     else: #only compare values for which there are values 
-        indices = np.argwhere(np.isnan(sim_a))[0]
+        indices = np.argwhere(np.isnan(sim_a))
         processing = np.array(sim_a)
         processing = processing[~np.isnan((processing))]        
        
@@ -136,7 +136,7 @@ def distance(x,y): #inputs are the dictionaries
         count = 0
         processing_y = list(obs_a)
         for i in indices:
-            processing_y.pop(i-count)
+            processing_y.pop(i[0]-count)
             count += 1
         
         new_a_y = np.array(processing_y)
