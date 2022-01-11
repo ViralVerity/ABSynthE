@@ -120,21 +120,15 @@ def calculate_topology_params(coalescent_tree):
         delta_w = np.nan
     
     ##max_ladder and IL_nodes
-    count_list = []
-    node_set = set()
+   ladder_dict = defaultdict(list)
+    go_down_ladder(coalescent_tree.root, None, ladder_dict)
 
-    node_set = set()
-    ladder_list = []
-    for leaf in coalescent_tree.tips:
-        go_up_ladder(coalescent_tree.root, leaf, node_set, [], ladder_list)
-
-    max_ladder = max([len(i) for i in ladder_list])/len(coalescent_tree.tips)
+    max_ladder = max([len(i) for i in ladder_dict.values()])/len(coalescent_tree.tips)
     
     in_ladders = []
-    for lst in ladder_list:
+    for lst in ladder_dict.values():
         for node in lst:
-            if node.type == "coalescent":
-                in_ladders.append(node)
+            in_ladders.append(node)
 
     IL_nodes = len(in_ladders)/len(coalescent_tree.final_nodes)
     
@@ -143,42 +137,23 @@ def calculate_topology_params(coalescent_tree):
     return topology
 
 
-def go_up_ladder(root, node, node_set, ladder, ladder_list):
-    
-    if node == root:
-        return
-    
-    sibling_nodes = [i for i in node.node_parent.node_children if i != node]
-    if len(sibling_nodes) != 1:
-        print(f'wrong len sibling nodes: {len(sibling_nodes)}')
-        print(node.id, node.node_parent.id)
-        for i in sibling_nodes:
-            print(i, i.id)
-            print(i.id)
-    
-    if node.type == "individual":
-        if sibling_nodes[0].type != "individual":
-            if node.node_parent not in node_set:
-                ladder.append(node.node_parent)
-                node_set.add(node.node_parent)
-                go_up_ladder(root, node.node_parent, node_set, ladder, ladder_list)
-            else:
-                ladder_list.append(ladder)
-                return
+def go_down_ladder(node, ladder_key, ladder_dict):
+        
+    if node.type == "coalescent":
+        child1 = node.node_children[0]
+        child2 = node.node_children[1]
+
+        if child1.type != child2.type:
+            if not ladder_key:
+                ladder_key = node
+            ladder_dict[ladder_key].append(node)
         else:
-            ladder_list.append(ladder)
-            return
+            ladder_key = None
+
+        for child in node.node_children:
+            go_down_ladder(child, ladder_key, ladder_dict)
+
     else:
-        if sibling_nodes[0].type != "individual":
-            if node.node_parent not in node_set:
-                ladder.append(node.node_parent)
-                go_up_ladder(root, node.node_parent,node_set, ladder, ladder_list)
-                node_set.add(node.node_parent)
-            else:
-                ladder_list.append(ladder)
-                return
-        else:
-            ladder_list.append(ladder)
-            return
+        pass 
     
 
