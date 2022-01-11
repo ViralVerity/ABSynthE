@@ -5,33 +5,26 @@ import datetime as dt
 
 
 def find_node_to_all_children(node, node_to_all_children):
-
-    if node.type == "individual":
-        node_to_all_children[node] = []
+    
+    if len(node.node_children) > 0:
+        for child in node.node_children:
+            node_to_all_children[node].append(child)
+            if child.type == "coalescent":
+                find_node_to_all_children(child, node_to_all_children)
     else:
-        node_to_all_children[node].extend(node.node_children)
-        for i in node.node_children:
-            node_to_all_children[node].extend(node_to_all_children[i])
+        node_to_all_children[node] = []
         
     if node.node_parent:
-        find_node_to_all_children(node.node_parent, node_to_all_children)
-    else:
-        return node_to_all_children
-
+        node_to_all_children[node.node_parent].extend(node_to_all_children[node])
+            
     return node_to_all_children
 
 def calculate_topology_params(coalescent_tree):
     
     #colless and staircase measures    
-    node_to_all_children_prep = defaultdict(list)
+    node_to_all_children = defaultdict(list)
     
-    for node in coalescent_tree.tips:
-
-        node_to_all_children_prep = find_node_to_all_children(node, node_to_all_children_prep)
-        
-    node_to_all_children = defaultdict(set)
-    for k,v in node_to_all_children_prep.items():
-        node_to_all_children[k] = set(v)
+    node_to_all_children = find_node_to_all_children(coalescent_tree.root, node_to_all_children)
 
     differences = []
     ratio_list = []
