@@ -28,19 +28,19 @@ def average_ltt_bins(ltt_dict, coalescent_times):
 
     for new_bin in new_tup_list:
         for old_bin in ltt_dict.keys():
-            start1 = old_bin[0]
-            start2 = new_bin[0]
-            end1 = old_bin[1]
-            end2 = new_bin[1]
+            start_old = old_bin[0]
+            start_new = new_bin[0]
+            end_old = old_bin[1]
+            end_new = new_bin[1]
             
-            if start1 >= start2 and end1 <= end2:
-                frac = (end1-start1)/bin_size
-            elif start1 <= start2 and end1 < end2:
-                frac = (end2-start2)/bin_size
-            elif start1 >= start2 and end1 > end2 and start1 < end2:
-                frac = (end2-start1)/bin_size
-            elif start1 < start2 and end1 <= end2 and end1 > start2:
-                frac = (end1-start2)/bin_size
+            if start_old >= start_new and end_old <= end_new:
+                frac = (end_old-start_old)/bin_size
+            elif start_old <= start_new and end_old > end_new:
+                frac = 1
+            elif start_old >= start_new and end_old > end_new and start_old < end_new:
+                frac = (end_new-start_old)/bin_size
+            elif start_old < start_new and end_old <= end_new and end_old > start_new:
+                frac = (end_old-start_new)/bin_size
             else:
                 continue
             

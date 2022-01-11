@@ -20,7 +20,7 @@ def find_node_to_all_children(node, node_to_all_children):
 
     return node_to_all_children
 
-def calculate_topology_params(coalescent_tree, newick_string):
+def calculate_topology_params(coalescent_tree):
     
     #colless and staircase measures    
     node_to_all_children_prep = defaultdict(list)
@@ -97,8 +97,8 @@ def calculate_topology_params(coalescent_tree, newick_string):
             for i in coalescent_tree.all_tips_nodes:
                 fw.write(f'{i.type}, children: {i.node_children}\n')
         
-        with open(f"test_newick_{now}.txt", 'w') as fw:
-            fw.write(newick_string)
+        # with open(f"test_newick_{now}.txt", 'w') as fw:
+        #     fw.write(newick_string)
 
     #Includes the root in each step calculation, which is correct as it should include the first branching
     sackin = np.sum(coalescent_tree.total_steps)

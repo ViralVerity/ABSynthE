@@ -40,7 +40,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
     parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
     parser.add_argument("-h","--help",action="store_true",dest="help")
-    
+    # parser.add_argument("--testing", action="store_true")
+
     if len(sysargs)<1: 
         parser.print_help()
         sys.exit(0)
@@ -73,6 +74,7 @@ def main(sysargs = sys.argv[1:]):
 
     config["overwrite"] = args.overwrite
     config["verbose"] = args.verbose
+    # config["testing"] = args.testing
     
     #from ABC-SMC fitting - will hard code in here, it's for ebov SLE exponential process
         # a = 0.65

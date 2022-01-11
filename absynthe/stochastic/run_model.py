@@ -207,6 +207,12 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
             counts = ",".join([str(i) for i in count_list])
             ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
     ch_mvmt_file.close()
+
+    # if config["testing"]:
+    #     with open(os.path.join(config["output_directory"],"transmission_dicts", f"transmission_dict_for_{iteration_count}.csv", 'w')) as f:
+    #         for k,v in 
+
+    
     
     if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
