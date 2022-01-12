@@ -67,7 +67,7 @@ def simulate_epidemic_all(a,b,c):
 
     config = common_part(config, a,b,c)
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "all", 47) #calls the run_model_fitting.py script
+    a_sim, dist_mvmt, ch_mvmt = run_model(config, "all", 68) #calls the run_model_fitting.py script
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)
@@ -83,7 +83,7 @@ def simulate_epidemic_ltt(a,b,c):
 
     config = common_part(config,a,b,c)
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt", 7) #calls the run_model_fitting.py script
+    a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt", 8) #calls the run_model_fitting.py script
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)
@@ -100,7 +100,7 @@ def simulate_epidemic_ltt_points(a,b,c):
 
     config = common_part(config, a,b,c)
     
-    a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt_points", 22) #calls the run_model_fitting.py script 
+    a_sim, dist_mvmt, ch_mvmt = run_model(config, "ltt_points", 41) #calls the run_model_fitting.py script 
     
     dist_jumps = get_jumps(dist_mvmt)
     ch_jumps = get_jumps(ch_mvmt)
