@@ -59,13 +59,16 @@ def main(sysargs = sys.argv[1:]):
     sampler = ConcurrentFutureSampler(pool)
 
     print('starting to fit')
-    abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
+    # abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
+    abc_continued = pyabc.ABCSMC(function, prior, distance, sampler=sampler)
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
+    # abc_id = abc.new(db_path, observed)
 
-    abc_id = abc.new(db_path, observed)
+    abc_continued.load(db_path, 1)
+    abc_continued.run(max_nr_populations=7, minimum_epsilon=0.1)
 
-    history = abc.run(max_nr_populations=10, minimum_epsilon=0.1)
+    abc.run(max_nr_populations=10, minimum_epsilon=0.1)
     
 # def simulate_pyabc_all(parameter):
 #     result = simulate_epidemic_all(**parameter) 
