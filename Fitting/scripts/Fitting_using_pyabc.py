@@ -23,7 +23,10 @@ def main(sysargs = sys.argv[1:]):
     
     parser.add_argument("--summary-stats-set", dest="summary_stats_set") #one of four
     parser.add_argument("--threads", dest="threads", default=28)
-    
+    parser.add_argument("--restart", action=store_true)
+    parser.add_argument("--remaining")
+    parser.add_argument("--id")
+
     args = parser.parse_args(sysargs)
 
     summary_stats_set = args.summary_stats_set
@@ -60,13 +63,14 @@ def main(sysargs = sys.argv[1:]):
 
     db_path = (f"sqlite:///{summary_stats_set}.db")
 
-    # abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
-    # abc_id = abc.new(db_path, observed)
-    # abc.run(max_nr_populations=10, minimum_epsilon=0.1)
-
-    abc_continued = pyabc.ABCSMC(function, prior, distance, sampler=sampler)
-    abc_continued.load(db_path, 4)
-    abc_continued.run(max_nr_populations=7, minimum_epsilon=0.1)
+    if args.restart:
+        abc_continued = pyabc.ABCSMC(function, prior, distance, sampler=sampler)
+        abc_continued.load(db_path, args.id)
+        abc_continued.run(max_nr_populations=args.remaining, minimum_epsilon=0.1)
+    else:
+        abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
+        abc_id = abc.new(db_path, observed)
+        abc.run(max_nr_populations=10, minimum_epsilon=0.1)
 
     
 # def simulate_pyabc_all(parameter):
