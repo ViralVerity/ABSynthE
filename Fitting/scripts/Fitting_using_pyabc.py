@@ -65,8 +65,8 @@ def main(sysargs = sys.argv[1:]):
     # abc.run(max_nr_populations=10, minimum_epsilon=0.1)
 
     abc_continued = pyabc.ABCSMC(function, prior, distance, sampler=sampler)
-    abc_continued.load(db_path, 1)
-    abc_continued.run(max_nr_populations=6, minimum_epsilon=0.1)
+    abc_continued.load(db_path, 4)
+    abc_continued.run(max_nr_populations=7, minimum_epsilon=0.1)
 
     
 # def simulate_pyabc_all(parameter):
