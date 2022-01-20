@@ -23,7 +23,7 @@ def main(sysargs = sys.argv[1:]):
     
     parser.add_argument("--summary-stats-set", dest="summary_stats_set") #one of four
     parser.add_argument("--threads", dest="threads", default=28)
-    parser.add_argument("--restart", action=store_true)
+    parser.add_argument("--restart", action="store_true")
     parser.add_argument("--remaining")
     parser.add_argument("--id")
 
