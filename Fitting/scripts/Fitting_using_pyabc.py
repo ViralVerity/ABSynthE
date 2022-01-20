@@ -65,7 +65,7 @@ def main(sysargs = sys.argv[1:]):
 
     if args.restart:
         abc_continued = pyabc.ABCSMC(function, prior, distance, sampler=sampler)
-        abc_continued.load(db_path, args.id)
+        abc_continued.load(db_path, int(args.id))
         abc_continued.run(max_nr_populations=args.remaining, minimum_epsilon=0.1)
     else:
         abc = pyabc.ABCSMC(function, prior, distance, sampler=sampler) 
