@@ -17,13 +17,13 @@ import LTT_metrics as ltt
 def run_model(config, summary_stats_set, len_stat):
     #may need to remove epidemic_config - see if it speeds it up at all
     
-    sys.stdout.write("\nStarting epidemic runs.\n")
+    #sys.stdout.write("\nStarting epidemic runs.\n")
     
     for iteration_count in range(config["number_model_iterations"]): 
         ##writing to file and screen
         if iteration_count%config["log_every"] == 0:
             config["write_file"] = True
-            print(f'{iteration_count} runs completed')
+            #print(f'{iteration_count} runs completed')
         else:
             config["write_file"] = False            
 
