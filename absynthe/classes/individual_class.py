@@ -50,13 +50,15 @@ class Individual():
 
     def death_time(self, death_cdf):
         random_number = random.uniform(0,1)
-        self.death_day = np.argmax(death_cdf > random_number)
+        death_after_symptoms = np.argmax(death_cdf > random_number)
+        self.death_day = self.incubation_day + death_after_symptoms
         return self.death_day
 
     def recovery_time(self, recovery_cdf):
         #Can't recover before day 4 - taken from the NEJM paper figure
         random_number = random.uniform(recovery_cdf[3],1)
-        self.recovery_day = np.argmax(recovery_cdf > random_number)
+        recovery_after_symptoms = np.argmax(recovery_cdf > random_number)
+        self.recovery_day = self.incubation_day + recovery_after_symptoms
         return self.recovery_day
 
 
