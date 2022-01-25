@@ -30,7 +30,7 @@ def define_distributions():
 def get_cdf(dim):
 
     x = np.linspace(0,dim, dim) #This is where difference between living/dead comes in
-    mu = 3.1 #again, from a paper that I need to dig out
+    mu = 3.1 
     sigma = 2.5
 
     a = shape = (mu/sigma)**2

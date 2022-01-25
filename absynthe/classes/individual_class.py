@@ -90,7 +90,7 @@ class Individual():
 
         poss_contact_dict = {}
         function = np.random.poisson
-        lamb = np.random.gamma(0.37, 1.76) #lamb_m is 0.65 - that is from a paper somewhere, should be in the docs
+        lamb = np.random.gamma(0.37, 1.89) #lamb_m is 0.7 - from Glynn. 0.37 is from Lau et al 2017
 
         a = config['a']
         b = config['b']
