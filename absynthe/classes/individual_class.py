@@ -53,15 +53,13 @@ class Individual():
 
     def death_time(self, death_cdf):
         random_number = random.uniform(0,1)
-        death_after_symptoms = np.argmax(death_cdf > random_number)
-        self.death_day = self.incubation_day + death_after_symptoms
+        self.death_day = np.argmax(death_cdf > random_number)
         return self.death_day
 
     def recovery_time(self, recovery_cdf):
         #Can't recover before day 4 - taken from the NEJM paper figure
         random_number = random.uniform(recovery_cdf[3],1)
-        recovery_after_symptoms = np.argmax(recovery_cdf > random_number)
-        self.recovery_day = self.incubation_day + recovery_after_symptoms
+        self.recovery_day = np.argmax(recovery_cdf > random_number)
         return self.recovery_day
 
 
@@ -148,8 +146,8 @@ class Individual():
         random_number = random.uniform(0,1)
 
         try:
-            day = np.argmax(cdf > random_number)
-            day_inf = day + current_day + self.incubation_day
+            day_during_infection = np.argmax(cdf > random_number)
+            day_inf = day_during_infection + current_day + self.incubation_day
             return day_inf, cdf_len_set
             
         except ValueError: #so this comes up if they finish their infection before the exposure happens - should have an if statement really
