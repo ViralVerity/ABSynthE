@@ -24,6 +24,9 @@ class Individual():
         self.incubation_time(inc_cdf)
         self.death_prob(cfr)
 
+        self.recovery_day = "NA"
+        self.death_day = "NA"
+
         if self.death_state: 
             self.death_time(death_cdf)
             self.infectious_period = self.death_day + 7 #ebola specific
