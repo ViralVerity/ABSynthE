@@ -7,7 +7,6 @@ import os
 def make_contact_dicts(input_directory, config):
     
     agent_location = defaultdict(list)
-    district_pops = {}
 
     #will need to be generalised if it's going to be useable for other levels of people - maybe adm1,adm2?
     with open(os.path.join(input_directory,"agent_location.txt")) as json_file:
