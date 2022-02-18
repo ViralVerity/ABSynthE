@@ -48,7 +48,14 @@ def make_data_structures(config):
 
 def make_index_case(config, epidemic_config):
 
-    index_id = random.choice(config["population_structure"]["ch_to_ppl"]["kissi_teng"])
+    if config["starting_level"] == "district":
+        dict_to_search = "dist_to_ppl"
+    else:
+        dict_to_search = "ch_to_ppl"
+        
+    index_id = random.choice(config["population_structure"][dict_to_search][config["starting_location"]])
+    #default is kissi teng
+    
     epidemic_config["index_id"] = index_id
 
     index_case_individual = Individual(index_id, None, config["population_structure"]["agent_location"], config["cfr"], config["distributions"], 0, epidemic_config) 

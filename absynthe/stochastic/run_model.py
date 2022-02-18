@@ -117,7 +117,14 @@ def run_epidemic(start_day, config, epidemic_config):
                         parent.children.append(focal_individual)
 
                         if config["write_file"]:
-                            config["info_file"].write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id},{focal_individual.hh},{focal_individual.ch},{focal_individual.dist},{day},{day+focal_individual.incubation_day},{focal_individual.death_state},{day+focal_individual.incubation_day+focal_individual.death_day},{day+focal_individual.incubation_day+focal_individual.recovery_day},{day + focal_individual.incubation_day}\n')
+                            if focal_individual.death_state:
+                                death = day+focal_individual.incubation_day+focal_individual.death_day
+                                recovery = "NA"
+                            else:
+                                recovery = day+focal_individual.incubation_day+focal_individual.recovery_day
+                                death = "NA"
+                                
+                            config["info_file"].write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id},{focal_individual.hh},{focal_individual.ch},{focal_individual.dist},{day},{day+focal_individual.incubation_day},{focal_individual.death_state},{death},{recovery},{day + focal_individual.incubation_day}\n')
 
                             if focal_individual.dist != focal_individual.parent.dist:
                                 epidemic_config["dist_mvmt"][focal_individual.dist,focal_individual.parent.dist].append(day)

@@ -24,6 +24,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--case-limit", dest="case_limit",type=int, help="Cap the epidemic at this many cases")
     parser.add_argument("--day-limit", dest="day_limit", type=int,help="Cap the epidemic at this many days.")
     parser.add_argument("--cfr", type=float, help="Set the case fatality rate as a number between 0 and 1. Default is 0.7 for Ebola", default=0.7)
+    parser.add_argument("--starting-location", dest="starting_location", help="location of index case. Format is level:location eg default is chiefdom:kissi_teng", default = "chiefdom:kissi_teng")
     
     #sampling delay after symptoms can be added in - probably wants a distribution, so maybe this would just be a flag
     parser.add_argument("--sampling-percentage", "-spct",type=float, dest="sampling_percentage", help="Percentage of cases sampled, used in generating the phylogeny from cases. Default is 0.16 for Ebola", default=0.16)
@@ -38,7 +39,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--log-every", dest="log_every",type=int, help="Frequency of logging epidemics in model states. Default is 10%% of number_model_iteration ", default=0.1)
     
     parser.add_argument("--overwrite", action="store_true", help="overwrite results in output directory")
-    parser.add_argument("--verbose", action="store_true", help="prints more information as it's runnign")
+    parser.add_argument("--threads", "-nt", type=int, help="number of threads to run analysis on", default=25)
+    parser.add_argument("--verbose", action="store_true", help="prints more information as it's running")
     parser.add_argument("-h","--help",action="store_true",dest="help")
     # parser.add_argument("--testing", action="store_true")
 
@@ -58,6 +60,8 @@ def main(sysargs = sys.argv[1:]):
     else:
         config["log_every"] = args.log_every
     config["cfr"] = args.cfr
+    config["starting_level"] = args.starting_location.split(":")[0]
+    config["starting_location"] = args.starting_location.split(":")[1]
     
     config["sampling_percentage"] = args.sampling_percentage
     config["sampling_scheme"] = "uniform"
@@ -81,9 +85,9 @@ def main(sysargs = sys.argv[1:]):
         # b = 0.11
         # c = 0.32
     #old ones for testing
-    config["a"] = 0.65
-    config["b"] = 0.11
-    config["c"] = 0.32
+    config["a"] = 0.74
+    config["b"] = 0.056
+    config["c"] = 0.31
 
     # sys.stdout.write("Setting up for running epidemics\n")
     
@@ -111,7 +115,7 @@ def main(sysargs = sys.argv[1:]):
             print(f" - {k}: {config[k]}")
     
     #see if the multi-threading still works
-    pool = ThreadPool(25) #might need to use star map to use lots of arguments? or put in a config dict
+    pool = ThreadPool(args.threads) 
     pool.map(run_model,(config, )) #calls the run_model.py script       
             
     if config["R0_output"]:
