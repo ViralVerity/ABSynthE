@@ -12,7 +12,8 @@ setup(name='absynthe',
       description='Agent based synthetic epidemic',
       install_requires=[
             "numpy>=1.19.4",
-            "scipy>=1.4.1"
+            "scipy>=1.4.1",
+            "PyYAML>=6.0.0"
             
       ],
       url='https://github.com/ViralVerity/ABSynthE',
