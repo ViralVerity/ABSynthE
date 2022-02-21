@@ -44,27 +44,7 @@ def make_directories(config):
         os.mkdir(os.path.join(config["output_directory"], 'lineages'))
 
     return config
-        
-def make_summary_files(config):
-    
-    if config["calculate_R0"]:
-        R0_output = open(os.path.join(config["output_directory"],"R0_run.csv"), 'w')
-    else:
-        R0_output = None
 
-    config["R0_output"] = R0_output
-        
-    config["size_output"] = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
-    config["length_output"] = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
-    
-    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
-        config["most_recent_tip_file"] = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
-        config["most_recent_tip_file"].write("number,most_recently_sampled_tip\n")
-    
-    config["size_output"].write("number,size,districts_involved,chiefdoms_involved\n")
-    config["length_output"].write("number,length_of_epidemic\n")
-    
-    return config
 
 def prep_movement_files(output_directory, iteration_count):
 
@@ -93,3 +73,71 @@ def prep_info_file(output_directory, index_case_individual, iteration_count):
     return info_file
 
     
+def make_summary_files(config):
+    
+    size_output = open(os.path.join(config["output_directory"], "epidemic_size.csv"),'w')
+    length_output = open(os.path.join(config["output_directory"], "persistence.csv"), 'w')
+    
+    size_output.write("number,size,districts_involved,chiefdoms_involved\n")
+    length_output.write("number,length_of_epidemic\n")
+    
+    run_out_summary_file = prep_runout_summary(config["output_directory"])
+
+    if config["calculate_R0"]:
+        R0_output = open(os.path.join(config["output_directory"],"R0_run.csv"), 'w')
+    else:
+        R0_output = None
+        
+    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        most_recent_tip_file = open(os.path.join(config["output_directory"], "most_recent_dates.csv"),'w')
+        most_recent_tip_file.write("number,most_recently_sampled_tip\n")
+    else:
+        most_recent_tip_file = None
+        
+    return size_output, length_output, run_out_summary_file, R0_output, most_recent_tip_file
+    
+    
+def write_summary_files(config,result_dict_list):
+    
+    size_output, length_output, run_out_summary_file, R0_output, most_recent_tip_file = make_summary_files(config)
+    
+    for result_dict in result_dict_list:
+        
+        iteration_count = result_dict["iteration_count"]
+        
+        length_output.write(f"{iteration_count},{result_dict['length']}\n")
+        size_output.write(f"{iteration_count},{result_dict['cases']},{result_dict['districts']},{result_dict['chiefdoms']}\n")
+        
+        if result_dict["epidemic_stopped"]:
+            run_out_summary_file.write(f"{iteration_count},{result_dict['cases']}\n")
+        
+        if config['calculate_R0']:
+            R0_output.write(f"{iteration_count},{result_dict['R0']}\n")
+            
+        if result_dict["most_recent_date"]:
+            most_recent_tip_file.write(f'{iteration_count},{result_dict["most_recent_date"]}\n')
+            
+    size_output.close()
+    length_output.close()
+    run_out_summary_file.close()
+    
+    if config["calculate_R0"]:
+        R0_output.close()
+    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
+        most_recent_tip_file.close()
+    
+    
+def write_runout_file(config, epidemic_config, iteration_count):
+
+    runout_file = prep_info_file(config["output_directory"], epidemic_config["index_case_individual"],iteration_count)
+        
+    for individual in epidemic_config["case_dict"].values():
+        #it's weird to use the transmission dict here
+        day = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"]
+        symptoms = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] #for now they get sampled on the first day of symptoms
+        sampled = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] 
+        
+        if individual.parent:
+            runout_file.write(f"{individual.unique_id},{individual.parent.unique_id},{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
+        
+    runout_file.close()

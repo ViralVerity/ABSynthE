@@ -9,63 +9,64 @@ import time
 from absynthe.classes.case_class import Case
 from absynthe.classes.individual_class import Individual
 
-def run_model(config):
-    #may need to remove epidemic_config - see if it speeds it up at all
-    
-    sys.stdout.write("\nStarting epidemic runs.\n")
-    
-    for iteration_count in range(config["number_model_iterations"]):
-    
-        ##writing to file and screen
-        if iteration_count%config["log_every"] == 0:
-            config["write_file"] = True
-            print(f'{iteration_count} runs completed')
-        else:
-            config["write_file"] = False            
-
-        epidemic_config = index_functions.make_data_structures(config)        
+def run_model(config, iteration_count):
         
-        ###Making index case###
-        epidemic_config = index_functions.make_index_case(config, epidemic_config)
-        
-        if config["write_file"]:
-            config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
-        
-        ###Run the epidemic###
-        epidemic_config = run_epidemic(0, config, epidemic_config)
+    ##writing to file and screen
+    if iteration_count%config["log_every"] == 0:
+        config["write_file"] = True
+        print(f'{iteration_count} runs completed')
+    else:
+        config["write_file"] = False            
+
+    epidemic_config = index_functions.make_data_structures(config)        
     
-        ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
-        #NB if a case limit is set, it's possible this removal process will put the case count below the case limit.
-        remove_set = set()   
-        for case, assignment in epidemic_config["case_dict"].items():
-            if not assignment: 
-                remove_set.add(case)
-        for case in remove_set:
-            del epidemic_config["case_dict"][case]
+    ###Making index case###
+    epidemic_config = index_functions.make_index_case(config, epidemic_config)
+    
+    if config["write_file"]:
+        epidemic_config["info_file"] = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"], iteration_count)
+    
+    ###Run the epidemic###
+    epidemic_config = run_epidemic(0, config, epidemic_config)
 
-        #Removing those people from the day dict
-        for day, case_list in epidemic_config["day_dict"].items():
-            new_case_list = [item for item in case_list if item not in remove_set] 
-            epidemic_config["day_dict"][day] = new_case_list
+    ###Removing cases that don't exist eg because the person was already infected, or because the parent had recovered/died###
+    #NB if a case limit is set, it's possible this removal process will put the case count below the case limit.
+    new_case_dict = {k:v for k,v in epidemic_config["case_dict"].items() if v}
+    epidemic_config['case_dict'] = new_case_dict
 
-        epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
-        last_day = max(epidemic_config["onset_times"])
+    #Removing those people from the day dict
+    for day, case_list in epidemic_config["day_dict"].items():
+        new_case_list = [item for item in case_list if item in epidemic_config['case_dict']] 
+        epidemic_config["day_dict"][day] = new_case_list
+
+    epidemic_config["day_dict"][0].append(epidemic_config["index_case_case"]) #Put here so that it doesn't confuse the loop above because it has no parent AND otherwise it would get reassigned and stuff
+    last_day = max(epidemic_config["onset_times"])
+    
+    if config["day_limit"]:
+        if config["day_limit"] < last_day:
+            last_day = config["day_limit"]
+
+    ###Getting results and writing to file###
+    if epidemic_config["epidemic_stopped"] and not config["write_file"]: #special log file for when it runs out 
+        file_functions.write_runout_file(config, epidemic_config, iteration_count)
+
+    if epidemic_config["epidemic_stopped"] or config["write_file"]:
+        R0,most_recent_date = record_individual_epidemic(iteration_count, config, epidemic_config, last_day)        
+
+    if config["write_file"]: #is there a way to check if a file is open?
+        epidemic_config["info_file"].close()
+
+    result_dict = {}
+    result_dict["iteration_count"] = iteration_count
+    result_dict["length"] = last_day
+    result_dict["cases"] = len(epidemic_config["case_dict"])
+    result_dict["districts"] = len(epidemic_config["districts_present"])
+    result_dict['chiefdoms'] = len(epidemic_config["chiefdoms_present"])
+    result_dict['epidemic_stopped'] = epidemic_config['epidemic_stopped']
+    result_dict["R0"] = R0
+    result_dict['most_recent_date'] = most_recent_date
         
-        if config["day_limit"]:
-            if config["day_limit"] < last_day:
-                last_day = config["day_limit"]
-
-        ###Getting results and writing to file###
-        write_to_summary_files(config, epidemic_config, iteration_count, last_day)
-
-        if epidemic_config["epidemic_stopped"] and not config["write_file"]:
-            write_runout_file(config, epidemic_config, iteration_count)
-
-        if epidemic_config["epidemic_stopped"] or config["write_file"]:
-            record_individual_epidemic(iteration_count, config, epidemic_config, last_day)        
-
-        if config["write_file"]: #is there a way to check if a file is open?
-            config["info_file"].close()
+    return result_dict
             
 def run_epidemic(start_day, config, epidemic_config):
     
@@ -124,7 +125,7 @@ def run_epidemic(start_day, config, epidemic_config):
                             recovery = day+focal_individual.incubation_day+focal_individual.recovery_day
                             death = "NA"
                             
-                        config["info_file"].write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id},{focal_individual.hh},{focal_individual.ch},{focal_individual.dist},{day},{day+focal_individual.incubation_day},{focal_individual.death_state},{death},{recovery},{day + focal_individual.incubation_day}\n')
+                        epidemic_config["info_file"].write(f'{focal_individual.unique_id},{focal_individual.parent.unique_id},{focal_individual.hh},{focal_individual.ch},{focal_individual.dist},{day},{day+focal_individual.incubation_day},{focal_individual.death_state},{death},{recovery},{day + focal_individual.incubation_day}\n')
 
                         if focal_individual.dist != focal_individual.parent.dist:
                             epidemic_config["dist_mvmt"][focal_individual.dist,focal_individual.parent.dist].append(day)
@@ -147,7 +148,6 @@ def run_epidemic(start_day, config, epidemic_config):
                                     if day_inf_output > config["day_limit"]:
                                         continue 
 
-                                
                                 new_case = Case(len(epidemic_config["case_dict"]), level, focal_case)
                                 epidemic_config["case_dict"][new_case] = None
                                 epidemic_config["day_dict"][day_inf_output].append(new_case)
@@ -169,37 +169,6 @@ def run_epidemic(start_day, config, epidemic_config):
 
 
 
-def write_to_summary_files(config, epidemic_config, iteration_count, last_day):
-
-    size = len(epidemic_config["case_dict"])
-    dists = len(epidemic_config["districts_present"])
-    chiefdoms = len(epidemic_config["chiefdoms_present"])
-
-    config["length_output"].write(f"{iteration_count},{last_day}\n")
-    config["size_output"].write(f"{iteration_count},{size},{dists},{chiefdoms}\n")
-    
-    if epidemic_config["epidemic_stopped"]:
-        if config["run_out_summary"] == "":
-            config["run_out_summary"] = file_funcs.prep_runout_summary(config["output_directory"])
-            config["run_out_summary"].write(f"{iteration_count},{size}\n")
-
-
-def write_runout_file(config, epidemic_config, iteration_count):
-
-    runout_file = file_functions.prep_info_file(config["output_directory"], epidemic_config["index_case_individual"],iteration_count)
-        
-    for individual in epidemic_config["case_dict"].values():
-        #it's weird to use the transmission dict here
-        day = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"]
-        symptoms = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] #for now they get sampled on the first day of symptoms
-        sampled = epidemic_config["transmission_dict"][individual.unique_id]["day_sampled"] 
-        
-        if individual.parent:
-            runout_file.write(f"{individual.unique_id},{individual.parent.unique_id},{individual.hh},{individual.dist},{day},{symptoms},{sampled},\n")
-        
-    runout_file.close()
-
-
 def record_individual_epidemic(iteration_count, config, epidemic_config, last_day):
 
     district_mvmt_file, ch_mvmt_file = file_functions.prep_movement_files(config["output_directory"], iteration_count)
@@ -215,20 +184,15 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
             counts = ",".join([str(i) for i in count_list])
             ch_mvmt_file.write(f'{ch_pair[0]},{ch_pair[1]},{counts}\n')      
     ch_mvmt_file.close()
-
-    # if config["testing"]:
-    #     with open(os.path.join(config["output_directory"],"transmission_dicts", f"transmission_dict_for_{iteration_count}.csv", 'w')) as f:
-    #         for k,v in 
-
     
-    
+    R0 = None
+    most_recent_date = None
     if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
         result = tree_sim.simulate_tree(epidemic_config, config, last_day) 
         if result:
             coalescent_tree, newick_string, skyline, R0, those_sampled, lineages_through_time, coalescent_times = result
-
-            config["most_recent_tip_file"].write(f'{iteration_count},{coalescent_tree.most_recent_date}\n')
-
+            most_recent_date = coalescent_tree.most_recent_date 
+            
             if config["output_tree"]:
                 tree_file = open(os.path.join(config["output_directory"],"trees",f"tree_for_{iteration_count}.txt"), 'w')
                 tree_file.write(newick_string)
@@ -253,9 +217,9 @@ def record_individual_epidemic(iteration_count, config, epidemic_config, last_da
                     lineage_count += 1
                     ltt_file.write(f"{lineage_count},{k[0]},{k[1]},{v}\n")
                 ltt_file.close()
-            
-            if config["calculate_R0"]:
-                config["R0_output"].write(f"{iteration_count},{R0}\n")
+                
+    return R0, most_recent_date
+                
 
 
 

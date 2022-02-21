@@ -6,6 +6,10 @@ import argparse
 from collections import defaultdict
 from multiprocessing.pool import ThreadPool
 
+from itertools import repeat
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import freeze_support
+
 from absynthe.stochastic.run_model import *
 
 import absynthe.set_up.file_functions as file_funcs
@@ -95,7 +99,7 @@ def main(sysargs = sys.argv[1:]):
     thisdir = os.path.abspath(os.path.dirname(__file__))
     
     config = file_funcs.make_directories(config)
-    config = file_funcs.make_summary_files(config)
+    # config = file_funcs.make_summary_files(config)
 
     config["distributions"] = dist_funcs.define_distributions() #this is ebola specific, so would be nice here to have user input
     config["population_structure"] = file_funcs.parse_population_information(args.population_config)
@@ -103,32 +107,23 @@ def main(sysargs = sys.argv[1:]):
     
     if config["case_limit"] or config["day_limit"]:
         config["capped"] = True
-        config["run_out_summary"] = file_funcs.prep_runout_summary(config["output_directory"])
     else:
         config["capped"] = False
-        config["run_out_summary"] = ""
-    
+        
     print("\n**** CONFIG ****")
     no_print = ["population_structure", "distributions"]
     for k in sorted(config):
         if k not in no_print:
             print(f" - {k}: {config[k]}")
     
-    #see if the multi-threading still works
-    pool = ThreadPool(args.threads) 
-    pool.map(run_model,(config, )) #calls the run_model.py script       
-            
-    if config["R0_output"]:
-        config["R0_output"].close()
-    config["size_output"].close()
-    config["length_output"].close()
+    sys.stdout.write("\nStarting epidemic runs.\n")
     
-    if config["output_tree"] or config["calculate_R0"] or config["output_ltt"] or config["output_skyline"]:
-        config["most_recent_tip_file"].close()
-                                    
-    if config["case_limit"] or config["day_limit"]:
-        config["run_out_summary"].close()
+    num_iterations = [i for i in range(config["number_model_iterations"])]
+    with ProcessPoolExecutor(max_workers=args.threads) as pool:
+        result_dict_list = list(pool.map(run_model, repeat(config), num_iterations))
 
+    file_functions.write_summary_files(config,result_dict_list)
+    
 
 if __name__ == '__main__':
     main()
