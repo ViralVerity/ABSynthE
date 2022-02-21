@@ -30,7 +30,7 @@ def make_data_structures(config):
         for i in range(config["day_limit"]+1): 
             epidemic_config["day_dict"][i] = []
     else:
-        for i in range(1001):
+        for i in range(10001):
             epidemic_config["day_dict"][i] = []
 
 
