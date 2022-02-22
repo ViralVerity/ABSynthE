@@ -85,13 +85,9 @@ def main(sysargs = sys.argv[1:]):
     # config["testing"] = args.testing
     
     #from ABC-SMC fitting - will hard code in here, it's for ebov SLE exponential process
-        # a = 0.65
-        # b = 0.11
-        # c = 0.32
-    #old ones for testing
-    config["a"] = 0.74
-    config["b"] = 0.056
-    config["c"] = 0.31
+    config["a"] = 0.759
+    config["b"] = 0.052
+    config["c"] = 0.288
 
     # sys.stdout.write("Setting up for running epidemics\n")
     
