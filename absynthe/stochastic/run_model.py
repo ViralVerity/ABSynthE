@@ -56,6 +56,8 @@ def run_model(config, iteration_count):
     if config["write_file"]: #is there a way to check if a file is open?
         epidemic_config["info_file"].close()
 
+    print(f'{iteration_count} finished!')
+
     result_dict = {}
     result_dict["iteration_count"] = iteration_count
     result_dict["length"] = last_day
